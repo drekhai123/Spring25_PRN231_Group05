@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FlowerFarmTaskManagementSystem.DataAccess.IRepositories
+namespace FlowerFarmTaskManagementSystem.BusinessLogic.IService
 {
-    public interface ICategory
+    public interface ICategoryService
     {
         Task<IEnumerable<Category>> GetAllCategoriesAsync();
         Task<Category> GetCategoryByIdAsync(Guid id);
