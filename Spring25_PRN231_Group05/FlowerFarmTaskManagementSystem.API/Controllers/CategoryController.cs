@@ -1,4 +1,5 @@
-﻿using FlowerFarmTaskManagementSystem.BusinessObject.Models;
+﻿using FlowerFarmTaskManagementSystem.BusinessLogic.IService;
+using FlowerFarmTaskManagementSystem.BusinessObject.Models;
 using FlowerFarmTaskManagementSystem.DataAccess.IRepositories;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -7,62 +8,80 @@ using System.Threading.Tasks;
 
 namespace FlowerFarmTaskManagementSystem.WebAPI.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class CategoryController : ControllerBase
     {
-        private readonly ICategory _categoryRepo;
+        private readonly ICategoryService _categoryService;
 
-        public CategoryController(ICategory categoryRepo)
+        public CategoryController(ICategoryService categoryService)
         {
-            _categoryRepo = categoryRepo;
+            _categoryService = categoryService;
         }
 
-        // GET: api/Category
         [HttpGet]
-        public IActionResult GetAllCategories()
+        public async Task<IActionResult> GetAllCategories()
         {
-            var categories = _categoryRepo.GetAllCategories();
+            var categories = await _categoryService.GetAllCategoriesAsync();
             return Ok(categories);
         }
 
-        // GET: api/Category/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCategoryById(Guid id)
         {
-            var category = await _categoryRepo.GetCategoryById(id);
-            if (category == null) return NotFound("Category not found.");
-            return Ok(category);
+            try
+            {
+                var category = await _categoryService.GetCategoryByIdAsync(id);
+                return Ok(category);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
 
-        // POST: api/Category
         [HttpPost]
         public async Task<IActionResult> CreateCategory([FromBody] Category category)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
-            var createdCategory = await _categoryRepo.CreateCategory(category);
-            return CreatedAtAction(nameof(GetCategoryById), new { id = createdCategory.CategoryId }, createdCategory);
+            try
+            {
+                var createdCategory = await _categoryService.CreateCategoryAsync(category);
+                return CreatedAtAction(nameof(GetCategoryById), new { id = createdCategory.CategoryId }, createdCategory);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        // PUT: api/Category/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCategory(Guid id, [FromBody] Category category)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
-            var updatedCategory = await _categoryRepo.UpdateCategory(id, category);
-            if (updatedCategory == null) return NotFound("Category not found.");
-            return Ok(updatedCategory);
+            try
+            {
+                var updatedCategory = await _categoryService.UpdateCategoryAsync(id, category);
+                return Ok(updatedCategory);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
 
-        // DELETE: api/Category/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategory(Guid id)
         {
-            var deletedCategory = await _categoryRepo.DeleteCategory(id);
-            if (deletedCategory == null) return NotFound("Category not found.");
-            return Ok(deletedCategory);
+            try
+            {
+                bool result = await _categoryService.DeleteCategoryAsync(id);
+                if (!result) return NotFound();
+                return NoContent();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
     }
+
 }
