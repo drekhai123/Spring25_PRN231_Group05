@@ -1,5 +1,5 @@
 using FlowerFarmTaskManagementSystem.BusinessLogic.IService;
-using FlowerFarmTaskManagementSystem.BusinessObject.Models;
+using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlowerFarmTaskManagementSystem.API.Controllers
@@ -16,14 +16,14 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllUsers()
+        public async Task<ActionResult<IEnumerable<UserResponseDTO>>> GetAllUsers()
         {
             var users = await _userService.GetAllUsersAsync();
             return Ok(users);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetUserById(Guid id)
+        public async Task<ActionResult<UserResponseDTO>> GetUserById(Guid id)
         {
             try
             {
@@ -37,11 +37,11 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateUser([FromBody] User user)
+        public async Task<ActionResult<UserResponseDTO>> CreateUser([FromBody] UserRequestDTO userDto)
         {
             try
             {
-                var createdUser = await _userService.CreateUserAsync(user);
+                var createdUser = await _userService.CreateUserAsync(userDto);
                 return CreatedAtAction(nameof(GetUserById), new { id = createdUser.UserId }, createdUser);
             }
             catch (ArgumentException ex)
@@ -51,16 +51,20 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(Guid id, [FromBody] User user)
+        public async Task<ActionResult<UserResponseDTO>> UpdateUser(Guid id, [FromBody] UserRequestDTO userDto)
         {
             try
             {
-                var updatedUser = await _userService.UpdateUserAsync(id, user);
+                var updatedUser = await _userService.UpdateUserAsync(id, userDto);
                 return Ok(updatedUser);
             }
             catch (KeyNotFoundException ex)
             {
                 return NotFound(ex.Message);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
 
@@ -70,11 +74,19 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
             try
             {
                 var result = await _userService.DeleteUserAsync(id);
-                return Ok(result);
+                return Ok(new
+                {
+                    Success = result,
+                    Message = "User deleted successfully"
+                });
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(ex.Message);
+                return NotFound(new
+                {
+                    Success = false,
+                    Message = ex.Message
+                });
             }
         }
     }

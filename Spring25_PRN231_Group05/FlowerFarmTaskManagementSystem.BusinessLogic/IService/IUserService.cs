@@ -1,13 +1,13 @@
-using FlowerFarmTaskManagementSystem.BusinessObject.Models;
+using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
 
 namespace FlowerFarmTaskManagementSystem.BusinessLogic.IService
 {
     public interface IUserService
     {
-        Task<IEnumerable<User>> GetAllUsersAsync();
-        Task<User> GetUserByIdAsync(Guid id);
-        Task<User> CreateUserAsync(User user);
-        Task<User> UpdateUserAsync(Guid id, User user);
+        Task<IEnumerable<UserResponseDTO>> GetAllUsersAsync();
+        Task<UserResponseDTO> GetUserByIdAsync(Guid id);
+        Task<UserResponseDTO> CreateUserAsync(UserRequestDTO userDto);
+        Task<UserResponseDTO> UpdateUserAsync(Guid id, UserRequestDTO userDto);
         Task<bool> DeleteUserAsync(Guid id);
     }
 }
