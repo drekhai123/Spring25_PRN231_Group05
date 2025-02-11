@@ -3,22 +3,25 @@ using FlowerFarmTaskManagementSystem.BusinessObject.Models;
 using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
 using FlowerFarmTaskManagementSystem.DataAccess.IRepositories;
 using System.Text.RegularExpressions;
+using AutoMapper;
 
 namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 {
     public class UserService : IUserService
     {
         private readonly IUser _userRepository;
+        private readonly IMapper _mapper;
 
-        public UserService(IUser userRepository)
+        public UserService(IUser userRepository, IMapper mapper)
         {
             _userRepository = userRepository;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<UserResponseDTO>> GetAllUsersAsync()
         {
             var users = await _userRepository.GetAllUsersAsync();
-            return users.Select(MapToResponseDTO);
+            return _mapper.Map<IEnumerable<UserResponseDTO>>(users);
         }
 
         public async Task<UserResponseDTO> GetUserByIdAsync(Guid id)
@@ -26,7 +29,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             var user = await _userRepository.GetUserByIdAsync(id);
             if (user == null)
                 throw new KeyNotFoundException($"User with ID {id} not found");
-            return MapToResponseDTO(user);
+            return _mapper.Map<UserResponseDTO>(user);
         }
 
         public async Task<UserResponseDTO> CreateUserAsync(UserRequestDTO userDto)
@@ -55,20 +58,11 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             if (existingUser != null)
                 throw new ArgumentException("Email already exists");
 
-            var user = new User
-            {
-                UserName = userDto.UserName,
-                Password = userDto.Password,
-                Email = userDto.Email,
-                Phone = userDto.Phone,
-                Address = userDto.Address,
-                Role = userDto.Role,
-                DateOfBirth = userDto.DateOfBirth,
-                IsActive = true
-            };
+            var user = _mapper.Map<User>(userDto);
+            user.IsActive = true; // Set default values
 
             var createdUser = await _userRepository.CreateUserAsync(user);
-            return MapToResponseDTO(createdUser);
+            return _mapper.Map<UserResponseDTO>(createdUser);
         }
 
         public async Task<UserResponseDTO> UpdateUserAsync(Guid id, UserRequestDTO userDto)
@@ -99,17 +93,9 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             if (currentUser == null)
                 throw new KeyNotFoundException($"User with ID {id} not found");
 
-            // Cập nhật chỉ những thông tin từ request
-            currentUser.UserName = userDto.UserName;
-            currentUser.Email = userDto.Email;
-            currentUser.Phone = userDto.Phone;
-            currentUser.Address = userDto.Address;
-            currentUser.Role = userDto.Role;
-            currentUser.DateOfBirth = userDto.DateOfBirth;
-            // Giữ nguyên IsActive từ dữ liệu cũ
-
+            _mapper.Map(userDto, currentUser);
             var updatedUser = await _userRepository.UpdateUserAsync(id, currentUser);
-            return MapToResponseDTO(updatedUser);
+            return _mapper.Map<UserResponseDTO>(updatedUser);
         }
 
         public async Task<bool> DeleteUserAsync(Guid id)
@@ -125,23 +111,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             var user = await _userRepository.UpdateUserStatusAsync(id);
             if (user == null)
                 throw new KeyNotFoundException($"User with ID {id} not found");
-            return MapToResponseDTO(user);
-        }
-
-        private UserResponseDTO MapToResponseDTO(User user)
-        {
-            return new UserResponseDTO
-            {
-                UserId = user.UserId,
-                UserName = user.UserName,
-                Email = user.Email,
-                Phone = user.Phone,
-                Address = user.Address,
-                Role = user.Role,
-                DateOfBirth = user.DateOfBirth,
-                CreateDate = user.CreateDate,
-                IsActive = user.IsActive
-            };
+            return _mapper.Map<UserResponseDTO>(user);
         }
 
         private bool IsValidEmail(string email)

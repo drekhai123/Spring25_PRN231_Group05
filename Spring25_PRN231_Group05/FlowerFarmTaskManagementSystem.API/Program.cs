@@ -5,6 +5,7 @@ using FlowerFarmTaskManagementSystem.DataAccess.IRepositories;
 using FlowerFarmTaskManagementSystem.DataAccess.Repositories;
 using FlowerFarmTaskManagementSystem.BusinessLogic.IService;
 using FlowerFarmTaskManagementSystem.BusinessLogic.Service;
+using FlowerFarmTaskManagementSystem.BusinessObject.Mapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,9 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Add AutoMapper
+builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
 //builder.Services.AddDbContext<FlowerFarmTaskManagementSystemDbContext>(options =>
 //    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

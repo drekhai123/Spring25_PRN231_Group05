@@ -12,9 +12,17 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Mapper
 {
     public class AutoMapperProfile : Profile
     {
-        public AutoMapperProfile() {
+        public AutoMapperProfile()
+        {
             CreateMap<Category, CategoryResponseDTO>();
             CreateMap<CategoryRequestDTO, Category>();
+
+            // Add User
+            CreateMap<User, UserResponseDTO>();
+            CreateMap<UserRequestDTO, User>()
+                .ForMember(dest => dest.UserId, opt => opt.Ignore())
+                .ForMember(dest => dest.CreateDate, opt => opt.Ignore())
+                .ForMember(dest => dest.IsActive, opt => opt.Ignore());
         }
     }
 }
