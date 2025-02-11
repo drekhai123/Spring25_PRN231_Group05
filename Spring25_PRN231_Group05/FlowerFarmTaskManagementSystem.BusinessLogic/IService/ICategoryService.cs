@@ -1,4 +1,5 @@
-﻿using FlowerFarmTaskManagementSystem.BusinessObject.Models;
+﻿using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
+using FlowerFarmTaskManagementSystem.BusinessObject.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +10,10 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.IService
 {
     public interface ICategoryService
     {
-        Task<IEnumerable<Category>> GetAllCategoriesAsync();
-        Task<Category> GetCategoryByIdAsync(Guid id);
-        Task<Category> CreateCategoryAsync(Category category);
-        Task<Category> UpdateCategoryAsync(Guid id, Category category);
+        Task<IEnumerable<CategoryResponseDTO>> GetAllCategoriesAsync();
+        Task<CategoryResponseDTO> GetCategoryByIdAsync(Guid id);
+        Task<CategoryResponseDTO> CreateCategoryAsync(CategoryRequestDTO categoryRequest);
+        Task<CategoryResponseDTO> UpdateCategoryAsync(Guid id, CategoryRequestDTO categoryRequest);
         Task<bool> DeleteCategoryAsync(Guid id);
     }
 }

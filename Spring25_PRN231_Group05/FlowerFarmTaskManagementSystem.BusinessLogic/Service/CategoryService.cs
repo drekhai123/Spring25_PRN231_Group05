@@ -1,6 +1,9 @@
-﻿using FlowerFarmTaskManagementSystem.BusinessLogic.IService;
+﻿using AutoMapper;
+using FlowerFarmTaskManagementSystem.BusinessLogic.IService;
+using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
 using FlowerFarmTaskManagementSystem.BusinessObject.Models;
 using FlowerFarmTaskManagementSystem.DataAccess.IRepositories;
+using FlowerFarmTaskManagementSystem.DataAccess.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,59 +14,72 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 {
     public class CategoryService : ICategoryService
     {
-        private readonly ICategory _categoryRepo;
+        private readonly UnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public CategoryService(ICategory categoryRepo)
+        public CategoryService(UnitOfWork unitOfWork, IMapper mapper)
         {
-            _categoryRepo = categoryRepo;
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<Category>> GetAllCategoriesAsync()
+        public async Task<IEnumerable<CategoryResponseDTO>> GetAllCategoriesAsync()
         {
-            return await _categoryRepo.GetAllCategoriesAsync();
+            var categories = await _unitOfWork.CategoryRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<CategoryResponseDTO>>(categories);
         }
 
-        public async Task<Category> GetCategoryByIdAsync(Guid id)
+        public async Task<CategoryResponseDTO> GetCategoryByIdAsync(Guid id)
         {
-            var category = await _categoryRepo.GetCategoryByIdAsync(id);
+            var category = await _unitOfWork.CategoryRepository.GetByIdAsync(id);
             if (category == null)
             {
-                throw new KeyNotFoundException($"Category with Id {id} not found.");
+                throw new KeyNotFoundException("Category not found.");
             }
-            return category;
+            return _mapper.Map<CategoryResponseDTO>(category);
         }
 
-        public async Task<Category> CreateCategoryAsync(Category category)
+        public async Task<CategoryResponseDTO> CreateCategoryAsync(CategoryRequestDTO categoryRequest)
         {
-            // Business logic before creating (e.g., check for duplicates)
-            if (string.IsNullOrWhiteSpace(category.CategoryName))
-            {
-                throw new ArgumentException("CategoryName is required.");
-            }
+            var category = _mapper.Map<Category>(categoryRequest);
+            category.CreateDate = DateTime.UtcNow;
+            category.UpdateDate = DateTime.UtcNow;
 
-            return await _categoryRepo.CreateCategoryAsync(category);
+            await _unitOfWork.CategoryRepository.AddAsync(category);
+            await _unitOfWork.SaveChangesAsync();
+
+            return _mapper.Map<CategoryResponseDTO>(category);
         }
 
-        public async Task<Category> UpdateCategoryAsync(Guid id, Category category)
+        public async Task<CategoryResponseDTO> UpdateCategoryAsync(Guid id, CategoryRequestDTO categoryRequest)
         {
-            var existingCategory = await _categoryRepo.GetCategoryByIdAsync(id);
-            if (existingCategory == null)
+            var category = await _unitOfWork.CategoryRepository.GetByIdAsync(id);
+            if (category == null)
             {
-                throw new KeyNotFoundException($"Category with Id {id} not found.");
+                throw new KeyNotFoundException("Category not found.");
             }
 
-            return await _categoryRepo.UpdateCategoryAsync(id, category);
+            _mapper.Map(categoryRequest, category);
+            category.UpdateDate = DateTime.UtcNow;
+
+            _unitOfWork.CategoryRepository.Update(category);
+            await _unitOfWork.SaveChangesAsync();
+
+            return _mapper.Map<CategoryResponseDTO>(category);
         }
 
         public async Task<bool> DeleteCategoryAsync(Guid id)
         {
-            var category = await _categoryRepo.GetCategoryByIdAsync(id);
+            var category = await _unitOfWork.CategoryRepository.GetByIdAsync(id);
             if (category == null)
             {
-                throw new KeyNotFoundException($"Category with Id {id} not found.");
+                throw new KeyNotFoundException("Category not found.");
             }
 
-            return await _categoryRepo.DeleteCategoryAsync(id);
+            _unitOfWork.CategoryRepository.Delete(category);
+            await _unitOfWork.SaveChangesAsync();
+
+            return true;
         }
     }
 }
