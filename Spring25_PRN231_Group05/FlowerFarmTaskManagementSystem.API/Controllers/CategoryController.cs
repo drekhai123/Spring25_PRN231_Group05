@@ -1,33 +1,32 @@
-﻿using FlowerFarmTaskManagementSystem.BusinessLogic.IService;
-using FlowerFarmTaskManagementSystem.BusinessObject.Models;
-using FlowerFarmTaskManagementSystem.DataAccess.IRepositories;
+﻿using AutoMapper;
+using FlowerFarmTaskManagementSystem.BusinessLogic.IService;
+using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
-namespace FlowerFarmTaskManagementSystem.WebAPI.Controllers
+namespace FlowerFarmTaskManagementSystem.API.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
+    [ApiController]
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryService _categoryService;
+        private readonly IMapper _mapper;
 
-        public CategoryController(ICategoryService categoryService)
+        public CategoryController(ICategoryService categoryService, IMapper mapper)
         {
             _categoryService = categoryService;
+            _mapper = mapper;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllCategories()
+        public async Task<ActionResult<IEnumerable<CategoryResponseDTO>>> GetAllCategories()
         {
             var categories = await _categoryService.GetAllCategoriesAsync();
             return Ok(categories);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetCategoryById(Guid id)
+        public async Task<ActionResult<CategoryResponseDTO>> GetCategoryById(Guid id)
         {
             try
             {
@@ -41,26 +40,29 @@ namespace FlowerFarmTaskManagementSystem.WebAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCategory([FromBody] Category category)
+        public async Task<ActionResult<CategoryResponseDTO>> CreateCategory([FromBody] CategoryRequestDTO categoryRequest)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                var createdCategory = await _categoryService.CreateCategoryAsync(category);
-                return CreatedAtAction(nameof(GetCategoryById), new { id = createdCategory.CategoryId }, createdCategory);
+                return BadRequest(ModelState);
             }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+
+            var category = await _categoryService.CreateCategoryAsync(categoryRequest);
+            return CreatedAtAction(nameof(GetCategoryById), new { id = category.CategoryId }, category);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCategory(Guid id, [FromBody] Category category)
+        public async Task<ActionResult<CategoryResponseDTO>> UpdateCategory(Guid id, [FromBody] CategoryRequestDTO categoryRequest)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             try
             {
-                var updatedCategory = await _categoryService.UpdateCategoryAsync(id, category);
-                return Ok(updatedCategory);
+                var category = await _categoryService.UpdateCategoryAsync(id, categoryRequest);
+                return Ok(category);
             }
             catch (KeyNotFoundException ex)
             {
@@ -69,13 +71,12 @@ namespace FlowerFarmTaskManagementSystem.WebAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCategory(Guid id)
+        public async Task<ActionResult<bool>> DeleteCategory(Guid id)
         {
             try
             {
-                bool result = await _categoryService.DeleteCategoryAsync(id);
-                if (!result) return NotFound();
-                return NoContent();
+                var result = await _categoryService.DeleteCategoryAsync(id);
+                return Ok(result);
             }
             catch (KeyNotFoundException ex)
             {
@@ -83,5 +84,4 @@ namespace FlowerFarmTaskManagementSystem.WebAPI.Controllers
             }
         }
     }
-
 }
