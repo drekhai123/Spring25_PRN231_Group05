@@ -10,5 +10,6 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.IRepositories
         Task<User> UpdateUserAsync(Guid id, User user);
         Task<bool> DeleteUserAsync(Guid id);
         Task<User> GetUserByEmailAsync(string email);
+        Task<User> UpdateUserStatusAsync(Guid id);
     }
 }

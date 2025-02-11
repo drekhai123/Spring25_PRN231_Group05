@@ -120,6 +120,14 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             return result;
         }
 
+        public async Task<UserResponseDTO> UpdateUserStatusAsync(Guid id)
+        {
+            var user = await _userRepository.UpdateUserStatusAsync(id);
+            if (user == null)
+                throw new KeyNotFoundException($"User with ID {id} not found");
+            return MapToResponseDTO(user);
+        }
+
         private UserResponseDTO MapToResponseDTO(User user)
         {
             return new UserResponseDTO

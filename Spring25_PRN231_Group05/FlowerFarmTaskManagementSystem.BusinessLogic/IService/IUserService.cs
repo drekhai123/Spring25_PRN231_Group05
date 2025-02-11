@@ -9,5 +9,6 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.IService
         Task<UserResponseDTO> CreateUserAsync(UserRequestDTO userDto);
         Task<UserResponseDTO> UpdateUserAsync(Guid id, UserRequestDTO userDto);
         Task<bool> DeleteUserAsync(Guid id);
+        Task<UserResponseDTO> UpdateUserStatusAsync(Guid id);
     }
 }

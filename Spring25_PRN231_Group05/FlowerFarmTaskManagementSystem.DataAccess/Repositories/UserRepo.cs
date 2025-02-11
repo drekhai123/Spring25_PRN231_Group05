@@ -65,5 +65,16 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.Repositories
         {
             return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
         }
+
+        public async Task<User> UpdateUserStatusAsync(Guid id)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == id);
+            if (user == null) return null;
+
+            user.IsActive = !user.IsActive;  // Toggle status
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+            return user;
+        }
     }
 }

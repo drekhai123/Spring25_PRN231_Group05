@@ -89,5 +89,28 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
                 });
             }
         }
+
+        [HttpPatch("{id}/toggle-status")]
+        public async Task<ActionResult<UserResponseDTO>> ToggleUserStatus(Guid id)
+        {
+            try
+            {
+                var user = await _userService.UpdateUserStatusAsync(id);
+                return Ok(new
+                {
+                    Success = true,
+                    Message = $"User has been {(user.IsActive ? "activated" : "deactivated")} successfully",
+                    Data = user
+                });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new
+                {
+                    Success = false,
+                    Message = ex.Message
+                });
+            }
+        }
     }
 }
