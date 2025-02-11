@@ -1,6 +1,10 @@
 using FlowerFarmTaskManagementSystem.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using System;
+using FlowerFarmTaskManagementSystem.DataAccess.IRepositories;
+using FlowerFarmTaskManagementSystem.DataAccess.Repositories;
+using FlowerFarmTaskManagementSystem.BusinessLogic.IService;
+using FlowerFarmTaskManagementSystem.BusinessLogic.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +20,10 @@ builder.Services.AddSwaggerGen();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<FlowerFarmTaskManagementSystemDbContext>(options =>
-	options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 32))));
+    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 32))));
+
+builder.Services.AddScoped<IUser, UserRepo>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 
