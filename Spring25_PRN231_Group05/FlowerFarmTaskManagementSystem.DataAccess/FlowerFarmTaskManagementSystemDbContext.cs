@@ -33,5 +33,13 @@ namespace FlowerFarmTaskManagementSystem.DataAccess
 			public DbSet<ProductField> ProductFields { get; set; }
 			public DbSet<TaskWork> TaskWorks { get; set; }
 			public DbSet<UserTask> UserTasks { get; set; }
+		    public DbSet<Supplier> Suppliers { get; set; }
+		    public DbSet<TypeSupplier> TypeSuppliers { get; set; }
+			public DbSet<TypeOfSupplier> TypeOfSuppliers { get; set; }
+			public DbSet<FarmToolCategories> FarmToolCategories { get; set; }
+			public DbSet<FarmTools> FarmTools { get; set; }
+			public DbSet<FarmToolsOfTask> FarmToolsOfTasks { get; set; }
+
+
 	}
 }

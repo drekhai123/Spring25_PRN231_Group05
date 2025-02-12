@@ -4,6 +4,7 @@ using FlowerFarmTaskManagementSystem.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FlowerFarmTaskManagementSystem.DataAccess.Migrations
 {
     [DbContext(typeof(FlowerFarmTaskManagementSystemDbContext))]
-    partial class FlowerFarmTaskManagementSystemDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250212060319_[add-table]")]
+    partial class addtable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -433,9 +436,6 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("Experience")
-                        .HasColumnType("longtext");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("tinyint(1)");
 
@@ -452,9 +452,6 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.Migrations
 
                     b.Property<string>("UserName")
                         .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("WorkPosition")
                         .HasColumnType("longtext");
 
                     b.HasKey("UserId");
