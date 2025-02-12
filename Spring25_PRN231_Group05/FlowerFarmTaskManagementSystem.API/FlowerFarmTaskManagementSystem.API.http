@@ -1,0 +1,6 @@
+@FlowerFarmTaskManagementSystem.API_HostAddress = http://localhost:5211
+
+GET {{FlowerFarmTaskManagementSystem.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
