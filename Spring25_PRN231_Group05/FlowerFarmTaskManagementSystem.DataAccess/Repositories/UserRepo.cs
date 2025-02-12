@@ -4,23 +4,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FlowerFarmTaskManagementSystem.DataAccess.Repositories
 {
-    public class UserRepo : IUser
+    public class UserRepo : GenericRepository<User>, IUser
     {
         private readonly FlowerFarmTaskManagementSystemDbContext _context;
 
-        public UserRepo(FlowerFarmTaskManagementSystemDbContext context)
+        public UserRepo(FlowerFarmTaskManagementSystemDbContext context) : base(context)
         {
             _context = context;
         }
 
         public async Task<IEnumerable<User>> GetAllUsersAsync()
         {
-            return await _context.Users.ToListAsync();
+            return await GetAllAsync();
         }
 
         public async Task<User> GetUserByIdAsync(Guid id)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.UserId == id);
+            return await GetByIdAsync(id);
         }
 
         public async Task<User> CreateUserAsync(User user)
@@ -28,14 +28,14 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.Repositories
             user.UserId = Guid.NewGuid();
             user.CreateDate = DateTime.Now;
             user.IsActive = true;
-            await _context.Users.AddAsync(user);
-            await _context.SaveChangesAsync();
+
+            await AddAsync(user);
             return user;
         }
 
         public async Task<User> UpdateUserAsync(Guid id, User user)
         {
-            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.UserId == id);
+            var existingUser = await GetByIdAsync(id);
             if (existingUser == null) return null;
 
             existingUser.UserName = user.UserName;
@@ -46,34 +46,32 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.Repositories
             existingUser.DateOfBirth = user.DateOfBirth;
             existingUser.IsActive = user.IsActive;
 
-            _context.Users.Update(existingUser);
-            await _context.SaveChangesAsync();
+            Update(existingUser);
             return existingUser;
         }
 
         public async Task<bool> DeleteUserAsync(Guid id)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == id);
+            var user = await GetByIdAsync(id);
             if (user == null) return false;
 
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
+            Delete(user);
             return true;
         }
 
         public async Task<User> GetUserByEmailAsync(string email)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            var users = Get(u => u.Email == email);
+            return users.FirstOrDefault();
         }
 
         public async Task<User> UpdateUserStatusAsync(Guid id)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == id);
+            var user = await GetByIdAsync(id);
             if (user == null) return null;
 
-            user.IsActive = !user.IsActive;  // Toggle status
-            _context.Users.Update(user);
-            await _context.SaveChangesAsync();
+            user.IsActive = !user.IsActive;
+            Update(user);
             return user;
         }
     }
