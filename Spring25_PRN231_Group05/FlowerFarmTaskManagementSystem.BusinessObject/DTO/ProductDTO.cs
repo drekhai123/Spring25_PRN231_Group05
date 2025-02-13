@@ -6,7 +6,17 @@ using System.Threading.Tasks;
 
 namespace FlowerFarmTaskManagementSystem.BusinessObject.DTO
 {
-    internal class ProductDTO
+    public class ProductDTO
     {
+        public Guid ProductId { get; set; }
+        public string ProductName { get; set; }
+        public string Description { get; set; }
+        public string? Note { get; set; }
+        public string? ProductImageUrl { get; set; }
+        public DateTime CreateDate { get; set; }
+        public DateTime UpdateDate { get; set; }
+        public bool Status { get; set; }
+        public Guid CategoryId { get; set; }
+        public string? CategoryName { get; set; }
     }
 }
