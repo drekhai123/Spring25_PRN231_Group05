@@ -15,6 +15,15 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Mapper
         public AutoMapperProfile() {
             CreateMap<Category, CategoryResponseDTO>();
             CreateMap<CategoryRequestDTO, Category>();
-        }
+
+			CreateMap<FarmToolCategoriesRequestDTO, FarmToolCategories>();
+			CreateMap<FarmToolCategories, FarmToolCategoriesResponseDTO>()
+			.ForMember(dest => dest.FarmToolCategoriesId, opt => opt.MapFrom(src => src.FarmToolCategoriesId.ToString()));
+
+			CreateMap<FarmToolsRequestDTO, FarmTools>();
+			CreateMap<FarmTools, FarmToolsResponseDTO>()
+			.ForMember(dest => dest.FarmToolCategoriesId, opt => opt.MapFrom(src => src.FarmToolCategoriesId.ToString()))
+			.ForMember(dest => dest.FarmToolsId, opt => opt.MapFrom(src => src.FarmToolsId.ToString()));
+		}
     }
 }
