@@ -2,10 +2,14 @@
 using FlowerFarmTaskManagementSystem.BusinessLogic.IService;
 using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace FlowerFarmTaskManagementSystem.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("odata/[controller]")]
     [ApiController]
     public class CategoryController : ControllerBase
     {
@@ -19,6 +23,7 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
         }
 
         [HttpGet]
+        [EnableQuery]
         public async Task<ActionResult<IEnumerable<CategoryResponseDTO>>> GetAllCategories()
         {
             var categories = await _categoryService.GetAllCategoriesAsync();

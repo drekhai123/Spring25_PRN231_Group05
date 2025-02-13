@@ -15,6 +15,9 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Mapper
         public AutoMapperProfile() {
             CreateMap<Category, CategoryResponseDTO>();
             CreateMap<CategoryRequestDTO, Category>();
+            CreateMap<Product, ProductDTO>();
+            CreateMap<ProductAddDTO, Product>();
+            CreateMap<ProductUpdateDTO, Product>();
         }
     }
 }
