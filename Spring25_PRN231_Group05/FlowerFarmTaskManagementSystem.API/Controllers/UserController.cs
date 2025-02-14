@@ -1,21 +1,29 @@
+using AutoMapper;
 using FlowerFarmTaskManagementSystem.BusinessLogic.IService;
 using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace FlowerFarmTaskManagementSystem.API.Controllers
 {
+    [Route("odata/[controller]")]
     [ApiController]
-    [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IMapper _mapper;
 
-        public UserController(IUserService userService)
+        public UserController(IUserService userService, IMapper mapper)
         {
             _userService = userService;
+            _mapper = mapper;
         }
 
         [HttpGet]
+        [EnableQuery]
         public async Task<ActionResult<IEnumerable<UserResponseDTO>>> GetAllUsers()
         {
             var users = await _userService.GetAllUsersAsync();
@@ -37,12 +45,17 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<UserResponseDTO>> CreateUser([FromBody] UserRequestDTO userDto)
+        public async Task<ActionResult<UserResponseDTO>> CreateUser([FromBody] UserRequestDTO userRequest)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             try
             {
-                var createdUser = await _userService.CreateUserAsync(userDto);
-                return CreatedAtAction(nameof(GetUserById), new { id = createdUser.UserId }, createdUser);
+                var user = await _userService.CreateUserAsync(userRequest);
+                return CreatedAtAction(nameof(GetUserById), new { id = user.UserId }, user);
             }
             catch (ArgumentException ex)
             {
@@ -51,12 +64,17 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<UserResponseDTO>> UpdateUser(Guid id, [FromBody] UserRequestDTO userDto)
+        public async Task<ActionResult<UserResponseDTO>> UpdateUser(Guid id, [FromBody] UserRequestDTO userRequest)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             try
             {
-                var updatedUser = await _userService.UpdateUserAsync(id, userDto);
-                return Ok(updatedUser);
+                var user = await _userService.UpdateUserAsync(id, userRequest);
+                return Ok(user);
             }
             catch (KeyNotFoundException ex)
             {
@@ -69,7 +87,7 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(Guid id)
+        public async Task<ActionResult<bool>> DeleteUser(Guid id)
         {
             try
             {
@@ -82,34 +100,21 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(new
-                {
-                    Success = false,
-                    Message = ex.Message
-                });
+                return NotFound(ex.Message);
             }
         }
 
-        [HttpPatch("{id}/toggle-status")]
-        public async Task<ActionResult<UserResponseDTO>> ToggleUserStatus(Guid id)
+        [HttpPut("{id}/status")]
+        public async Task<ActionResult<UserResponseDTO>> UpdateUserStatus(Guid id)
         {
             try
             {
                 var user = await _userService.UpdateUserStatusAsync(id);
-                return Ok(new
-                {
-                    Success = true,
-                    Message = $"User has been {(user.IsActive ? "activated" : "deactivated")} successfully",
-                    Data = user
-                });
+                return Ok(user);
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(new
-                {
-                    Success = false,
-                    Message = ex.Message
-                });
+                return NotFound(ex.Message);
             }
         }
     }
