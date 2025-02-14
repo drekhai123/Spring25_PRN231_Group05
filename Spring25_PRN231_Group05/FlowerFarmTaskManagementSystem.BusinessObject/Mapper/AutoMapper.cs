@@ -23,6 +23,9 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Mapper
                 .ForMember(dest => dest.UserId, opt => opt.Ignore())
                 .ForMember(dest => dest.CreateDate, opt => opt.Ignore())
                 .ForMember(dest => dest.IsActive, opt => opt.Ignore());
+            CreateMap<Product, ProductDTO>();
+            CreateMap<ProductAddDTO, Product>();
+            CreateMap<ProductUpdateDTO, Product>();
         }
     }
 }
