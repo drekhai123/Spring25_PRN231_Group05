@@ -26,6 +26,16 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Mapper
             CreateMap<Product, ProductDTO>();
             CreateMap<ProductAddDTO, Product>();
             CreateMap<ProductUpdateDTO, Product>();
+
+            // Add UserTask mappings
+            CreateMap<UserTaskRequestDTO, UserTask>()
+                .ForMember(dest => dest.UserTaskId, opt => opt.MapFrom(src => Guid.NewGuid()))
+                .ForMember(dest => dest.CreateDate, opt => opt.Ignore())
+                .ForMember(dest => dest.UpdateDate, opt => opt.Ignore());
+
+            CreateMap<UserTask, UserTaskResponseDTO>()
+                .ForMember(dest => dest.JobTitle, opt => opt.MapFrom(src => src.TaskWork.JobTitle))
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName));
         }
     }
 }
