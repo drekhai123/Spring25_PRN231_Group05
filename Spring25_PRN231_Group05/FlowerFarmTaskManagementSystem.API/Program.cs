@@ -21,8 +21,7 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<ICategoryService, CategoryService>();
-builder.Services.AddScoped<IProductService, ProductService>();
+
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
 //builder.Services.AddDbContext<FlowerFarmTaskManagementSystemDbContext>(options =>
@@ -36,6 +35,9 @@ builder.Services.AddDbContext<FlowerFarmTaskManagementSystemDbContext>(options =
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserTaskService, UserTaskService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 
 var app = builder.Build();
 
