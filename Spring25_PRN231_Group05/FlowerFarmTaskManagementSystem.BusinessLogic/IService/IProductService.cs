@@ -10,7 +10,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.IService
     public interface IProductService
     {        
         Task<ProductDTO> AddProductAsync(ProductAddDTO productAddDTO);
-        Task<ProductDTO> UpdateProductAsync(ProductUpdateDTO productUpdateDTO);
+        Task<ProductDTO> UpdateProductAsync(Guid id, ProductUpdateDTO productUpdateDTO);
         Task<bool> DeleteProductAsync(Guid productId);
         Task<ProductDTO> GetProductByIdAsync(Guid productId);
         Task<IEnumerable<ProductDTO>> GetAllProductsAsync();
