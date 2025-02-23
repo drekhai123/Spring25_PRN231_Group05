@@ -19,7 +19,9 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Mapper
             CreateMap<ProductAddDTO, Product>();
             CreateMap<ProductUpdateDTO, Product>();
 
-			CreateMap<FarmToolCategoriesRequestDTO, FarmToolCategories>();
+			CreateMap<FarmToolCategoriesRequestDTO, FarmToolCategories>()
+            .ForMember(dest => dest.FarmToolCategoriesId, opt => opt.MapFrom(src => src.FarmToolCategoriesId.ToString()));
+
 			CreateMap<FarmToolCategories, FarmToolCategoriesResponseDTO>()
 			.ForMember(dest => dest.FarmToolCategoriesId, opt => opt.MapFrom(src => src.FarmToolCategoriesId.ToString()));
 

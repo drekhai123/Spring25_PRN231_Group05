@@ -1,0 +1,97 @@
+﻿@page
+@model FFTMS.RazorPages.Pages.FarmTools.ListFarmToolsModel
+@{
+	ViewData["Title"] = "ListFarmTools";
+	Layout = "_Layout";
+}
+
+<div class="main-container">
+	<div class="pd-ltr-20 xs-pd-20-10">
+		<div class="min-height-200px">
+			<div class="page-header">
+				<div class="row">
+					<div class="col-md-6 col-sm-12">
+						<div class="title">
+							<h4>List Farm Tools</h4>
+						</div>
+						<nav aria-label="breadcrumb" role="navigation">
+							<ol class="breadcrumb">
+								<li class="breadcrumb-item">FarmTools</li>
+								<li class="breadcrumb-item active" aria-current="page">List Farm Tools</li>
+							</ol>
+						</nav>
+					</div>
+				</div>
+			</div>
+
+			<!-- Table -->
+			<div class="card-box mb-30">
+				<div class="pd-20">
+					<h4 class="text-blue h4">List Of Farm Tools</h4>
+				</div>
+				<div class="pb-20">
+					<table class="data-table table stripe hover nowrap">
+						<thead>
+							<tr>
+								<th class="table-plus datatable-nosort">Farm Tool Name</th>
+								<th>Farm Tool Categories</th>
+								<th>FarmToolsQuantity</th>
+								<th>Create Date</th>
+								<th>Update Date</th>
+								<th class="datatable-nosort">Action</th>
+							</tr>
+						</thead>
+						<tbody>
+							@foreach (var tool in Model.FarmTools)
+							{
+								<tr>
+									<td class="table-plus">@tool.FarmToolsName</td>
+									<td>@tool.FarmToolCategoriesId</td>
+									<td>@tool.FarmToolsQuantity @tool.FarmToolsUnit</td>
+									<td>@tool.CreateDate.ToString("dd-MM-yyyy")</td>
+									<td>@tool.UpdateDate.ToString("dd-MM-yyyy")</td>
+									<td>
+										<div class="dropdown">
+											<a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle" href="#" role="button" data-toggle="dropdown">
+												<i class="dw dw-more"></i>
+											</a>
+											<div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
+												<a class="dropdown-item" asp-page="FarmToolDetails" asp-route-id="@tool.FarmToolsId">
+													<i class="dw dw-eye"></i> View
+												</a>												
+												<a class="dropdown-item" asp-page="#"><i class="dw dw-edit2"></i> Edit</a>
+												<a class="dropdown-item" asp-page="#"><i class="dw dw-delete-3"></i> Delete</a>
+											</div>
+										</div>
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<!-- Table End -->
+		</div>
+	</div>
+</div>
+
+	@* <!-- js -->
+	<script src="~/vendors/scripts/core.js"></script>
+	<script src="~/vendors/scripts/script.min.js"></script>
+	<script src="~/vendors/scripts/process.js"></script>
+	<script src="~/vendors/scripts/layout-settings.js"></script>
+	<script src="~/src/plugins/datatables/js/jquery.dataTables.min.js"></script>
+	<script src="~/src/plugins/datatables/js/dataTables.bootstrap4.min.js"></script>
+	<script src="~/src/plugins/datatables/js/dataTables.responsive.min.js"></script>
+	<script src="~/src/plugins/datatables/js/responsive.bootstrap4.min.js"></script>
+	<!-- buttons for Export datatable -->
+	<script src="~/src/plugins/datatables/js/dataTables.buttons.min.js"></script>
+	<script src="~/src/plugins/datatables/js/buttons.bootstrap4.min.js"></script>
+	<script src="~/src/plugins/datatables/js/buttons.print.min.js"></script>
+	<script src="~/src/plugins/datatables/js/buttons.html5.min.js"></script>
+	<script src="~/src/plugins/datatables/js/buttons.flash.min.js"></script>
+	<script src="~/src/plugins/datatables/js/pdfmake.min.js"></script>
+	<script src="~/src/plugins/datatables/js/vfs_fonts.js"></script>
+	<!-- Datatable Setting js -->
+	<script src="~/vendors/scripts/datatable-setting.js"></script> *@
+

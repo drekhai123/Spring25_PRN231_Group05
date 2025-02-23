@@ -21,17 +21,19 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 			_unitOfWork = unitOfWork;
 			_mapper = mapper;
 		}
-		public async Task<FarmToolCategoriesRequestDTO> CreateFarmToolCategoryAsync(FarmToolCategoriesRequestDTO farmToolCategoriesRequest)
+		public async Task<FarmToolCategoriesResponseDTO> CreateFarmToolCategoryAsync(FarmToolCategoriesRequestDTO farmToolCategoriesRequest)
 		{
-			var farmToolCategories = _mapper.Map<FarmToolCategories>(farmToolCategoriesRequest);
+			var farmToolCategories = new FarmToolCategories();
 			farmToolCategories.FarmToolCategoriesId = Guid.NewGuid();
+			farmToolCategories.FarmToolCategoriesName = farmToolCategoriesRequest.FarmToolCategoriesName;
+			farmToolCategories.FarmToolCategoriesDescription = farmToolCategoriesRequest.FarmToolCategoriesDescription;
 			farmToolCategories.CreateDate = DateTime.UtcNow;
 			farmToolCategories.UpdateDate = DateTime.UtcNow;
 			farmToolCategories.Status = true;
 			await _unitOfWork.FarmToolCategoriesRepository.AddAsync(farmToolCategories);
 			await _unitOfWork.SaveChangesAsync();
-			var farmToolCategoriesMap = _mapper.Map<FarmToolCategoriesRequestDTO>(farmToolCategories);
-			farmToolCategoriesMap.FarmToolCategoriesId = farmToolCategories.FarmToolCategoriesId.ToString();
+			var farmToolCategoriesMap = _mapper.Map<FarmToolCategoriesResponseDTO>(farmToolCategories);
+			//farmToolCategoriesMap.FarmToolCategoriesId = farmToolCategories.FarmToolCategoriesId.ToString();
 			return farmToolCategoriesMap;
 		}
 		public async Task<bool> DeleteFarmToolCategoriesAsync(string FarmToolCategoriesId)
@@ -63,7 +65,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 			var farmToolCategoriesMap = _mapper.Map<FarmToolCategoriesResponseDTO>(farmToolCategories);
 			return farmToolCategoriesMap;
 		}
-		public async Task<FarmToolCategoriesRequestDTO> UpdateFarmToolCategoryAsync(FarmToolCategoriesRequestDTO farmToolCategoriesRequest)
+		public async Task<FarmToolCategoriesResponseDTO> UpdateFarmToolCategoryAsync(FarmToolCategoriesRequestDTO farmToolCategoriesRequest)
 		{
 			var FarmToolCategoryId = Guid.Parse(farmToolCategoriesRequest.FarmToolCategoriesId);
 			var farmToolCategories = await _unitOfWork.FarmToolCategoriesRepository.GetByIdAsync(FarmToolCategoryId);
@@ -75,11 +77,11 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 			farmToolCategories.UpdateDate = DateTime.UtcNow;
 			_unitOfWork.FarmToolCategoriesRepository.Update(farmToolCategories);
 			await _unitOfWork.SaveChangesAsync();
-			var farmToolCategoriesMap = _mapper.Map<FarmToolCategoriesRequestDTO>(farmToolCategories);
+			var farmToolCategoriesMap = _mapper.Map<FarmToolCategoriesResponseDTO>(farmToolCategories);
 			farmToolCategoriesMap.FarmToolCategoriesId = farmToolCategories.FarmToolCategoriesId.ToString();
 			return farmToolCategoriesMap;
 		}
-		public async Task<FarmToolCategoriesRequestDTO> UpdateFarmToolCategoryStatusAsync(string FarmToolCategoriesId)
+		public async Task<FarmToolCategoriesResponseDTO> UpdateFarmToolCategoryStatusAsync(string FarmToolCategoriesId)
 		{
 			var FarmToolCategoryId = Guid.Parse(FarmToolCategoriesId);
 			var farmToolCategories = await _unitOfWork.FarmToolCategoriesRepository.GetByIdAsync(FarmToolCategoryId);
@@ -91,7 +93,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 			farmToolCategories.Status = false;
 			_unitOfWork.FarmToolCategoriesRepository.Update(farmToolCategories);
 			await _unitOfWork.SaveChangesAsync();
-			var farmToolCategoriesMap = _mapper.Map<FarmToolCategoriesRequestDTO>(farmToolCategories);
+			var farmToolCategoriesMap = _mapper.Map<FarmToolCategoriesResponseDTO>(farmToolCategories);
 			farmToolCategoriesMap.FarmToolCategoriesId = farmToolCategories.FarmToolCategoriesId.ToString();
 			return farmToolCategoriesMap;
 		}
