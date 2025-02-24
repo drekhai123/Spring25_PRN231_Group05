@@ -59,7 +59,7 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
 
             try
             {
-                var updatedProduct = await _productService.UpdateProductAsync(productUpdateDTO);
+                var updatedProduct = await _productService.UpdateProductAsync(id, productUpdateDTO);
                 return Ok(updatedProduct);
             }
             catch (KeyNotFoundException ex)

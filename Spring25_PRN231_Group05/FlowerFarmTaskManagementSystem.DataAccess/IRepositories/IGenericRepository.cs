@@ -23,5 +23,7 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.IRepositories
         Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate);
         void Insert(T entity);
         T GetByID(object id);
-    }
+		Task<T> GetAsync(Expression<Func<T, bool>> filter);
+
+	}
 }
