@@ -33,11 +33,10 @@
 					<table class="data-table table stripe hover nowrap">
 						<thead>
 							<tr>
-								<th class="table-plus datatable-nosort">Farm Tool Name</th>
-								<th>Farm Tool Categories</th>
-								<th>FarmToolsQuantity</th>
+								<th class="table-plus datatable-nosort">ID</th>
+								<th>Name</th>
+								<th>Quantity</th>
 								<th>Create Date</th>
-								<th>Update Date</th>
 								<th class="datatable-nosort">Action</th>
 							</tr>
 						</thead>
@@ -45,18 +44,22 @@
 							@foreach (var tool in Model.FarmTools)
 							{
 								<tr>
-									<td class="table-plus">@tool.FarmToolsName</td>
-									<td>@tool.FarmToolCategoriesId</td>
+									<td class="table-plus">
+										@(tool.FarmToolsId.Length > 5 ? tool.FarmToolsId.Substring(0, 5) + "..." : tool.FarmToolsId)
+									</td>
+
+									<td>
+										@(tool.FarmToolsName.Length > 10 ? tool.FarmToolsName.Substring(0, 10) + "..." : tool.FarmToolsName)
+									</td>
 									<td>@tool.FarmToolsQuantity @tool.FarmToolsUnit</td>
 									<td>@tool.CreateDate.ToString("dd-MM-yyyy")</td>
-									<td>@tool.UpdateDate.ToString("dd-MM-yyyy")</td>
 									<td>
 										<div class="dropdown">
 											<a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle" href="#" role="button" data-toggle="dropdown">
 												<i class="dw dw-more"></i>
 											</a>
 											<div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
-												<a class="dropdown-item" asp-page="FarmToolDetails" asp-route-id="@tool.FarmToolsId">
+												<a class="dropdown-item" asp-page="./FarmToolDetails" asp-route-id="@tool.FarmToolsId">
 													<i class="dw dw-eye"></i> View
 												</a>												
 												<a class="dropdown-item" asp-page="#"><i class="dw dw-edit2"></i> Edit</a>

@@ -20,7 +20,7 @@ namespace FFTMS.RazorPages.Pages.FarmToolCategories
         }
 
         [BindProperty]
-        public FarmToolCategories FarmToolCategories { get; set; } = default!;
+        public FlowerFarmTaskManagementSystem.BusinessObject.Models.FarmToolCategories FarmToolCategories { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {

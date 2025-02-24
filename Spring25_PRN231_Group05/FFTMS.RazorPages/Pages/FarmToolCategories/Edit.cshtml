@@ -3,8 +3,10 @@
 
 @{
     ViewData["Title"] = "Edit";
-}
+    Layout = "_Layout";
 
+}
+<div class="main-container">
 <h1>Edit</h1>
 
 <h4>FarmToolCategories</h4>
@@ -53,3 +55,4 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+</div>

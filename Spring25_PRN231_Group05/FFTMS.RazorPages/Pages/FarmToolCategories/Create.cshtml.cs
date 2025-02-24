@@ -7,27 +7,28 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using FlowerFarmTaskManagementSystem.BusinessObject.Models;
 using FlowerFarmTaskManagementSystem.DataAccess;
+using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
+using System.Text.Json;
 
 namespace FFTMS.RazorPages.Pages.FarmToolCategories
 {
     public class CreateModel : PageModel
     {
-        private readonly FlowerFarmTaskManagementSystem.DataAccess.FlowerFarmTaskManagementSystemDbContext _context;
+        private readonly HttpClient _httpClient;
 
-        public CreateModel(FlowerFarmTaskManagementSystem.DataAccess.FlowerFarmTaskManagementSystemDbContext context)
+        public CreateModel(HttpClient httpClient)
         {
-            _context = context;
+            _httpClient = httpClient;
         }
 
-        public IActionResult OnGet()
+        [BindProperty]
+        public FarmToolCategoriesRequestDTO FarmToolCategories { get; set; } = default!;
+
+        public async Task<IActionResult> OnGetAsync()
         {
             return Page();
         }
 
-        [BindProperty]
-        public FarmToolCategories FarmToolCategories { get; set; } = default!;
-
-        // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
@@ -35,8 +36,15 @@ namespace FFTMS.RazorPages.Pages.FarmToolCategories
                 return Page();
             }
 
-            _context.FarmToolCategories.Add(FarmToolCategories);
-            await _context.SaveChangesAsync();
+            var apiUrl = "https://localhost:7207/odata/FarmToolCategories/create-farm-tool-category";
+
+            var response = await _httpClient.PostAsJsonAsync(apiUrl, FarmToolCategories); 
+
+            if (!response.IsSuccessStatusCode)
+            {
+                ModelState.AddModelError(string.Empty, "Error creating farm tool category.");
+                return Page();
+            }
 
             return RedirectToPage("./Index");
         }

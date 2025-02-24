@@ -25,7 +25,7 @@ namespace FFTMS.RazorPages.Pages.FarmTools
 				return NotFound();
 			}
 
-			var apiUrl = $"https://localhost:7207/odata/FarmToolCategories/get-all-farm-tool-category?$filter=farmToolCategoriesId eq '{id.Replace("'", "''")}'";
+			var apiUrl = $"https://localhost:7207/odata/FarmToolCategories/get-all-farm-tool-category?$filter=FarmToolsId eq '{id.Replace("'", "''")}'";
 			var response = await _httpClient.GetAsync(apiUrl);
 			if (!response.IsSuccessStatusCode)
 			{

@@ -7,37 +7,44 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using FlowerFarmTaskManagementSystem.BusinessObject.Models;
 using FlowerFarmTaskManagementSystem.DataAccess;
+using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
+using System.Net.Http;
+using System.Text.Json;
 
 namespace FFTMS.RazorPages.Pages.FarmToolCategories
 {
     public class DetailsModel : PageModel
     {
-        private readonly FlowerFarmTaskManagementSystem.DataAccess.FlowerFarmTaskManagementSystemDbContext _context;
+		private readonly HttpClient _httpClient;
 
-        public DetailsModel(FlowerFarmTaskManagementSystem.DataAccess.FlowerFarmTaskManagementSystemDbContext context)
-        {
-            _context = context;
-        }
+		public DetailsModel(HttpClient httpClient)
+		{
+			_httpClient = httpClient;
+		}
 
-        public FarmToolCategories FarmToolCategories { get; set; } = default!;
+		public FarmToolCategoriesResponseDTO FarmToolCategories { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+		public async Task<IActionResult> OnGetAsync(string id)
+		{
+			if (string.IsNullOrEmpty(id))
+			{
+				return NotFound();
+			}
 
-            var farmtoolcategories = await _context.FarmToolCategories.FirstOrDefaultAsync(m => m.FarmToolCategoriesId == id);
-            if (farmtoolcategories == null)
-            {
-                return NotFound();
-            }
-            else
-            {
-                FarmToolCategories = farmtoolcategories;
-            }
-            return Page();
-        }
-    }
+			var apiUrl = $"https://localhost:7207/odata/FarmToolCategories/get-all-farm-tool-category?$filter=farmToolCategoriesId eq '{id.Replace("'", "''")}'";
+			var response = await _httpClient.GetAsync(apiUrl);
+			if (!response.IsSuccessStatusCode)
+			{
+				return NotFound();
+			}
+
+			var jsonResponse = await response.Content.ReadAsStringAsync();
+			FarmToolCategories = JsonSerializer.Deserialize<FarmToolCategoriesResponseDTO>(jsonResponse, new JsonSerializerOptions
+			{
+				PropertyNameCaseInsensitive = true
+			});
+
+			return Page();
+		}
+	}
 }

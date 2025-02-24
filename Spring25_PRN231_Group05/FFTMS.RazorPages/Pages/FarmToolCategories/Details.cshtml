@@ -3,9 +3,11 @@
 
 @{
     ViewData["Title"] = "Details";
-}
+    Layout = "_Layout";
 
-<h1>Details</h1>
+}
+<div class="main-container">
+<h1>Farm Tool Categories Details</h1>
 
 <div>
     <h4>FarmToolCategories</h4>
@@ -46,4 +48,5 @@
 <div>
     <a asp-page="./Edit" asp-route-id="@Model.FarmToolCategories.FarmToolCategoriesId">Edit</a> |
     <a asp-page="./Index">Back to List</a>
+</div>
 </div>

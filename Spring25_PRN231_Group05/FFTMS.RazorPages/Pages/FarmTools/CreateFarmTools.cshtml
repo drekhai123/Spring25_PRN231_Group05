@@ -1,4 +1,66 @@
 ﻿@page
 @model FFTMS.RazorPages.Pages.FarmTools.CreateFarmToolsModel
 @{
+    ViewData["Title"] = "CreateFarmTools";
+    Layout = "_Layout";
+
 }
+<div class="main-container">
+    <h1>Create</h1>
+
+    <h4>Farm Tools</h4>
+    <hr />
+    <div class="row">
+        <div class="col-md-4">
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="FarmTools.FarmToolsName" class="control-label"></label>
+                    <input asp-for="FarmTools.FarmToolsName" class="form-control" />
+                    <span asp-validation-for="FarmTools.FarmToolsName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label for="FarmToolCategoriesId">Farm Tool Category</label>
+                    <select class="form-control" asp-for="FarmTools.FarmToolCategoriesId" required>
+                        <option value="">-- Select a Category --</option>
+                        @foreach (var category in Model.FarmToolCategoriesList)
+                        {
+                            <option value="@category.FarmToolCategoriesId">@category.FarmToolCategoriesName</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label asp-for="FarmTools.FarmToolsDetails" class="control-label"></label>
+                    <input asp-for="FarmTools.FarmToolsDetails" class="form-control" />
+                    <span asp-validation-for="FarmTools.FarmToolsDetails" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="FarmTools.FarmToolCategoriesId" class="control-label"></label>
+                    <input asp-for="FarmTools.FarmToolCategoriesId" class="form-control" />
+                    <span asp-validation-for="FarmTools.FarmToolCategoriesId" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="FarmTools.FarmToolsQuantity" class="control-label"></label>
+                    <input asp-for="FarmTools.FarmToolsQuantity" class="form-control" />
+                    <span asp-validation-for="FarmTools.FarmToolsQuantity" class="text-danger"></span>
+                    <label asp-for="FarmTools.FarmToolsUnit" class="control-label"></label>
+                    <input asp-for="FarmTools.FarmToolsUnit" class="form-control" />
+                    <span asp-validation-for="FarmTools.FarmToolsUnit" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div>
+        <a asp-page="ListFarmTools">Back to List</a>
+    </div>
+
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }
+</div>

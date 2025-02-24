@@ -8,39 +8,48 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using FlowerFarmTaskManagementSystem.BusinessObject.Models;
 using FlowerFarmTaskManagementSystem.DataAccess;
+using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
+using System.Text.Json;
 
 namespace FFTMS.RazorPages.Pages.FarmToolCategories
 {
     public class EditModel : PageModel
     {
-        private readonly FlowerFarmTaskManagementSystem.DataAccess.FlowerFarmTaskManagementSystemDbContext _context;
+        private readonly HttpClient _httpClient;
 
-        public EditModel(FlowerFarmTaskManagementSystem.DataAccess.FlowerFarmTaskManagementSystemDbContext context)
+        public EditModel(HttpClient httpClient)
         {
-            _context = context;
+            _httpClient = httpClient;
         }
 
         [BindProperty]
-        public FarmToolCategories FarmToolCategories { get; set; } = default!;
+        public FarmToolCategoriesRequestDTO FarmToolCategories { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync(String? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var farmtoolcategories =  await _context.FarmToolCategories.FirstOrDefaultAsync(m => m.FarmToolCategoriesId == id);
-            if (farmtoolcategories == null)
+            // Fetch existing category details from API
+            var apiUrl = $"https://localhost:7207/odata/FarmToolCategories/get-farm-tool-category-by-id?FarmToolCategoriesId={id}";
+
+            var response = await _httpClient.GetAsync(apiUrl);
+            if (!response.IsSuccessStatusCode)
             {
                 return NotFound();
             }
-            FarmToolCategories = farmtoolcategories;
+
+            var jsonResponse = await response.Content.ReadAsStringAsync();
+            FarmToolCategories = JsonSerializer.Deserialize<FarmToolCategoriesRequestDTO>(jsonResponse, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
             return Page();
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
@@ -48,30 +57,17 @@ namespace FFTMS.RazorPages.Pages.FarmToolCategories
                 return Page();
             }
 
-            _context.Attach(FarmToolCategories).State = EntityState.Modified;
+            var apiUrl = "https://localhost:7207/odata/FarmToolCategories/update-farm-tool-category";
 
-            try
+            var response = await _httpClient.PutAsJsonAsync(apiUrl, FarmToolCategories);
+
+            if (!response.IsSuccessStatusCode)
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!FarmToolCategoriesExists(FarmToolCategories.FarmToolCategoriesId))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                ModelState.AddModelError(string.Empty, "Error updating farm tool category.");
+                return Page();
             }
 
             return RedirectToPage("./Index");
-        }
-
-        private bool FarmToolCategoriesExists(Guid id)
-        {
-            return _context.FarmToolCategories.Any(e => e.FarmToolCategoriesId == id);
         }
     }
 }
