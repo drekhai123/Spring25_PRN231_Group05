@@ -2,7 +2,17 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-builder.Services.AddHttpClient();
+
+// Cấu hình HttpClient với base URL và SSL handling
+builder.Services.AddHttpClient("API", client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7207/");
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+});
+
+// Đăng ký HttpClient với DI
+builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("API"));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
