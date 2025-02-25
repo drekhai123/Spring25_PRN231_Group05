@@ -31,7 +31,7 @@ namespace FFTMS.RazorPages.Pages.FarmToolCategories
 				return NotFound();
 			}
 
-			var apiUrl = $"https://localhost:7207/odata/FarmToolCategories/get-all-farm-tool-category?$filter=farmToolCategoriesId eq '{id.Replace("'", "''")}'";
+			var apiUrl = $"https://localhost:7207/odata/FarmToolCategories/get-all-farm-tool-category?$filter=FarmToolCategoriesId eq '{id}'";
 			var response = await _httpClient.GetAsync(apiUrl);
 			if (!response.IsSuccessStatusCode)
 			{
@@ -39,12 +39,15 @@ namespace FFTMS.RazorPages.Pages.FarmToolCategories
 			}
 
 			var jsonResponse = await response.Content.ReadAsStringAsync();
-			FarmToolCategories = JsonSerializer.Deserialize<FarmToolCategoriesResponseDTO>(jsonResponse, new JsonSerializerOptions
+            var parsedResponse = JsonSerializer.Deserialize<List<FarmToolCategoriesResponseDTO>>(jsonResponse, new JsonSerializerOptions
 			{
 				PropertyNameCaseInsensitive = true
 			});
 
-			return Page();
+            FarmToolCategories = parsedResponse?.FirstOrDefault();
+
+
+            return Page();
 		}
 	}
 }
