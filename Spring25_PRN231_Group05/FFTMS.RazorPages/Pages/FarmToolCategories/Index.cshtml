@@ -1,0 +1,79 @@
+﻿@page
+@model FFTMS.RazorPages.Pages.FarmToolCategories.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+	Layout = "_Layout";
+}
+
+<div class="main-container">
+	<div class="pd-ltr-20 xs-pd-20-10">
+		<div class="min-height-200px">
+			<div class="page-header">
+				<div class="row">
+					<div class="col-md-6 col-sm-12">
+						<div class="title">
+							<h4>List Farm Tool Categories</h4>
+						</div>
+						<nav aria-label="breadcrumb" role="navigation">
+							<ol class="breadcrumb">
+								<li class="breadcrumb-item">FarmToolCategories</li>
+								<li class="breadcrumb-item active" aria-current="page">List Farm Tool Categories</li>
+							</ol>
+						</nav>
+					</div>
+				</div>
+			</div>
+
+			<!-- Table -->
+			<div class="card-box mb-30">
+				<div class="pd-20">
+					<h4 class="text-blue h4">List Of Farm Tool Categories</h4>
+				</div>
+				<div class="pb-20">
+					<table class="data-table table stripe hover nowrap">
+						<thead>
+							<tr>
+								<th class="table-plus datatable-nosort">ID</th>
+								<th>Name</th>
+								<th>Description</th>
+								<th>Create Date</th>
+								<th class="datatable-nosort">Action</th>
+							</tr>
+						</thead>
+						<tbody>
+							@foreach (var tool in Model.FarmToolCategories)
+							{
+								<tr>
+									<td class="table-plus">
+										@(tool.FarmToolCategoriesId.Length > 5 ? tool.FarmToolCategoriesId.Substring(0, 5) + "..." : tool.FarmToolCategoriesId)
+									</td>
+									<td>@(tool.FarmToolCategoriesName.Length > 10 ? tool.FarmToolCategoriesName.Substring(0, 10) + "..." : tool.FarmToolCategoriesName)</td>
+									<td>@(tool.FarmToolCategoriesDescription.Length > 10 ? tool.FarmToolCategoriesDescription.Substring(0, 10) + "..." : tool.FarmToolCategoriesDescription)</td>
+									<td>@tool.CreateDate.ToString("dd-MM-yyyy")</td>
+									<td>
+										<div class="dropdown">
+											<a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle" href="#" role="button" data-toggle="dropdown">
+												<i class="dw dw-more"></i>
+											</a>
+											<div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
+												<a class="dropdown-item" asp-page="./Details" asp-route-id="@tool.FarmToolCategoriesId">
+													<i class="dw dw-eye"></i> View
+												</a>
+												<a class="dropdown-item" asp-page="./Edit" asp-route-id="@tool.FarmToolCategoriesId">
+													<i class="dw dw-edit2"></i>Edit 
+												</a >
+												<a class="dropdown-item" asp-page="#"><i class="dw dw-delete-3"></i> Delete</a>
+											</div>
+										</div>
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<!-- Table End -->
+		</div>
+	</div>
+</div>

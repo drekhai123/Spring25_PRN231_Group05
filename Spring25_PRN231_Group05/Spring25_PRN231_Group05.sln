@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlowerFarmTaskManagementSys
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlowerFarmTaskManagementSystem.DataAccess", "FlowerFarmTaskManagementSystem.DataAccess\FlowerFarmTaskManagementSystem.DataAccess.csproj", "{7F575C99-3260-4B09-A4AA-A0FF7B1380FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlowerFarmTaskManagementSystem.BusinessLogic", "FlowerFarmTaskManagementSystem.BusinessLogic\FlowerFarmTaskManagementSystem.BusinessLogic.csproj", "{9D22C4E0-5E3E-47BF-8610-D24D073379F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlowerFarmTaskManagementSystem.BusinessLogic", "FlowerFarmTaskManagementSystem.BusinessLogic\FlowerFarmTaskManagementSystem.BusinessLogic.csproj", "{9D22C4E0-5E3E-47BF-8610-D24D073379F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

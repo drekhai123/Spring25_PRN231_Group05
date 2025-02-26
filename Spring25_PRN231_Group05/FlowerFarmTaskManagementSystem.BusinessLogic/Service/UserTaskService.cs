@@ -6,6 +6,8 @@ using FlowerFarmTaskManagementSystem.BusinessObject.Models;
 using FlowerFarmTaskManagementSystem.DataAccess.IRepositories;
 using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
 using FlowerFarmTaskManagementSystem.BusinessLogic.IService;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 {
@@ -22,7 +24,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 
         public async Task<IEnumerable<UserTaskResponseDTO>> GetAllUserTasksAsync()
         {
-            var userTasks = await _unitOfWork.UserTaskRepository.GetAllAsync();
+            var userTasks = _unitOfWork.UserTaskRepository.Get(includeProperties: "User,TaskWork");
             return _mapper.Map<IEnumerable<UserTaskResponseDTO>>(userTasks);
         }
 
