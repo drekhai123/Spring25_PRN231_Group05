@@ -30,7 +30,6 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IFarmToolCategoriesService, FarmToolCategoriesService>();
 builder.Services.AddScoped<IFarmToolsService, FarmToolsService>();
-
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
 //builder.Services.AddDbContext<FlowerFarmTaskManagementSystemDbContext>(options =>

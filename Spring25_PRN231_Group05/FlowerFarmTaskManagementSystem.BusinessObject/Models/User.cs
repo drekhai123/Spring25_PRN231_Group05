@@ -24,9 +24,9 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Models
         public DateTime CreateDate { get; set; }
         public bool IsActive { get; set; }
 
-		required public string VerificationId { get; set; }
-		public string VerificationCode { get; set; } = string.Empty;
-		public DateTime ExpiresAt { get; set; }
-		public bool IsUsed { get; set; }
+		//required public string VerificationId { get; set; }
+		//public string VerificationCode { get; set; } = string.Empty;
+		//public DateTime ExpiresAt { get; set; }
+		//public bool IsUsed { get; set; }
 	}
 }

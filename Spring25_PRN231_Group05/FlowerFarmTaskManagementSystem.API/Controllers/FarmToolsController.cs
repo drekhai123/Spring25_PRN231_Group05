@@ -3,6 +3,7 @@ using FlowerFarmTaskManagementSystem.BusinessLogic.IService;
 using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 
 namespace FlowerFarmTaskManagementSystem.API.Controllers
 {
@@ -17,7 +18,9 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
 			_farmToolsService = farmToolsService;
 			_mapper = mapper;
 		}
-		[HttpGet("get-all-farm-tools")]
+
+        [EnableQuery]
+        [HttpGet("get-all-farm-tools")]
 		public async Task<ActionResult<IEnumerable<FarmToolsResponseDTO>>> GetAllFarmTools()
 		{
 			var farmTools = await _farmToolsService.GetAllFarmToolsAsync();

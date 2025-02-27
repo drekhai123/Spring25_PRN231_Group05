@@ -21,8 +21,12 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Models
 		[ForeignKey(nameof(FarmToolsId))]
 		public FarmTools? FarmTools { get; set; }
 
-		public Guid TaskWorkId { get; set; }
-		[ForeignKey(nameof(TaskWorkId))]
-		public TaskWork? TaskWork { get; set; }
-	}
+        //public Guid TaskWorkId { get; set; }
+        //[ForeignKey(nameof(TaskWorkId))]
+        //public TaskWork? TaskWork { get; set; }
+
+        public Guid UserTaskId { get; set; }
+        [ForeignKey(nameof(UserTaskId))]
+        public UserTask? UserTask { get; set; }
+    }
 }
