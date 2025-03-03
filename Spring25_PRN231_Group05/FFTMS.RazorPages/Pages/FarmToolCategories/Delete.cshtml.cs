@@ -7,57 +7,96 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using FlowerFarmTaskManagementSystem.BusinessObject.Models;
 using FlowerFarmTaskManagementSystem.DataAccess;
+using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
+using System.Net.Http.Headers;
+using System.Text.Json;
 
 namespace FFTMS.RazorPages.Pages.FarmToolCategories
 {
     public class DeleteModel : PageModel
     {
-        private readonly FlowerFarmTaskManagementSystem.DataAccess.FlowerFarmTaskManagementSystemDbContext _context;
+        private readonly HttpClient _httpClient;
 
-        public DeleteModel(FlowerFarmTaskManagementSystem.DataAccess.FlowerFarmTaskManagementSystemDbContext context)
+        public DeleteModel(HttpClient httpClient)
         {
-            _context = context;
+            _httpClient = httpClient;
         }
 
         [BindProperty]
-        public FlowerFarmTaskManagementSystem.BusinessObject.Models.FarmToolCategories FarmToolCategories { get; set; } = default!;
+        public FarmToolCategoriesResponseDTO FarmToolCategories { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync(string? id)
         {
-            if (id == null)
+           
+            if (string.IsNullOrEmpty(id))
             {
                 return NotFound();
             }
 
-            var farmtoolcategories = await _context.FarmToolCategories.FirstOrDefaultAsync(m => m.FarmToolCategoriesId == id);
+            try
+            {
+                var apiUrl = $"https://localhost:7207/odata/FarmToolCategories/get-all-farm-tool-category?$filter=FarmToolCategoriesId eq '{id}'";
+                var request = new HttpRequestMessage(HttpMethod.Get, apiUrl);
+                var response = await _httpClient.SendAsync(request);
 
-            if (farmtoolcategories == null)
-            {
-                return NotFound();
+                if (!response.IsSuccessStatusCode)
+                {
+                    return NotFound();
+                }
+
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var parsedResponse = JsonSerializer.Deserialize<List<FarmToolCategoriesResponseDTO>>(jsonResponse, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+                FarmToolCategories = parsedResponse?.FirstOrDefault();
+                if (FarmToolCategories == null)
+                {
+                    return NotFound();
+                }
             }
-            else
+            catch (Exception ex)
             {
-                FarmToolCategories = farmtoolcategories;
+                ViewData["ErrorMessage"] = $"An error occurred: {ex.Message}";
+                return Page();
             }
+
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(Guid? id)
+        public async Task<IActionResult> OnPostAsync()
         {
-            if (id == null)
+            try
             {
-                return NotFound();
-            }
+                var apiUrl = $"https://localhost:7207/odata/FarmToolCategories/update-farm-tool-category-status?FarmToolCategoriesId={FarmToolCategories.FarmToolCategoriesId}";
 
-            var farmtoolcategories = await _context.FarmToolCategories.FindAsync(id);
-            if (farmtoolcategories != null)
+                var request = new HttpRequestMessage(HttpMethod.Put, apiUrl)
+                {
+                    Content = new StringContent(JsonSerializer.Serialize(FarmToolCategories), System.Text.Encoding.UTF8, "application/json")
+                };
+
+                var response = await _httpClient.SendAsync(request);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    ModelState.AddModelError(string.Empty, "Error updating farm tool.");
+                    return Page();
+                }
+            }
+            catch (Exception ex)
             {
-                FarmToolCategories = farmtoolcategories;
-                _context.FarmToolCategories.Remove(FarmToolCategories);
-                await _context.SaveChangesAsync();
+                ModelState.AddModelError(string.Empty, $"An error occurred: {ex.Message}");
+                return Page();
             }
 
             return RedirectToPage("./Index");
         }
+
+        private class ODataResponse<T>
+        {
+            public List<T>? Value { get; set; }
+        }
     }
 }
+

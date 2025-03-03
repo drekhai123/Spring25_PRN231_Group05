@@ -28,6 +28,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 			farmTools.CreateDate = DateTime.UtcNow;
 			farmTools.UpdateDate = DateTime.UtcNow;
 			farmTools.Status = true;
+			farmTools.IsActive = true;
 			await _unitOfWork.FarmToolsRepository.AddAsync(farmTools);
 			await _unitOfWork.SaveChangesAsync();
 			var farmToolsMap = _mapper.Map<FarmToolsResponseDTO>(farmTools);
@@ -88,6 +89,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 			}
 			farmTools.UpdateDate = DateTime.UtcNow;
 			farmTools.Status = false;
+			farmTools.IsActive = false;
 			_unitOfWork.FarmToolsRepository.Update(farmTools);
 			await _unitOfWork.SaveChangesAsync();
 			var farmToolsMap = _mapper.Map<FarmToolsResponseDTO>(farmTools);
