@@ -7,11 +7,6 @@ using FlowerFarmTaskManagementSystem.DataAccess.Repositories;
 using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
 using System;
-using FlowerFarmTaskManagementSystem.DataAccess.IRepositories;
-using FlowerFarmTaskManagementSystem.DataAccess.Repositories;
-using FlowerFarmTaskManagementSystem.BusinessLogic.IService;
-using FlowerFarmTaskManagementSystem.BusinessLogic.Service;
-using FlowerFarmTaskManagementSystem.BusinessObject.Mapper;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -43,6 +38,8 @@ builder.Services.AddScoped<IUserTaskService, UserTaskService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IFarmToolsService, FarmToolsService>();
+builder.Services.AddScoped<IFarmToolCategoriesService, FarmToolCategoriesService>();
 // Configure Swagger
 builder.Services.AddSwaggerGen(c =>
 {

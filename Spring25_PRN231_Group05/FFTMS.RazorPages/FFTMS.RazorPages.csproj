@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Pages\ProductPages\" />
     <Folder Include="wwwroot\plugins\" />
   </ItemGroup>
 
