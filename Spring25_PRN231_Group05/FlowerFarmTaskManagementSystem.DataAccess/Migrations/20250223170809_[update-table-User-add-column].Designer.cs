@@ -4,6 +4,7 @@ using FlowerFarmTaskManagementSystem.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FlowerFarmTaskManagementSystem.DataAccess.Migrations
 {
     [DbContext(typeof(FlowerFarmTaskManagementSystemDbContext))]
-    partial class FlowerFarmTaskManagementSystemDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250223170809_[update-table-User-add-column]")]
+    partial class updatetableUseraddcolumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -140,17 +143,17 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.Migrations
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<Guid>("TaskWorkId")
+                        .HasColumnType("char(36)");
+
                     b.Property<DateTime>("UpdateDate")
                         .HasColumnType("datetime(6)");
-
-                    b.Property<Guid>("UserTaskId")
-                        .HasColumnType("char(36)");
 
                     b.HasKey("FarmToolsOfTaskId");
 
                     b.HasIndex("FarmToolsId");
 
-                    b.HasIndex("UserTaskId");
+                    b.HasIndex("TaskWorkId");
 
                     b.ToTable("FarmToolsOfTasks");
                 });
@@ -436,7 +439,13 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.Migrations
                     b.Property<string>("Experience")
                         .HasColumnType("longtext");
 
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsUsed")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Password")
@@ -451,6 +460,14 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("VerificationCode")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("VerificationId")
                         .IsRequired()
                         .HasColumnType("longtext");
 
@@ -515,15 +532,15 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FlowerFarmTaskManagementSystem.BusinessObject.Models.UserTask", "UserTask")
+                    b.HasOne("FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskWork", "TaskWork")
                         .WithMany()
-                        .HasForeignKey("UserTaskId")
+                        .HasForeignKey("TaskWorkId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("FarmTools");
 
-                    b.Navigation("UserTask");
+                    b.Navigation("TaskWork");
                 });
 
             modelBuilder.Entity("FlowerFarmTaskManagementSystem.BusinessObject.Models.Product", b =>

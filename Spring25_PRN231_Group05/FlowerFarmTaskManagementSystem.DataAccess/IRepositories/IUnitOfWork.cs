@@ -16,7 +16,9 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.IRepositories
         IGenericRepository<TaskWork> TaskWorkRepository { get; }
         IGenericRepository<User> UserRepository { get; }
         IGenericRepository<UserTask> UserTaskRepository { get; }
-        Task<int> SaveChangesAsync();
+		IGenericRepository<FarmToolCategories> FarmToolCategoriesRepository { get; }
+		IGenericRepository<FarmTools> FarmToolsRepository { get; }
+		Task<int> SaveChangesAsync();
         void Save();
     }
 }

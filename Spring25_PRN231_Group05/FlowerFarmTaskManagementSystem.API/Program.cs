@@ -2,6 +2,8 @@ using FlowerFarmTaskManagementSystem.BusinessLogic.IService;
 using FlowerFarmTaskManagementSystem.BusinessLogic.Service;
 using FlowerFarmTaskManagementSystem.BusinessObject.Mapper;
 using FlowerFarmTaskManagementSystem.DataAccess;
+using FlowerFarmTaskManagementSystem.DataAccess.IRepositories;
+using FlowerFarmTaskManagementSystem.DataAccess.Repositories;
 using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -22,6 +24,8 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
 //builder.Services.AddDbContext<FlowerFarmTaskManagementSystemDbContext>(options =>
