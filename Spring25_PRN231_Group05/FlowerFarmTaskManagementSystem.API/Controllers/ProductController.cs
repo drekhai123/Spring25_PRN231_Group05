@@ -25,8 +25,8 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
             return Ok(products);
         }
 
-		// GET: odata/Product/by-id
-		[HttpGet("by-id")]
+		// GET: odata/Product/by-id/{id}
+		[HttpGet("by-id/{id}")]
         public async Task<ActionResult<ProductDTO>> GetProductById(Guid id)
         {
             try
