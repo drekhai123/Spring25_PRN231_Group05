@@ -22,7 +22,7 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
+        [HttpGet("get-all-category")]
         [EnableQuery]
         public async Task<ActionResult<IEnumerable<CategoryResponseDTO>>> GetAllCategories()
         {
