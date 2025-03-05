@@ -45,6 +45,7 @@ namespace FFTMS.RazorPages.Pages.ProductPages
                 ModelState.AddModelError(string.Empty, "Error creating Product.");
                 return Page();
             }
+
             return RedirectToPage("./ListProduct");
         }
     }
