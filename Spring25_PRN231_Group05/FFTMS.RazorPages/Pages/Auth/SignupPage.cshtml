@@ -249,13 +249,6 @@
                 <h2 class="logo">Flower Farm TMS</h2>
                 <p class="subtitle">Create an account to manage your farm tasks</p>
 
-                <!-- Display success message if available -->
-                @if (TempData["SuccessMessage"] != null)
-                {
-                    <div class="success-message">
-                        @TempData["SuccessMessage"]
-                    </div>
-                }
                 <form method="post" class="space-y-6">
                     <div asp-validation-summary="ModelOnly" class="error-message text-center"></div>
 

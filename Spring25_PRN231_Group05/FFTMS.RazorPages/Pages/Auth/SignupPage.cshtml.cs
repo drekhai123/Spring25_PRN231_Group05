@@ -95,8 +95,6 @@ namespace FFTMS.RazorPages.Pages.Auth
                 {
                     _logger.LogInformation("User registered successfully.");
                     // Redirect to the login page after successful signup
-                    TempData["SuccessMessage"] = "T?o tài kho?n m?i thành công! Vui lòng ??ng nh?p.";
-                    // Redirect to the login page after successful signup
                     return RedirectToPage("./LoginPage");
                 }
                 else
