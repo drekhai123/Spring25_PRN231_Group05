@@ -6,51 +6,66 @@
     Layout = "_Layout";
 }
 <div class="main-container">
-<h1>Create</h1>
 
-<h4>FarmToolCategories</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="FarmToolCategories.FarmToolCategoriesName" class="control-label"></label>
-                <input asp-for="FarmToolCategories.FarmToolCategoriesName" class="form-control" />
-                <span asp-validation-for="FarmToolCategories.FarmToolCategoriesName" class="text-danger"></span>
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">Create New Farm Tool Category</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                            <div class="mb-3">
+                                <label asp-for="FarmToolCategories.FarmToolCategoriesName" class="form-label fw-bold"></label>
+                                <input asp-for="FarmToolCategories.FarmToolCategoriesName" class="form-control" placeholder="Enter category name" />
+                                <span asp-validation-for="FarmToolCategories.FarmToolCategoriesName" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="FarmToolCategories.FarmToolCategoriesDescription" class="form-label fw-bold"></label>
+                                <textarea asp-for="FarmToolCategories.FarmToolCategoriesDescription" class="form-control" rows="3" placeholder="Enter category description"></textarea>
+                                <span asp-validation-for="FarmToolCategories.FarmToolCategoriesDescription" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3 form-check form-switch d-flex align-items-center">
+                                <input type="hidden" name="FarmToolCategories.Status" value="false" />
+                                <input class="form-check-input me-2" type="checkbox" asp-for="FarmToolCategories.Status" value="true">
+                                <label class="form-check-label fw-bold">@Html.DisplayNameFor(model => model.FarmToolCategories.Status)</label>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="FarmToolCategories.CreateDate" class="form-label fw-bold"></label>
+                                <input asp-for="FarmToolCategories.CreateDate" type="date" class="form-control" />
+                                <span asp-validation-for="FarmToolCategories.CreateDate" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="FarmToolCategories.UpdateDate" class="form-label fw-bold"></label>
+                                <input asp-for="FarmToolCategories.UpdateDate" type="date" class="form-control" />
+                                <span asp-validation-for="FarmToolCategories.UpdateDate" class="text-danger"></span>
+                            </div>
+
+                            <div class="d-flex justify-content-between">
+                                <a asp-page="Index" class="btn btn-secondary">
+                                    <i class="dw dw-arrow-left"></i> Cancel
+                                </a>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="dw dw-disk"></i> Create
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="FarmToolCategories.FarmToolCategoriesDescription" class="control-label"></label>
-                <input asp-for="FarmToolCategories.FarmToolCategoriesDescription" class="form-control" />
-                <span asp-validation-for="FarmToolCategories.FarmToolCategoriesDescription" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="FarmToolCategories.Status" /> @Html.DisplayNameFor(model => model.FarmToolCategories.Status)
-                </label>
-            </div>
-            <div class="form-group">
-                <label asp-for="FarmToolCategories.CreateDate" class="control-label"></label>
-                <input asp-for="FarmToolCategories.CreateDate" class="form-control" />
-                <span asp-validation-for="FarmToolCategories.CreateDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FarmToolCategories.UpdateDate" class="control-label"></label>
-                <input asp-for="FarmToolCategories.UpdateDate" class="form-control" />
-                <span asp-validation-for="FarmToolCategories.UpdateDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
-</div>
 
-<div>
-    <a asp-page="Index">Back to List</a>
-</div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }
 </div>

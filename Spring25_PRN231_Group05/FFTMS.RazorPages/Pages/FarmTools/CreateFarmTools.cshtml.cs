@@ -1,58 +1,85 @@
 using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Net.Http.Headers;
 using System.Text.Json;
 
 namespace FFTMS.RazorPages.Pages.FarmTools
 {
     public class CreateFarmToolsModel : PageModel
     {
-        private readonly HttpClient _httpClient;
+		private readonly HttpClient _httpClient;
 
-        public CreateFarmToolsModel(HttpClient httpClient)
-        {
-            _httpClient = httpClient;
-        }
+		public CreateFarmToolsModel(HttpClient httpClient)
+		{
+			_httpClient = httpClient;
+		}
 
-        [BindProperty]
-        public FarmToolsRequestDTO FarmTools { get; set; } = default!;
-        public List<FarmToolCategoriesResponseDTO> FarmToolCategoriesList { get; set; } = new();
+		[BindProperty]
+		public FarmToolsRequestDTO FarmTools { get; set; } = new FarmToolsRequestDTO();
 
-        public async Task<IActionResult> OnGetAsync(String? id)
-        {
-            var apiUrl = "https://localhost:7207/odata/FarmToolCategories/get-all-farm-tool-category";
+		public List<FarmToolCategoriesResponseDTO> FarmToolCategoriesList { get; set; } = new();
 
-            var response = await _httpClient.GetAsync(apiUrl);
-            if (response.IsSuccessStatusCode)
-            {
-                var jsonResponse = await response.Content.ReadAsStringAsync();
-                FarmToolCategoriesList = JsonSerializer.Deserialize<List<FarmToolCategoriesResponseDTO>>(jsonResponse, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                }) ?? new List<FarmToolCategoriesResponseDTO>();
-            }
+		public async Task<IActionResult> OnGetAsync()
+		{
 
-            return Page();
-        }
+			try
+			{
+				var apiUrl = "https://localhost:7207/odata/FarmToolCategories/get-all-farm-tool-category?$filter=Status eq true";
+				var request = new HttpRequestMessage(HttpMethod.Get, apiUrl);
 
-        public async Task<IActionResult> OnPostAsync()
-        {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
+				var response = await _httpClient.SendAsync(request);
+				if (response.IsSuccessStatusCode)
+				{
+					var jsonResponse = await response.Content.ReadAsStringAsync();
+					var parsedResponse = JsonSerializer.Deserialize<List<FarmToolCategoriesResponseDTO>>(jsonResponse, new JsonSerializerOptions
+					{
+						PropertyNameCaseInsensitive = true
+					});
 
-            var apiUrl = "https://localhost:7207/odata/FarmTools/create-farm-tool";
+					FarmToolCategoriesList = parsedResponse ?? new List<FarmToolCategoriesResponseDTO>();
+				}
+			}
+			catch (Exception ex)
+			{
+				ModelState.AddModelError(string.Empty, $"Error fetching categories: {ex.Message}");
+			}
 
-            var response = await _httpClient.PostAsJsonAsync(apiUrl, FarmTools);
+			return Page();
+		}
 
-            if (!response.IsSuccessStatusCode)
-            {
-                ModelState.AddModelError(string.Empty, "Error creating farm tool.");
-                return Page();
-            }
+		public async Task<IActionResult> OnPostAsync()
+		{
 
-            return RedirectToPage("./ListFarmTools");
-        }
-    }
+			try
+			{
+				var apiUrl = "https://localhost:7207/odata/FarmTools/create-farm-tools";
+				var request = new HttpRequestMessage(HttpMethod.Post, apiUrl)
+				{
+					Content = JsonContent.Create(FarmTools)
+				};
+
+				var response = await _httpClient.SendAsync(request);
+
+				if (!response.IsSuccessStatusCode)
+				{
+					string errorMessage = await response.Content.ReadAsStringAsync();
+					ModelState.AddModelError(string.Empty, $"Error: {errorMessage}");
+					return Page();
+				}
+
+				return RedirectToPage("./ListFarmTools");
+			}
+			catch (Exception ex)
+			{
+				ModelState.AddModelError(string.Empty, $"An error occurred: {ex.Message}");
+				return Page();
+			}
+		}
+
+		private class ODataResponse<T>
+		{
+			public List<T>? Value { get; set; }
+		}
+	}
 }
