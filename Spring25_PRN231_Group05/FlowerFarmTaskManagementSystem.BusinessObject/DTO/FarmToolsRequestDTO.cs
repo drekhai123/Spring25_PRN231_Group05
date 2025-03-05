@@ -8,7 +8,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.DTO
 {
 	public class FarmToolsRequestDTO
 	{
-		public String FarmToolsId { get; set; }
+		public String? FarmToolsId { get; set; }
 		public String FarmToolsName { get; set; }
 		public String? FarmToolsDetails { get; set; }
 		public int FarmToolsQuantity { get; set; }

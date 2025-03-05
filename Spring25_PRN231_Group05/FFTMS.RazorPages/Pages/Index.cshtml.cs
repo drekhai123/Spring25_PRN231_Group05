@@ -5,16 +5,15 @@ namespace FFTMS.RazorPages.Pages
 {
     public class IndexModel : PageModel
     {
-        private readonly ILogger<IndexModel> _logger;
-
-        public IndexModel(ILogger<IndexModel> logger)
+        public IActionResult OnGet()
         {
-            _logger = logger;
-        }
+            // Optional: You can remove this check if you're using middleware to handle redirects
+            if (!Request.Cookies.ContainsKey("AuthToken"))
+            {
+                return RedirectToPage("/Auth/LoginPage");
+            }
 
-        public void OnGet()
-        {
-
+            return Page();
         }
     }
 }
