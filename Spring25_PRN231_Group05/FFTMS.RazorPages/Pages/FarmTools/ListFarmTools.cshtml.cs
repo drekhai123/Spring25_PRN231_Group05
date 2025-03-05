@@ -19,7 +19,7 @@ namespace FFTMS.RazorPages.Pages.FarmTools
 
 		public async Task OnGetAsync()
 		{
-			var apiUrl = "https://localhost:7207/odata/FarmTools/get-all-farm-tools";
+			var apiUrl = "https://localhost:7207/odata/FarmTools/get-all-farm-tools?$filter=Status eq true";
 
 			var response = await _httpClient.GetAsync(apiUrl);
 			if (response.IsSuccessStatusCode)

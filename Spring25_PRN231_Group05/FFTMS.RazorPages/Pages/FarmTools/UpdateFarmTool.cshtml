@@ -6,62 +6,81 @@
 
 }
 <div class="main-container">
-    <h1>UpdateFarmTool</h1>
+    <div class="container mt-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-warning text-white">
+                <h3 class="mb-0">Edit Farm Tool</h3>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                    <input type="hidden" asp-for="FarmTools.FarmToolsId" />
 
-    <h4>FarmTool</h4>
-    <hr />
-    <div class="row">
-        <div class="col-md-4">
-            <form method="post">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <input type="hidden" asp-for="FarmTools.FarmToolsId" />
-                <div class="form-group">
-                    <label asp-for="FarmTools.FarmToolsName" class="control-label"></label>
-                    <input asp-for="FarmTools.FarmToolsName" class="form-control" />
-                    <span asp-validation-for="FarmTools.FarmToolsName" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="FarmTools.FarmToolsDetails" class="control-label"></label>
-                    <input asp-for="FarmTools.FarmToolsDetails" class="form-control" />
-                    <span asp-validation-for="FarmTools.FarmToolsDetails" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="FarmTools.FarmToolCategoriesId" class="control-label"></label>
-                    <input asp-for="FarmTools.FarmToolCategoriesId" class="form-control" />
-                    <span asp-validation-for="FarmTools.FarmToolCategoriesId" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="FarmTools.FarmToolsQuantity" class="control-label"></label>
-                    <input asp-for="FarmTools.FarmToolsQuantity" class="form-control" />
-                    <span asp-validation-for="FarmTools.FarmToolsQuantity" class="text-danger"></span>
-                    <label asp-for="FarmTools.FarmToolsUnit" class="control-label"></label>
-                    <input asp-for="FarmTools.FarmToolsUnit" class="form-control" />
-                    <span asp-validation-for="FarmTools.FarmToolsUnit" class="text-danger"></span>
-                </div>
-                <div class="form-group form-check">
-                    <label class="form-check-label">
-                        <input class="form-check-input" asp-for="FarmTools.Status" /> @Html.DisplayNameFor(model => model.FarmTools.Status)
-                    </label>
-                </div>
-                <div class="form-group">
-                    <label asp-for="FarmTools.CreateDate" class="control-label"></label>
-                    <input asp-for="FarmTools.CreateDate" class="form-control" />
-                    <span asp-validation-for="FarmTools.CreateDate" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="FarmTools.UpdateDate" class="control-label"></label>
-                    <input asp-for="FarmTools.UpdateDate" class="form-control" />
-                    <span asp-validation-for="FarmTools.UpdateDate" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <input type="submit" value="Save" class="btn btn-primary" />
-                </div>
-            </form>
+                    <div class="mb-3">
+                        <label asp-for="FarmTools.FarmToolsName" class="form-label fw-bold"></label>
+                        <input asp-for="FarmTools.FarmToolsName" class="form-control" placeholder="Enter tool name..." />
+                        <span asp-validation-for="FarmTools.FarmToolsName" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="FarmTools.FarmToolsDetails" class="form-label fw-bold"></label>
+                        <textarea asp-for="FarmTools.FarmToolsDetails" class="form-control" placeholder="Enter details..." rows="3"></textarea>
+                        <span asp-validation-for="FarmTools.FarmToolsDetails" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="FarmTools.FarmToolsQuantity" class="form-label fw-bold"></label>
+                        <input asp-for="FarmTools.FarmToolsQuantity" type="number" class="form-control" placeholder="Enter quantity..." />
+                        <span asp-validation-for="FarmTools.FarmToolsQuantity" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="FarmTools.FarmToolsUnit" class="form-label fw-bold"></label>
+                        <input asp-for="FarmTools.FarmToolsUnit" class="form-control" placeholder="Enter unit..." />
+                        <span asp-validation-for="FarmTools.FarmToolsUnit" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="FarmTools.FarmToolCategoriesId" class="form-label fw-bold"></label>
+                        <select asp-for="FarmTools.FarmToolCategoriesId" class="form-select" asp-items="@(ViewData["FarmToolCategoriesId"] as SelectList)">
+                            <option value="">-- Select Category --</option>
+                        </select>
+                        <span asp-validation-for="FarmTools.FarmToolCategoriesId" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" asp-for="FarmTools.Status">
+                        <label class="form-check-label fw-bold">@Html.DisplayNameFor(model => model.FarmTools.Status)</label>
+                    </div>
+
+                    <div class="form-check form-switch mt-2">
+                        <input class="form-check-input" type="checkbox" asp-for="FarmTools.IsActive">
+                        <label class="form-check-label fw-bold">@Html.DisplayNameFor(model => model.FarmTools.IsActive)</label>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="FarmTools.CreateDate" class="form-label fw-bold"></label>
+                        <input asp-for="FarmTools.CreateDate" type="datetime-local" class="form-control" />
+                        <span asp-validation-for="FarmTools.CreateDate" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="FarmTools.UpdateDate" class="form-label fw-bold"></label>
+                        <input asp-for="FarmTools.UpdateDate" type="datetime-local" class="form-control" />
+                        <span asp-validation-for="FarmTools.UpdateDate" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-page="./Index" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Back to List
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
-
-    <div>
-        <a asp-page="/ListFarmTools">Back to List</a>
     </div>
 
     @section Scripts {
@@ -69,5 +88,6 @@
             await Html.RenderPartialAsync("_ValidationScriptsPartial");
         }
     }
+
 </div>
 

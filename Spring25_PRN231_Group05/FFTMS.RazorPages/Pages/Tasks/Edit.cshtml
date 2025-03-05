@@ -1,0 +1,96 @@
+@page "{id:guid}"
+@model FFTMS.RazorPages.Pages.Tasks.EditModel
+@{
+    ViewData["Title"] = "Edit Task";
+    Layout = "_Layout";
+}
+
+<div class="main-container">
+    <div class="pd-ltr-20 xs-pd-20-10">
+        <div class="min-height-200px">
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-md-6 col-sm-12">
+                        <div class="title">
+                            <h4>Edit Task</h4>
+                        </div>
+                        <nav aria-label="breadcrumb" role="navigation">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a asp-page="/Index">Home</a></li>
+                                <li class="breadcrumb-item"><a asp-page="/Tasks/Index">Tasks</a></li>
+                                <li class="breadcrumb-item active">Edit Task</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pd-20 card-box mb-30">
+                <form method="post">
+                    <div class="form-group">
+                        <label asp-for="Task.JobTitle">Job Title</label>
+                        <input asp-for="Task.JobTitle" class="form-control" />
+                        <span asp-validation-for="Task.JobTitle" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Task.Description">Description</label>
+                        <textarea asp-for="Task.Description" class="form-control"></textarea>
+                        <span asp-validation-for="Task.Description" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Task.AssignedTo">Assigned To</label>
+                        <select asp-for="Task.AssignedTo" asp-items="Model.UserList" class="form-control">
+                            <option value="">-- Select User --</option>
+                        </select>
+                        <span asp-validation-for="Task.AssignedTo" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group" style="display: none;">
+                        <label asp-for="Task.AssignedBy">Assigned By</label>
+                        <input asp-for="Task.AssignedBy" class="form-control" readonly />
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Task.StartDate">Start Date</label>
+                        <input asp-for="Task.StartDate" class="form-control" type="date" />
+                        <span asp-validation-for="Task.StartDate" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Task.EndDate">End Date</label>
+                        <input asp-for="Task.EndDate" class="form-control" type="date" />
+                        <span asp-validation-for="Task.EndDate" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Task.Status">Status</label>
+                        <select asp-for="Task.Status" class="form-control">
+                            <option value="true">Active</option>
+                            <option value="false">Inactive</option>
+                        </select>
+                        <span asp-validation-for="Task.Status" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Task.ImageUrl">Image URL</label>
+                        <input asp-for="Task.ImageUrl" class="form-control" />
+                        <span asp-validation-for="Task.ImageUrl" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <a asp-page="./Index" class="btn btn-secondary">Back to List</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

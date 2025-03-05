@@ -1,0 +1,139 @@
+@page
+@model FFTMS.RazorPages.Pages.Tasks.IndexModel
+@{
+    ViewData["Title"] = "Tasks";
+    Layout = "_Layout";
+}
+
+<div class="main-container">
+    <div class="pd-ltr-20">
+        <div class="card-box mb-30">
+            <div class="pd-20">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4 class="text-blue h4">List of Tasks</h4>
+                    </div>
+                    <div class="col-md-6 text-right">
+                        <a asp-page="Create" class="btn btn-primary">
+                            <i class="icon-copy dw dw-add"></i> Create New Task
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pb-20 px-4">
+                <div class="row align-items-center mb-3">
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-center">
+                            <span class="mr-2">Show</span>
+                            <select class="custom-select custom-select-sm w-auto mr-2">
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                            </select>
+                            <span>entries</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4 ml-auto">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="dw dw-search2"></i></span>
+                            </div>
+                            <input type="search" class="form-control form-control-sm" placeholder="Search...">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th class="table-plus">Job Title <i class="fa fa-sort ml-1"></i></th>
+                                <th>Description <i class="fa fa-sort ml-1"></i></th>
+                                <th>Assigned To <i class="fa fa-sort ml-1"></i></th>
+                                <th>Assigned By <i class="fa fa-sort ml-1"></i></th>
+                                <th>Start Date <i class="fa fa-sort ml-1"></i></th>
+                                <th>End Date <i class="fa fa-sort ml-1"></i></th>
+                                <th>Status</th>
+                                <th class="datatable-nosort">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Tasks)
+                            {
+                                <tr>
+                                    <td class="table-plus">@item.JobTitle</td>
+                                    <td>@item.Description</td>
+                                    <td>@item.AssignedTo</td>
+                                    <td>@item.AssignedBy</td>
+                                    <td>@item.StartDate.ToString("dd/MM/yyyy")</td>
+                                    <td>@item.EndDate.ToString("dd/MM/yyyy")</td>
+                                    <td>
+                                        <span class="badge badge-pill @(item.Status ? "badge-success" : "badge-danger")">
+                                            @(item.Status ? "Active" : "Inactive")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <a asp-page="./Details" asp-route-id="@item.TaskWorkId"
+                                                class="btn btn-link text-primary p-0 mr-2">
+                                                <i class="dw dw-eye font-18"></i>
+                                            </a>
+                                            <a asp-page="./Edit" asp-route-id="@item.TaskWorkId"
+                                                class="btn btn-link text-warning p-0 mr-2">
+                                                <i class="icon-copy fa fa-pencil" aria-hidden="true"></i>
+                                            </a>
+                                            <a asp-page="./Delete" asp-route-id="@item.TaskWorkId"
+                                                class="btn btn-link text-danger p-0">
+                                                <i class="icon-copy fa fa-trash" aria-hidden="true"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-sm-12 col-md-5">
+                        <div class="dataTables_info">
+                            Showing 1 to @Model.Tasks.Count() of @Model.Tasks.Count() entries
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-7">
+                        <div class="dataTables_paginate paging_simple_numbers">
+                            <ul class="pagination">
+                                <li class="paginate_button page-item previous disabled">
+                                    <a href="#" class="page-link"><i class="ion-chevron-left"></i></a>
+                                </li>
+                                <li class="paginate_button page-item active">
+                                    <a href="#" class="page-link">1</a>
+                                </li>
+                                <li class="paginate_button page-item next disabled">
+                                    <a href="#" class="page-link"><i class="ion-chevron-right"></i></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Handle show entries change
+            $('select').change(function () {
+                // Handle entries change
+            });
+
+            // Handle search input
+            $('input[type="search"]').on('keyup', function () {
+                // Handle search
+            });
+        });
+    </script>
+}

@@ -14,7 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers()
-    .AddOData(options => options.Select().Expand().Filter().OrderBy().Count().SetMaxTop(100));
+	.AddOData(options => options.Select().Expand().Filter().OrderBy().Count().SetMaxTop(100));
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -28,7 +28,7 @@ builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<FlowerFarmTaskManagementSystemDbContext>(options =>
-    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 32))));
+	options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 32))));
 
 // Register Repositories and Services
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -40,6 +40,7 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IFarmToolsService, FarmToolsService>();
 builder.Services.AddScoped<IFarmToolCategoriesService, FarmToolCategoriesService>();
+builder.Services.AddScoped<ITaskService, TaskService>();
 // Configure Swagger
 builder.Services.AddSwaggerGen(c =>
 {
@@ -71,19 +72,32 @@ builder.Services.AddSwaggerGen(c =>
 	});
 });
 
+// Add CORS
+builder.Services.AddCors(options =>
+{
+	options.AddPolicy("AllowAll",
+		builder => builder
+			.AllowAnyOrigin()
+			.AllowAnyMethod()
+			.AllowAnyHeader());
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+	app.UseSwagger();
+	app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+// Enable CORS
+app.UseCors("AllowAll");
 
 app.MapControllers();
 
