@@ -11,22 +11,24 @@
 				<div class="row">
 					<div class="col-md-6 col-sm-12">
 						<div class="title">
-							<h4>List Farm Tools</h4>
+							<h4>List Product</h4>
 						</div>
 						<nav aria-label="breadcrumb" role="navigation">
 							<ol class="breadcrumb">
-								<li class="breadcrumb-item">FarmTools</li>
-								<li class="breadcrumb-item active" aria-current="page">List Farm Tools</li>
+								<li class="breadcrumb-item">Product</li>
+								<li class="breadcrumb-item active" aria-current="page">List Product</li>
 							</ol>
 						</nav>
 					</div>
 				</div>
 			</div>
-
+			<div class="d-flex justify-content-between align-items-center mb-3">
+				<a asp-page="CreateProduct" class="btn btn-success">+ Add Product</a>
+			</div>
 			<!-- Table -->
 			<div class="card-box mb-30">
 				<div class="pd-20">
-					<h4 class="text-blue h4">List Of Farm Tools</h4>
+					<h4 class="text-blue h4">List Of Product</h4>
 				</div>
 				<div class="pb-20">
 					<table class="data-table table stripe hover nowrap">
@@ -59,7 +61,9 @@
 												<a class="dropdown-item" asp-page="./ProductDetails" asp-route-id="@product.ProductId">
 													<i class="dw dw-eye"></i> View
 												</a>
-												<a class="dropdown-item" asp-page="#"><i class="dw dw-edit2"></i> Edit</a>
+												<a class="dropdown-item" asp-page="./UpdateProduct" asp-route-id="@product.ProductId">
+													<i class="dw dw-eye"></i> Edit
+												</a>
 												<a class="dropdown-item" asp-page="#"><i class="dw dw-delete-3"></i> Delete</a>
 											</div>
 										</div>
