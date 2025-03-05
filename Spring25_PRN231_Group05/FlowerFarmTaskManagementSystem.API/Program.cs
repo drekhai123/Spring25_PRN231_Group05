@@ -40,6 +40,7 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IFarmToolsService, FarmToolsService>();
 builder.Services.AddScoped<IFarmToolCategoriesService, FarmToolCategoriesService>();
+builder.Services.AddScoped<ITaskService, TaskService>();
 // Configure Swagger
 builder.Services.AddSwaggerGen(c =>
 {
