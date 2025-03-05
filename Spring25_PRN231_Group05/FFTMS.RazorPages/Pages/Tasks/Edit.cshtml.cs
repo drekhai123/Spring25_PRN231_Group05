@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Text.Json;
+using FFTMS.RazorPages.Helpers;
 
 namespace FFTMS.RazorPages.Pages.Tasks
 {
@@ -25,6 +26,10 @@ namespace FFTMS.RazorPages.Pages.Tasks
         {
             try
             {
+                // Get current user id from token
+                var token = Request.Cookies["token"];
+                var currentUserId = JwtHelper.GetUserIdFromToken(token);
+
                 // Get all users
                 var userResponse = await _httpClient.GetAsync("https://localhost:7207/odata/User");
                 if (userResponse.IsSuccessStatusCode)
@@ -35,7 +40,6 @@ namespace FFTMS.RazorPages.Pages.Tasks
                         PropertyNameCaseInsensitive = true
                     });
 
-                    // Filter users with role "User"
                     var usersList = users.Where(u => u.Role == "User")
                                       .Select(u => new SelectListItem
                                       {
@@ -62,7 +66,7 @@ namespace FFTMS.RazorPages.Pages.Tasks
                         JobTitle = task.JobTitle,
                         Description = task.Description,
                         AssignedTo = task.AssignedTo,
-                        AssignedBy = task.AssignedBy,
+                        AssignedBy = currentUserId, // Set AssignedBy to current user id
                         StartDate = task.StartDate,
                         EndDate = task.EndDate,
                         Status = task.Status,
