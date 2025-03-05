@@ -84,12 +84,12 @@ namespace FFTMS.RazorPages.Pages.Auth
                     password = Input.Password,
                     phone = Input.Phone,
                     address = Input.Address,
-                    role = Input.Role,
+                    role = "Staff",
                     dateOfBirth = Input.DateOfBirth
                 };
 
                 // Send the signup request to the API
-                var response = await client.PostAsJsonAsync("/odata/Auth/register", signupRequest);
+                var response = await client.PostAsJsonAsync("/odata/User", signupRequest);
 
                 if (response.IsSuccessStatusCode)
                 {
