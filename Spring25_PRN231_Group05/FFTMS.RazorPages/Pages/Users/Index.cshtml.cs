@@ -25,10 +25,13 @@ namespace FFTMS.RazorPages.Pages.Users
                 if (response.IsSuccessStatusCode)
                 {
                     var jsonResponse = await response.Content.ReadAsStringAsync();
-                    Users = JsonSerializer.Deserialize<List<UserResponseDTO>>(jsonResponse, new JsonSerializerOptions
+                    var allUsers = JsonSerializer.Deserialize<List<UserResponseDTO>>(jsonResponse, new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
                     }) ?? new List<UserResponseDTO>();
+
+                    // Filter out users with Admin role
+                    Users = allUsers.Where(u => u.Role != "Admin").ToList();
                 }
                 else
                 {

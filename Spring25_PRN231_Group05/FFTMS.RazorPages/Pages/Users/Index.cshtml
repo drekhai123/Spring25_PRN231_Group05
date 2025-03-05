@@ -31,9 +31,9 @@
 
             @if (!string.IsNullOrEmpty(Model.ErrorMessage))
             {
-                    <div class="alert alert-danger">
-                        @Model.ErrorMessage
-                    </div>
+                <div class="alert alert-danger">
+                    @Model.ErrorMessage
+                </div>
             }
 
             <div class="card-box mb-30">
@@ -41,26 +41,29 @@
                     <h4 class="text-blue h4">List of Users</h4>
                 </div>
                 <div class="pb-20">
-                    <table class="table hover nowrap">
-                        <thead>
-                            <tr>
-                                <th>Username</th>
-                                <th>Email</th>
-                                <th>Phone</th>
-                                <th>Role</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model.Users)
-                            {
+                    @if (Model.Users.Any())
+                    {
+                        <table class="table hover nowrap">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Users)
+                                {
                                     <tr>
                                         <td>@item.UserName</td>
                                         <td>@item.Email</td>
                                         <td>@(item.Phone ?? "N/A")</td>
                                         <td>
-                                            <span class="badge badge-pill @(item.Role == "Admin" ? "badge-danger" : "badge-primary")">
+                                            <span
+                                                class="badge badge-pill @(item.Role == "Admin" ? "badge-danger" : "badge-primary")">
                                                 @item.Role
                                             </span>
                                         </td>
@@ -70,14 +73,24 @@
                                             </span>
                                         </td>
                                         <td>
-                                            <a asp-page="./Edit" asp-route-id="@item.UserId" class="btn btn-info btn-sm">Edit</a>
-                                            <a asp-page="./Details" asp-route-id="@item.UserId" class="btn btn-primary btn-sm">Details</a>
-                                            <a asp-page="./Delete" asp-route-id="@item.UserId" class="btn btn-danger btn-sm">Delete</a>
+                                            <a asp-page="./Edit" asp-route-id="@item.UserId"
+                                                class="btn btn-info btn-sm">Edit</a>
+                                            <a asp-page="./Details" asp-route-id="@item.UserId"
+                                                class="btn btn-primary btn-sm">Details</a>
+                                            <a asp-page="./Delete" asp-route-id="@item.UserId"
+                                                class="btn btn-danger btn-sm">Delete</a>
                                         </td>
                                     </tr>
-                            }
-                        </tbody>
-                    </table>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info m-3">
+                            No users to display.
+                        </div>
+                    }
                 </div>
             </div>
         </div>

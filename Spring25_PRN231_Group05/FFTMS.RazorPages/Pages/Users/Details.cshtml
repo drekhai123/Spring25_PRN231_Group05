@@ -1,7 +1,7 @@
-@page "{id}"
+@page
 @model FFTMS.RazorPages.Pages.Users.DetailsModel
 @{
-    ViewData["Title"] = "Chi tiết người dùng";
+    ViewData["Title"] = "User Details";
     Layout = "_Layout";
 }
 
@@ -12,13 +12,13 @@
                 <div class="row">
                     <div class="col-md-6 col-sm-12">
                         <div class="title">
-                            <h4>Chi tiết người dùng</h4>
+                            <h4>User Details</h4>
                         </div>
                         <nav aria-label="breadcrumb" role="navigation">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a asp-page="/Index">Trang chủ</a></li>
-                                <li class="breadcrumb-item"><a asp-page="/Users/Index">Người dùng</a></li>
-                                <li class="breadcrumb-item active">Chi tiết</li>
+                                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                                <li class="breadcrumb-item"><a asp-page="/Users/Index">Users</a></li>
+                                <li class="breadcrumb-item active">Details</li>
                             </ol>
                         </nav>
                     </div>
@@ -27,64 +27,66 @@
 
             @if (!string.IsNullOrEmpty(Model.ErrorMessage))
             {
-                    <div class="alert alert-danger">
-                        @Model.ErrorMessage
-                    </div>
+                <div class="alert alert-danger">
+                    @Model.ErrorMessage
+                </div>
             }
 
             <div class="pd-20 card-box mb-30">
                 <div class="clearfix mb-20">
                     <div class="pull-left">
-                        <h4 class="text-blue h4">Thông tin người dùng</h4>
+                        <h4 class="text-blue h4">User Information</h4>
                     </div>
                 </div>
 
                 @if (Model.User != null)
                 {
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="font-weight-bold">Tên đăng nhập:</label>
-                                    <p>@Model.User.UserName</p>
-                                </div>
-                                <div class="form-group">
-                                    <label class="font-weight-bold">Email:</label>
-                                    <p>@Model.User.Email</p>
-                                </div>
-                                <div class="form-group">
-                                    <label class="font-weight-bold">Số điện thoại:</label>
-                                    <p>@(Model.User.Phone ?? "Chưa cập nhật")</p>
-                                </div>
-                                <div class="form-group">
-                                    <label class="font-weight-bold">Địa chỉ:</label>
-                                    <p>@(Model.User.Address ?? "Chưa cập nhật")</p>
-                                </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="font-weight-bold">Username:</label>
+                                <p>@Model.User.UserName</p>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="font-weight-bold">Vai trò:</label>
-                                    <p><span class="badge badge-pill @(Model.User.Role == "Admin" ? "badge-danger" : "badge-primary")">@Model.User.Role</span></p>
-                                </div>
-                                <div class="form-group">
-                                    <label class="font-weight-bold">Trạng thái:</label>
-                                    <p><span class="badge badge-pill @(Model.User.IsActive ? "badge-success" : "badge-danger")">
-                                        @(Model.User.IsActive ? "Đang hoạt động" : "Không hoạt động")</span></p>
-                                </div>
-                                <div class="form-group">
-                                    <label class="font-weight-bold">Ngày sinh:</label>
-                                    <p>@(Model.User.DateOfBirth?.ToString("dd/MM/yyyy") ?? "Chưa cập nhật")</p>
-                                </div>
-                                <div class="form-group">
-                                    <label class="font-weight-bold">Ngày tạo:</label>
-                                    <p>@Model.User.CreateDate.ToString("dd/MM/yyyy HH:mm")</p>
-                                </div>
+                            <div class="form-group">
+                                <label class="font-weight-bold">Email:</label>
+                                <p>@Model.User.Email</p>
+                            </div>
+                            <div class="form-group">
+                                <label class="font-weight-bold">Phone:</label>
+                                <p>@(Model.User.Phone ?? "Not provided")</p>
+                            </div>
+                            <div class="form-group">
+                                <label class="font-weight-bold">Address:</label>
+                                <p>@(Model.User.Address ?? "Not provided")</p>
                             </div>
                         </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="font-weight-bold">Role:</label>
+                                <p><span
+                                        class="badge badge-pill @(Model.User.Role == "Admin" ? "badge-danger" : "badge-primary")">@Model.User.Role</span>
+                                </p>
+                            </div>
+                            <div class="form-group">
+                                <label class="font-weight-bold">Status:</label>
+                                <p><span class="badge badge-pill @(Model.User.IsActive ? "badge-success" : "badge-danger")">
+                                        @(Model.User.IsActive ? "Active" : "Inactive")</span></p>
+                            </div>
+                            <div class="form-group">
+                                <label class="font-weight-bold">Date of Birth:</label>
+                                <p>@(Model.User.DateOfBirth?.ToString("dd/MM/yyyy") ?? "Not provided")</p>
+                            </div>
+                            <div class="form-group">
+                                <label class="font-weight-bold">Created Date:</label>
+                                <p>@Model.User.CreateDate.ToString("dd/MM/yyyy HH:mm")</p>
+                            </div>
+                        </div>
+                    </div>
                 }
 
                 <div class="form-group">
-                    <a asp-page="./Edit" asp-route-id="@Model.User?.UserId" class="btn btn-primary">Chỉnh sửa</a>
-                    <a asp-page="./Index" class="btn btn-secondary">Quay lại danh sách</a>
+                    <a asp-page="./Edit" asp-route-id="@Model.User?.UserId" class="btn btn-primary">Edit</a>
+                    <a asp-page="./Index" class="btn btn-secondary">Back to List</a>
                 </div>
             </div>
         </div>

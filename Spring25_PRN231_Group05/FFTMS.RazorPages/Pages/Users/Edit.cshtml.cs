@@ -24,31 +24,41 @@ namespace FFTMS.RazorPages.Pages.Users
                 return NotFound();
             }
 
-            var response = await _httpClient.GetAsync($"odata/User/{id}");
-            if (!response.IsSuccessStatusCode)
+            try
             {
-                return NotFound();
+                // Use absolute URL instead of relative URL
+                var response = await _httpClient.GetAsync($"https://localhost:7207/odata/User/{id}");
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return NotFound();
+                }
+
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var userResponse = JsonSerializer.Deserialize<UserResponseDTO>(jsonResponse, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+                // Map from UserResponseDTO to UserRequestDTO
+                User = new UserRequestDTO
+                {
+                    UserId = userResponse.UserId,
+                    UserName = userResponse.UserName,
+                    Email = userResponse.Email,
+                    Phone = userResponse.Phone,
+                    Address = userResponse.Address,
+                    Role = userResponse.Role,
+                    DateOfBirth = userResponse.DateOfBirth
+                };
+
+                return Page();
             }
-
-            var jsonResponse = await response.Content.ReadAsStringAsync();
-            var userResponse = JsonSerializer.Deserialize<UserResponseDTO>(jsonResponse, new JsonSerializerOptions
+            catch (Exception ex)
             {
-                PropertyNameCaseInsensitive = true
-            });
-
-            // Map từ UserResponseDTO sang UserRequestDTO
-            User = new UserRequestDTO
-            {
-                UserId = userResponse.UserId,  // Có thể map trực tiếp
-                UserName = userResponse.UserName,
-                Email = userResponse.Email,
-                Phone = userResponse.Phone,
-                Address = userResponse.Address,
-                Role = userResponse.Role,
-                DateOfBirth = userResponse.DateOfBirth
-            };
-
-            return Page();
+                // Handle exception
+                return RedirectToPage("./Index");
+            }
         }
 
         public async Task<IActionResult> OnPostAsync()

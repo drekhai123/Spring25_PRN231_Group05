@@ -16,6 +16,7 @@ namespace FFTMS.RazorPages.Pages.Users
 
         [BindProperty]
         public UserResponseDTO User { get; set; }
+        public string ErrorMessage { get; set; }
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
@@ -24,36 +25,53 @@ namespace FFTMS.RazorPages.Pages.Users
                 return NotFound();
             }
 
-            var response = await _httpClient.GetAsync($"odata/User/{id}");
-            if (!response.IsSuccessStatusCode)
+            try
             {
-                return NotFound();
+                var response = await _httpClient.GetAsync($"https://localhost:7207/odata/User/{id}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var jsonResponse = await response.Content.ReadAsStringAsync();
+                    User = JsonSerializer.Deserialize<UserResponseDTO>(jsonResponse, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+                    return Page();
+                }
+                else
+                {
+                    ErrorMessage = $"Unable to load user. API returned status code: {response.StatusCode}";
+                    return Page();
+                }
             }
-
-            var jsonResponse = await response.Content.ReadAsStringAsync();
-            User = JsonSerializer.Deserialize<UserResponseDTO>(jsonResponse, new JsonSerializerOptions
+            catch (Exception ex)
             {
-                PropertyNameCaseInsensitive = true
-            });
-
-            return Page();
-        }
-
-        public async Task<IActionResult> OnPostAsync(string id)
-        {
-            if (string.IsNullOrEmpty(id))
-            {
-                return NotFound();
-            }
-
-            var response = await _httpClient.DeleteAsync($"odata/User/{id}");
-
-            if (!response.IsSuccessStatusCode)
-            {
+                ErrorMessage = $"Error loading user: {ex.Message}";
                 return Page();
             }
+        }
 
-            return RedirectToPage("./Index");
+        public async Task<IActionResult> OnPostAsync()
+        {
+            try
+            {
+                var response = await _httpClient.DeleteAsync($"https://localhost:7207/odata/User/{User.UserId}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToPage("./Index");
+                }
+                else
+                {
+                    ErrorMessage = $"Error deleting user. API returned status code: {response.StatusCode}";
+                    return Page();
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Exception: {ex.Message}";
+                return Page();
+            }
         }
     }
 }

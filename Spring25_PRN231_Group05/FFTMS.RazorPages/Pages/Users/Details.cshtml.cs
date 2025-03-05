@@ -26,7 +26,7 @@ namespace FFTMS.RazorPages.Pages.Users
 
             try
             {
-                var response = await _httpClient.GetAsync($"odata/User/{id}");
+                var response = await _httpClient.GetAsync($"https://localhost:7207/odata/User/{id}");
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -39,13 +39,13 @@ namespace FFTMS.RazorPages.Pages.Users
                 }
                 else
                 {
-                    ErrorMessage = $"Không thể tải thông tin người dùng. API trả về mã lỗi: {response.StatusCode}";
+                    ErrorMessage = $"Unable to load user details. API returned status code: {response.StatusCode}";
                     return Page();
                 }
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"Lỗi khi tải thông tin người dùng: {ex.Message}";
+                ErrorMessage = $"Error loading user details: {ex.Message}";
                 return Page();
             }
         }
