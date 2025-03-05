@@ -16,8 +16,8 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
             _productService = productService;
         }
 
-        // GET: odata/Product
-        [HttpGet]
+        // GET: odata/Product/get-all-product
+        [HttpGet("get-all-product")]
         [EnableQuery]
         public async Task<ActionResult<IEnumerable<ProductDTO>>> GetAllProducts()
         {
@@ -25,8 +25,8 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
             return Ok(products);
         }
 
-        // GET: odata/Product(1)
-        [HttpGet("{id}")]
+		// GET: odata/Product/by-id/{id}
+		[HttpGet("by-id/{id}")]
         public async Task<ActionResult<ProductDTO>> GetProductById(Guid id)
         {
             try
@@ -41,15 +41,15 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
         }
 
         // POST: odata/Product
-        [HttpPost]
+        [HttpPost("add-product")]
         public async Task<ActionResult<ProductDTO>> AddProduct(ProductAddDTO productAddDTO)
         {
             var product = await _productService.AddProductAsync(productAddDTO);
             return CreatedAtAction(nameof(GetProductById), new { id = product.ProductId }, product);
         }
 
-        // PUT: odata/Product(1)
-        [HttpPut("{id}")]
+		// PUT: odata/Product/update-product
+		[HttpPut("update-product")]
         public async Task<ActionResult<ProductDTO>> UpdateProduct(Guid id, ProductUpdateDTO productUpdateDTO)
         {
             if (id != productUpdateDTO.ProductId)
@@ -68,8 +68,8 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
             }
         }
 
-        // DELETE: odata/Product(1)
-        [HttpDelete("{id}")]
+		// DELETE: odata/Product/delete-product
+		[HttpDelete("delete-product")]
         public async Task<ActionResult> DeleteProduct(Guid id)
         {
             try
