@@ -7,111 +7,147 @@
 
 <div class="main-container">
     <div class="pd-ltr-20">
-        <div class="card-box mb-30">
-            <div class="pd-20">
+        <div class="min-height-200px">
+            <div class="page-header">
                 <div class="row">
-                    <div class="col-md-6">
-                        <h4 class="text-blue h4">List of Tasks</h4>
-                    </div>
-                    <div class="col-md-6 text-right">
-                        <a asp-page="Create" class="btn btn-primary">
-                            <i class="icon-copy dw dw-add"></i> Create New Task
-                        </a>
+                    <div class="col-md-6 col-sm-12">
+                        <div class="title">
+                            <h4>Tasks Management</h4>
+                        </div>
+                        <nav aria-label="breadcrumb" role="navigation">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+                                <li class="breadcrumb-item active">Tasks</li>
+                            </ol>
+                        </nav>
                     </div>
                 </div>
             </div>
 
-            <div class="pb-20 px-4">
-                <div class="row align-items-center mb-3">
-                    <div class="col-md-4">
-                        <div class="d-flex align-items-center">
-                            <span class="mr-2">Show</span>
-                            <select class="custom-select custom-select-sm w-auto mr-2">
+            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <div class="alert alert-danger">
+                    @Model.ErrorMessage
+                </div>
+            }
+
+            <div class="card-box mb-30" style="padding: 30px;">
+                <div class="pb-20">
+                    <div class="row align-items-center pb-3">
+                        <div class="col-md-6">
+                            <h4 class="text-blue h4">Tasks</h4>
+                        </div>
+                    </div>
+
+                    <div class="row align-items-center pb-3">
+                        <div class="col-sm-12 col-md-6 d-flex align-items-center">
+                            <span>Hiển thị</span>
+                            <select class="mx-2 form-select form-select-sm" style="width: auto; min-width: 80px">
                                 <option value="10">10</option>
                                 <option value="25">25</option>
                                 <option value="50">50</option>
                             </select>
-                            <span>entries</span>
+                            <span>mục</span>
                         </div>
-                    </div>
-                    <div class="col-md-4 ml-auto">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><i class="dw dw-search2"></i></span>
+                        <div class="col-sm-12 col-md-6">
+                            <div class="d-flex justify-content-md-end align-items-center">
+                                <input type="search" class="form-control form-control-sm me-2" style="width: 200px"
+                                    placeholder="Tìm kiếm...">
+                                <button class="btn btn-success btn-sm" onclick="location.href='@Url.Page("./Create")'">
+                                    Add Task
+                                </button>
                             </div>
-                            <input type="search" class="form-control form-control-sm" placeholder="Search...">
                         </div>
                     </div>
-                </div>
 
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th class="table-plus">Job Title <i class="fa fa-sort ml-1"></i></th>
-                                <th>Description <i class="fa fa-sort ml-1"></i></th>
-                                <th>Assigned To <i class="fa fa-sort ml-1"></i></th>
-                                <th>Assigned By <i class="fa fa-sort ml-1"></i></th>
-                                <th>Start Date <i class="fa fa-sort ml-1"></i></th>
-                                <th>End Date <i class="fa fa-sort ml-1"></i></th>
-                                <th>Status</th>
-                                <th class="datatable-nosort">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model.Tasks)
-                            {
+                    <div class="table-responsive">
+                        <table class="table table-hover" style="width:100%">
+                            <thead>
                                 <tr>
-                                    <td class="table-plus">@item.JobTitle</td>
-                                    <td>@item.Description</td>
-                                    <td>@item.AssignedTo</td>
-                                    <td>@item.AssignedBy</td>
-                                    <td>@item.StartDate.ToString("dd/MM/yyyy")</td>
-                                    <td>@item.EndDate.ToString("dd/MM/yyyy")</td>
-                                    <td>
-                                        <span class="badge badge-pill @(item.Status ? "badge-success" : "badge-danger")">
-                                            @(item.Status ? "Active" : "Inactive")
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex">
-                                            <a asp-page="./Details" asp-route-id="@item.TaskWorkId"
-                                                class="btn btn-link text-primary p-0 mr-2">
-                                                <i class="dw dw-eye font-18"></i>
-                                            </a>
-                                            <a asp-page="./Edit" asp-route-id="@item.TaskWorkId"
-                                                class="btn btn-link text-warning p-0 mr-2">
-                                                <i class="icon-copy fa fa-pencil" aria-hidden="true"></i>
-                                            </a>
-                                            <a asp-page="./Delete" asp-route-id="@item.TaskWorkId"
-                                                class="btn btn-link text-danger p-0">
-                                                <i class="icon-copy fa fa-trash" aria-hidden="true"></i>
-                                            </a>
+                                    <th>
+                                        <div class="d-flex align-items-center">
+                                            Job Title
+                                            <i class="fa fa-sort ms-2"></i>
                                         </div>
-                                    </td>
+                                    </th>
+                                    <th>
+                                        <div class="d-flex align-items-center">
+                                            Description
+                                            <i class="fa fa-sort ms-2"></i>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="d-flex align-items-center">
+                                            Assigned To
+                                            <i class="fa fa-sort ms-2"></i>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="d-flex align-items-center">
+                                            Start Date
+                                            <i class="fa fa-sort ms-2"></i>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="d-flex align-items-center">
+                                            End Date
+                                            <i class="fa fa-sort ms-2"></i>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="d-flex align-items-center">
+                                            Status
+                                            <i class="fa fa-sort ms-2"></i>
+                                        </div>
+                                    </th>
+                                    <th class="text-center">Actions</th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="row mt-3">
-                    <div class="col-sm-12 col-md-5">
-                        <div class="dataTables_info">
-                            Showing 1 to @Model.Tasks.Count() of @Model.Tasks.Count() entries
-                        </div>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Tasks)
+                                {
+                                    <tr>
+                                        <td>@item.JobTitle</td>
+                                        <td>@item.Description</td>
+                                        <td>@item.AssignedTo</td>
+                                        <td>@item.StartDate.ToString("dd/MM/yyyy")</td>
+                                        <td>@item.EndDate.ToString("dd/MM/yyyy")</td>
+                                        <td>
+                                            <span class="badge @(item.Status ? "bg-success" : "bg-danger")">
+                                                @(item.Status ? "Active" : "Inactive")
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <a asp-page="./Details" asp-route-id="@item.TaskWorkId" class="text-dark mx-1">
+                                                <i class="dw dw-eye"></i>
+                                            </a>
+                                            <a asp-page="./Edit" asp-route-id="@item.TaskWorkId" class="text-dark mx-1">
+                                                <i class="dw dw-edit2"></i>
+                                            </a>
+                                            <a asp-page="./Delete" asp-route-id="@item.TaskWorkId" class="text-dark mx-1">
+                                                <i class="dw dw-delete-3"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="col-sm-12 col-md-7">
-                        <div class="dataTables_paginate paging_simple_numbers">
-                            <ul class="pagination">
-                                <li class="paginate_button page-item previous disabled">
-                                    <a href="#" class="page-link"><i class="ion-chevron-left"></i></a>
+
+                    <div class="row mt-3">
+                        <div class="col-sm-12 col-md-5">
+                            Hiển thị 1 - @Model.Tasks.Count() trong tổng số @Model.Tasks.Count() mục
+                        </div>
+                        <div class="col-sm-12 col-md-7">
+                            <ul class="pagination justify-content-end mb-0">
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#">Trước</a>
                                 </li>
-                                <li class="paginate_button page-item active">
-                                    <a href="#" class="page-link">1</a>
+                                <li class="page-item active">
+                                    <a class="page-link" href="#">1</a>
                                 </li>
-                                <li class="paginate_button page-item next disabled">
-                                    <a href="#" class="page-link"><i class="ion-chevron-right"></i></a>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">Sau</a>
                                 </li>
                             </ul>
                         </div>
@@ -122,17 +158,53 @@
     </div>
 </div>
 
+<style>
+    .table {
+        margin: 0;
+        width: 100% !important;
+    }
+
+    .table thead th {
+        padding: 1rem;
+        font-weight: 500;
+        border-bottom: 2px solid #e5e5e5;
+        white-space: nowrap;
+    }
+
+    .table tbody td {
+        padding: 1rem;
+        vertical-align: middle;
+    }
+
+    .badge {
+        padding: 0.4em 0.8em;
+        font-size: 12px;
+    }
+
+    .table-responsive {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+    }
+
+    .card-box {
+        background-color: #ffffff;
+        border-radius: 0.25rem;
+        box-shadow: 0 0 28px 0 rgb(0 0 0 / 8%);
+    }
+</style>
+
 @section Scripts {
     <script>
         $(document).ready(function () {
-            // Handle show entries change
-            $('select').change(function () {
-                // Handle entries change
-            });
-
-            // Handle search input
-            $('input[type="search"]').on('keyup', function () {
-                // Handle search
+            $('.table').DataTable({
+                autoWidth: true,
+                searching: false,
+                lengthChange: false,
+                paging: false,
+                info: false,
+                ordering: true,
+                scrollX: false
             });
         });
     </script>

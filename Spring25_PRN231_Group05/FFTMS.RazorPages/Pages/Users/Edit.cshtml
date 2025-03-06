@@ -57,8 +57,10 @@
                     <div class="form-group">
                         <label asp-for="User.Role" class="control-label">Role</label>
                         <select asp-for="User.Role" class="form-control">
+                            <option value="">Select Role</option>
                             <option value="Admin">Admin</option>
-                            <option value="User">User</option>
+                            <option value="Manager">Manager</option>
+                            <option value="Staff">Staff</option>
                         </select>
                         <span asp-validation-for="User.Role" class="text-danger"></span>
                     </div>

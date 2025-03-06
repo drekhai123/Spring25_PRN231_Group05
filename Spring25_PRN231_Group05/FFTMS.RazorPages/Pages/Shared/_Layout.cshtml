@@ -197,19 +197,31 @@
 						</a>
 					</li>
 
-					<li>
-						<a asp-page="/Users/Index" class="dropdown-toggle no-arrow">
-							<span class="micon dw dw-user-2"></span>
-							<span class="mtext">User Management</span>
-						</a>
-					</li>
+					@using FFTMS.RazorPages.Helpers
 
-					<li>
-						<a asp-page="/Tasks/Index" class="dropdown-toggle no-arrow">
-							<span class="micon dw dw-clipboard"></span>
-							<span class="mtext">Tasks Management</span>
-						</a>
-					</li>
+					@{
+						var role = JwtHelper.GetRoleFromToken(Context.Request.Cookies["AuthToken"]);
+					}
+
+					@if (role == "Admin")
+					{
+						<li>
+							<a asp-page="/Users/Index" class="dropdown-toggle no-arrow">
+								<span class="micon dw dw-user-2"></span>
+								<span class="mtext">User Management</span>
+							</a>
+						</li>
+					}
+
+					@if (role == "Manager")
+					{
+						<li>
+							<a asp-page="/Tasks/Index" class="dropdown-toggle no-arrow">
+								<span class="micon dw dw-clipboard"></span>
+								<span class="mtext">Tasks Management</span>
+							</a>
+						</li>
+					}
 
 					<li>
 						<div class="dropdown-divider"></div>

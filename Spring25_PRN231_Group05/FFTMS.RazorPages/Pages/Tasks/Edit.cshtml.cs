@@ -10,7 +10,6 @@ namespace FFTMS.RazorPages.Pages.Tasks
     public class EditModel : PageModel
     {
         private readonly HttpClient _httpClient;
-        private Guid _taskId;
 
         public EditModel(HttpClient httpClient)
         {
@@ -18,61 +17,52 @@ namespace FFTMS.RazorPages.Pages.Tasks
         }
 
         [BindProperty]
-        public TaskRequestDTO Task { get; set; } = default!;
-        public string? ErrorMessage { get; set; }
+        public TaskRequestDTO Task { get; set; } = new TaskRequestDTO();
         public SelectList UserList { get; set; }
+        public string ErrorMessage { get; set; }
+        public Guid TaskId { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(Guid id)
+        public async Task<IActionResult> OnGetAsync(string id)
         {
             try
             {
-                // Get current user id from token
-                var token = Request.Cookies["token"];
-                var currentUserId = JwtHelper.GetUserIdFromToken(token);
-
-                // Get all users
-                var userResponse = await _httpClient.GetAsync("https://localhost:7207/odata/User");
-                if (userResponse.IsSuccessStatusCode)
+                var token = Request.Cookies["AuthToken"];
+                if (string.IsNullOrEmpty(token))
                 {
-                    var jsonResponse = await userResponse.Content.ReadAsStringAsync();
-                    var users = JsonSerializer.Deserialize<List<UserDTO>>(jsonResponse, new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    });
-
-                    var usersList = users.Where(u => u.Role == "User")
-                                      .Select(u => new SelectListItem
-                                      {
-                                          Value = u.Email,
-                                          Text = $"{u.FirstName} {u.LastName} ({u.Email})"
-                                      });
-
-                    UserList = new SelectList(usersList, "Value", "Text");
+                    return RedirectToPage("/Auth/LoginPage");
                 }
 
-                // Get task details
-                _taskId = id;
-                var taskResponse = await _httpClient.GetAsync($"https://localhost:7207/odata/Task/{id}");
-                if (taskResponse.IsSuccessStatusCode)
+                var role = JwtHelper.GetRoleFromToken(token);
+                if (role != "Manager")
                 {
-                    var jsonResponse = await taskResponse.Content.ReadAsStringAsync();
-                    var task = JsonSerializer.Deserialize<TaskResponseDTO>(jsonResponse, new JsonSerializerOptions
+                    return RedirectToPage("/Index");
+                }
+
+                TaskId = Guid.Parse(id);
+                var response = await _httpClient.GetAsync($"https://localhost:7207/odata/Task/{id}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var jsonResponse = await response.Content.ReadAsStringAsync();
+                    var taskResponse = JsonSerializer.Deserialize<TaskResponseDTO>(jsonResponse, new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
                     });
 
+                    // Map từ TaskResponseDTO sang TaskRequestDTO
                     Task = new TaskRequestDTO
                     {
-                        JobTitle = task.JobTitle,
-                        Description = task.Description,
-                        AssignedTo = task.AssignedTo,
-                        AssignedBy = currentUserId, // Set AssignedBy to current user id
-                        StartDate = task.StartDate,
-                        EndDate = task.EndDate,
-                        Status = task.Status,
-                        ImageUrl = task.ImageUrl
+                        JobTitle = taskResponse.JobTitle,
+                        Description = taskResponse.Description,
+                        AssignedTo = taskResponse.AssignedTo,
+                        AssignedBy = taskResponse.AssignedBy,
+                        StartDate = taskResponse.StartDate,
+                        EndDate = taskResponse.EndDate,
+                        Status = taskResponse.Status,
+                        ImageUrl = taskResponse.ImageUrl
                     };
 
+                    // Load users cho dropdown
+                    await LoadUserList();
                     return Page();
                 }
                 return NotFound();
@@ -84,10 +74,38 @@ namespace FFTMS.RazorPages.Pages.Tasks
             }
         }
 
+        private async Task LoadUserList()
+        {
+            var token = Request.Cookies["token"];
+            if (!string.IsNullOrEmpty(token))
+            {
+                var userResponse = await _httpClient.GetAsync("https://localhost:7207/odata/User");
+                if (userResponse.IsSuccessStatusCode)
+                {
+                    var userJsonResponse = await userResponse.Content.ReadAsStringAsync();
+                    var users = JsonSerializer.Deserialize<List<UserResponseDTO>>(userJsonResponse, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+
+                    // Chỉ lấy Staff để assign task
+                    var usersList = users.Where(u => u.Role == "Staff")
+                                      .Select(u => new SelectListItem
+                                      {
+                                          Value = u.Email,
+                                          Text = $"{u.UserName} ({u.Email})"
+                                      });
+
+                    UserList = new SelectList(usersList, "Value", "Text");
+                }
+            }
+        }
+
         public async Task<IActionResult> OnPostAsync(Guid id)
         {
             if (!ModelState.IsValid)
             {
+                await LoadUserList();
                 return Page();
             }
 
@@ -100,21 +118,15 @@ namespace FFTMS.RazorPages.Pages.Tasks
                 }
 
                 ErrorMessage = $"Error updating task. Status code: {response.StatusCode}";
+                await LoadUserList();
                 return Page();
             }
             catch (Exception ex)
             {
                 ErrorMessage = $"Error updating task: {ex.Message}";
+                await LoadUserList();
                 return Page();
             }
         }
-    }
-
-    public class UserDTO
-    {
-        public string Email { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Role { get; set; }
     }
 }
