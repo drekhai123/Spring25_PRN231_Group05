@@ -2,7 +2,8 @@ using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Text.Json;
-
+using System.Collections.Generic;
+using FFTMS.RazorPages.Helpers;
 namespace FFTMS.RazorPages.Pages.Tasks
 {
     public class DetailsModel : PageModel
@@ -21,6 +22,18 @@ namespace FFTMS.RazorPages.Pages.Tasks
         {
             try
             {
+                var token = Request.Cookies["AuthToken"];
+                if (string.IsNullOrEmpty(token))
+                {
+                    return RedirectToPage("/Auth/LoginPage");
+                }
+
+                var role = JwtHelper.GetRoleFromToken(token);
+                if (role != "Manager")
+                {
+                    return RedirectToPage("/Index");
+                }
+
                 var response = await _httpClient.GetAsync($"https://localhost:7207/odata/Task/{id}");
                 if (response.IsSuccessStatusCode)
                 {

@@ -2,6 +2,9 @@ using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Text.Json;
+using FlowerFarmTaskManagementSystem.BusinessObject.Enums;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using FFTMS.RazorPages.Helpers;
 
 namespace FFTMS.RazorPages.Pages.Users
 {
@@ -17,16 +20,34 @@ namespace FFTMS.RazorPages.Pages.Users
         [BindProperty]
         public UserRequestDTO User { get; set; } = new UserRequestDTO();
 
+        public IEnumerable<SelectListItem> RoleList => Enum.GetValues<Role>()
+            .Select(r => new SelectListItem
+            {
+                Value = r.ToString(),
+                Text = r.ToString()
+            });
+
         public async Task<IActionResult> OnGetAsync(string id)
         {
-            if (string.IsNullOrEmpty(id))
-            {
-                return NotFound();
-            }
-
             try
             {
-                // Use absolute URL instead of relative URL
+                var token = Request.Cookies["AuthToken"];
+                if (string.IsNullOrEmpty(token))
+                {
+                    return RedirectToPage("/Auth/LoginPage");
+                }
+
+                var role = JwtHelper.GetRoleFromToken(token);
+                if (role != "Admin")
+                {
+                    return RedirectToPage("/Index");
+                }
+
+                if (string.IsNullOrEmpty(id))
+                {
+                    return NotFound();
+                }
+
                 var response = await _httpClient.GetAsync($"https://localhost:7207/odata/User/{id}");
 
                 if (!response.IsSuccessStatusCode)
@@ -56,13 +77,25 @@ namespace FFTMS.RazorPages.Pages.Users
             }
             catch (Exception ex)
             {
-                // Handle exception
-                return RedirectToPage("./Index");
+            
+                return Page();
             }
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
+            var token = Request.Cookies["AuthToken"];
+            if (string.IsNullOrEmpty(token))
+            {
+                return RedirectToPage("/Auth/LoginPage");
+            }
+
+            var role = JwtHelper.GetRoleFromToken(token);
+            if (role != "Admin")
+            {
+                return RedirectToPage("/Index");
+            }
+
             try
             {
                 if (!ModelState.IsValid)

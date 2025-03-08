@@ -1,4 +1,6 @@
+using FFTMS.RazorPages.Helpers;
 using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Text.Json;
 
@@ -16,10 +18,22 @@ namespace FFTMS.RazorPages.Pages.Users
         public IList<UserResponseDTO> Users { get; set; } = new List<UserResponseDTO>();
         public string ErrorMessage { get; set; }
 
-        public async Task OnGetAsync()
+        public async Task<IActionResult> OnGetAsync()
         {
             try
             {
+                var token = Request.Cookies["AuthToken"];
+                if (string.IsNullOrEmpty(token))
+                {
+                    return RedirectToPage("/Auth/LoginPage");
+                }
+
+                var role = JwtHelper.GetRoleFromToken(token);
+                if (role != "Admin")
+                {
+                    return RedirectToPage("/Index");
+                }
+
                 var response = await _httpClient.GetAsync("https://localhost:7207/odata/User");
 
                 if (response.IsSuccessStatusCode)
@@ -42,6 +56,7 @@ namespace FFTMS.RazorPages.Pages.Users
             {
                 ErrorMessage = "Error connecting to API. Please try again later.";
             }
+            return Page();
         }
     }
 }

@@ -6,7 +6,7 @@
 }
 
 <div class="main-container">
-    <div class="pd-ltr-20 xs-pd-20-10">
+    <div class="pd-ltr-20">
         <div class="min-height-200px">
             <div class="page-header">
                 <div class="row">
@@ -16,15 +16,10 @@
                         </div>
                         <nav aria-label="breadcrumb" role="navigation">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                                <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
                                 <li class="breadcrumb-item active">Users</li>
                             </ol>
                         </nav>
-                    </div>
-                    <div class="col-md-6 col-sm-12 text-right">
-                        <a asp-page="Create" class="btn btn-primary">
-                            <i class="icon-copy dw dw-add"></i> Create New User
-                        </a>
                     </div>
                 </div>
             </div>
@@ -36,22 +31,70 @@
                 </div>
             }
 
-            <div class="card-box mb-30">
-                <div class="pd-20">
-                    <h4 class="text-blue h4">List of Users</h4>
-                </div>
+            <div class="card-box mb-30" style="padding: 30px;">
                 <div class="pb-20">
-                    @if (Model.Users.Any())
-                    {
-                        <table class="table hover nowrap">
+                    <div class="row align-items-center pb-3">
+                        <div class="col-md-6">
+                            <h4 class="text-blue h4">Users</h4>
+                        </div>
+                    </div>
+
+                    <div class="row align-items-center pb-3">
+                        <div class="col-sm-12 col-md-6 d-flex align-items-center">
+                            <span>Hiển thị</span>
+                            <select class="mx-2 form-select form-select-sm" style="width: auto; min-width: 80px">
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                            </select>
+                            <span>mục</span>
+                        </div>
+                        <div class="col-sm-12 col-md-6">
+                            <div class="d-flex justify-content-md-end align-items-center">
+                                <input type="search" class="form-control form-control-sm me-2" style="width: 200px"
+                                    placeholder="Tìm kiếm...">
+                                <button class="btn btn-success btn-sm" onclick="location.href='@Url.Page("./Create")'">
+                                    Add User
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover" style="width:100%">
                             <thead>
                                 <tr>
-                                    <th>Username</th>
-                                    <th>Email</th>
-                                    <th>Phone</th>
-                                    <th>Role</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
+                                    <th>
+                                        <div class="d-flex align-items-center">
+                                            Username
+                                            <i class="fa fa-sort ms-2"></i>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="d-flex align-items-center">
+                                            Email
+                                            <i class="fa fa-sort ms-2"></i>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="d-flex align-items-center">
+                                            Phone
+                                            <i class="fa fa-sort ms-2"></i>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="d-flex align-items-center">
+                                            Role
+                                            <i class="fa fa-sort ms-2"></i>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="d-flex align-items-center">
+                                            Status
+                                            <i class="fa fa-sort ms-2"></i>
+                                        </div>
+                                    </th>
+                                    <th class="text-center">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -62,37 +105,102 @@
                                         <td>@item.Email</td>
                                         <td>@(item.Phone ?? "N/A")</td>
                                         <td>
-                                            <span
-                                                class="badge badge-pill @(item.Role == "Admin" ? "badge-danger" : "badge-primary")">
+                                            <span class="badge @(item.Role == "Manager" ? "bg-primary" : "bg-info")">
                                                 @item.Role
                                             </span>
                                         </td>
                                         <td>
-                                            <span class="badge badge-pill @(item.IsActive ? "badge-success" : "badge-danger")">
-                                                @(item.IsActive ? "Active" : "Inactive")
-                                            </span>
+                                            <span class="badge bg-success">Active</span>
                                         </td>
-                                        <td>
-                                            <a asp-page="./Edit" asp-route-id="@item.UserId"
-                                                class="btn btn-info btn-sm">Edit</a>
-                                            <a asp-page="./Details" asp-route-id="@item.UserId"
-                                                class="btn btn-primary btn-sm">Details</a>
-                                            <a asp-page="./Delete" asp-route-id="@item.UserId"
-                                                class="btn btn-danger btn-sm">Delete</a>
+                                        <td class="text-center">
+                                            <a asp-page="./Details" asp-route-id="@item.UserId" class="text-dark mx-1">
+                                                <i class="dw dw-eye"></i>
+                                            </a>
+                                            <a asp-page="./Edit" asp-route-id="@item.UserId" class="text-dark mx-1">
+                                                <i class="dw dw-edit2"></i>
+                                            </a>
+                                            <a asp-page="./Delete" asp-route-id="@item.UserId" class="text-dark mx-1">
+                                                <i class="dw dw-delete-3"></i>
+                                            </a>
                                         </td>
                                     </tr>
                                 }
                             </tbody>
                         </table>
-                    }
-                    else
-                    {
-                        <div class="alert alert-info m-3">
-                            No users to display.
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-sm-12 col-md-5">
+                            Hiển thị 1 - 5 trong tổng số 5 mục
                         </div>
-                    }
+                        <div class="col-sm-12 col-md-7">
+                            <ul class="pagination justify-content-end mb-0">
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#">Trước</a>
+                                </li>
+                                <li class="page-item active">
+                                    <a class="page-link" href="#">1</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">Sau</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .table {
+        margin: 0;
+        width: 100% !important;
+    }
+
+    .table thead th {
+        padding: 1rem;
+        font-weight: 500;
+        border-bottom: 2px solid #e5e5e5;
+        white-space: nowrap;
+    }
+
+    .table tbody td {
+        padding: 1rem;
+        vertical-align: middle;
+    }
+
+    .badge {
+        padding: 0.4em 0.8em;
+        font-size: 12px;
+    }
+
+    .table-responsive {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+    }
+
+    .card-box {
+        background-color: #ffffff;
+        border-radius: 0.25rem;
+        box-shadow: 0 0 28px 0 rgb(0 0 0 / 8%);
+    }
+</style>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.table').DataTable({
+                autoWidth: true,
+                searching: false,
+                lengthChange: false,
+                paging: false,
+                info: false,
+                ordering: true,
+                scrollX: false
+            });
+        });
+    </script>
+}
