@@ -1,4 +1,4 @@
-@page
+@page "{id:guid}"
 @model FFTMS.RazorPages.Pages.Tasks.DetailsModel
 @{
     ViewData["Title"] = "Task Details";
@@ -6,7 +6,7 @@
 }
 
 <div class="main-container">
-    <div class="pd-ltr-20 xs-pd-20-10">
+    <div class="pd-ltr-20">
         <div class="min-height-200px">
             <div class="page-header">
                 <div class="row">
@@ -16,8 +16,8 @@
                         </div>
                         <nav aria-label="breadcrumb" role="navigation">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a asp-page="/Index">Home</a></li>
-                                <li class="breadcrumb-item"><a asp-page="/Tasks/Index">Tasks</a></li>
+                                <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+                                <li class="breadcrumb-item"><a asp-page="./Index">Tasks</a></li>
                                 <li class="breadcrumb-item active">Details</li>
                             </ol>
                         </nav>
@@ -35,29 +35,38 @@
             <div class="pd-20 card-box mb-30">
                 <div class="details-view">
                     <dl class="row">
+                        <dt class="col-sm-3">Task ID</dt>
+                        <dd class="col-sm-9">@Model.Task.TaskWorkId</dd>
+
                         <dt class="col-sm-3">Job Title</dt>
                         <dd class="col-sm-9">@Model.Task.JobTitle</dd>
 
                         <dt class="col-sm-3">Description</dt>
                         <dd class="col-sm-9">@Model.Task.Description</dd>
 
-                        <dt class="col-sm-3">Assigned To</dt>
-                        <dd class="col-sm-9">@Model.Task.AssignedTo</dd>
-
                         <dt class="col-sm-3">Assigned By</dt>
                         <dd class="col-sm-9">@Model.Task.AssignedBy</dd>
 
                         <dt class="col-sm-3">Start Date</dt>
-                        <dd class="col-sm-9">@Model.Task.StartDate.ToString("dd/MM/yyyy")</dd>
+                        <dd class="col-sm-9">@Model.Task.StartDate.ToString("dd/MM/yyyy HH:mm")</dd>
 
                         <dt class="col-sm-3">End Date</dt>
-                        <dd class="col-sm-9">@Model.Task.EndDate.ToString("dd/MM/yyyy")</dd>
+                        <dd class="col-sm-9">@Model.Task.EndDate.ToString("dd/MM/yyyy HH:mm")</dd>
 
                         <dt class="col-sm-3">Status</dt>
                         <dd class="col-sm-9">
-                            <span class="badge badge-pill @(Model.Task.Status ? "badge-success" : "badge-danger")">
+                            <span class="badge @(Model.Task.Status ? "bg-success" : "bg-danger")">
                                 @(Model.Task.Status ? "Active" : "Inactive")
                             </span>
+                        </dd>
+
+                        <dt class="col-sm-3">Created Date</dt>
+                        <dd class="col-sm-9">@Model.Task.CreateDate.ToString("dd/MM/yyyy HH:mm")</dd>
+
+                        <dt class="col-sm-3">Updated Date</dt>
+                        <dd class="col-sm-9">
+                            @(Model.Task.UpdateDate != default(DateTime) ?
+                                                        Model.Task.UpdateDate.ToString("dd/MM/yyyy HH:mm") : "Not updated")
                         </dd>
 
                         @if (!string.IsNullOrEmpty(Model.Task.ImageUrl))
@@ -68,11 +77,68 @@
                             </dd>
                         }
 
-                        <dt class="col-sm-3">Created Date</dt>
-                        <dd class="col-sm-9">@Model.Task.CreateDate.ToString("dd/MM/yyyy HH:mm")</dd>
+                        <dt class="col-sm-3">Product Field Information</dt>
+                        <dd class="col-sm-9">
+                            <dl class="row mb-0">
+                                <dt class="col-sm-4">Product Field ID</dt>
+                                <dd class="col-sm-8">@Model.Task.ProductField.ProductFieldId</dd>
+
+                                <dt class="col-sm-4">Start Date</dt>
+                                <dd class="col-sm-8">@Model.Task.ProductField.StartDate.ToString("dd/MM/yyyy")</dd>
+
+                                <dt class="col-sm-4">End Date</dt>
+                                <dd class="col-sm-8">@Model.Task.ProductField.EndDate.ToString("dd/MM/yyyy")</dd>
+
+                                <dt class="col-sm-4">Productivity</dt>
+                                <dd class="col-sm-8">@Model.Task.ProductField.Productivity
+                                    @Model.Task.ProductField.ProductivityUnit</dd>
+
+                                <dt class="col-sm-4">Product Name</dt>
+                                <dd class="col-sm-8">@Model.Task.ProductField.Product.ProductName</dd>
+
+                                <dt class="col-sm-4">Category</dt>
+                                <dd class="col-sm-8">@Model.Task.ProductField.Product.Category.CategoryName</dd>
+                            </dl>
+                        </dd>
+
+                        <dt class="col-sm-3">Staff Assignments</dt>
+                        <dd class="col-sm-9">
+                            @if (Model.Task.UserTasks != null && Model.Task.UserTasks.Any())
+                            {
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Staff Name</th>
+                                                <th>Description</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var userTask in Model.Task.UserTasks)
+                                            {
+                                                <tr>
+                                                    <td>@userTask.User.UserName</td>
+                                                    <td>@userTask.UserTaskDescription</td>
+                                                    <td>
+                                                        <span class="badge @(userTask.Status ? "bg-success" : "bg-danger")">
+                                                            @(userTask.Status ? "Active" : "Inactive")
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                            else
+                            {
+                                <p>No staff assignments</p>
+                            }
+                        </dd>
                     </dl>
 
-                    <div class="form-group">
+                    <div class="form-group mt-3">
                         <a asp-page="./Edit" asp-route-id="@Model.Task.TaskWorkId" class="btn btn-primary">Edit</a>
                         <a asp-page="./Index" class="btn btn-secondary">Back to List</a>
                     </div>
@@ -81,3 +147,22 @@
         </div>
     </div>
 </div>
+
+<style>
+    .details-view dt {
+        font-weight: 500;
+    }
+
+    .details-view dd {
+        margin-bottom: 1rem;
+    }
+
+    .table {
+        margin-bottom: 0;
+    }
+
+    .badge {
+        padding: 0.4em 0.8em;
+        font-size: 12px;
+    }
+</style>

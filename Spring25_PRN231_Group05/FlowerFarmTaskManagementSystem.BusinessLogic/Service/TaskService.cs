@@ -50,7 +50,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             task.TaskWorkId = Guid.NewGuid();
             task.CreateDate = DateTime.UtcNow;
             task.Status = true;
-            task.ProductFieldId = taskRequest.ProductField.ProductFieldId;
+            task.ProductFieldId = taskRequest.ProductFieldId;
             task.AssignedBy = taskRequest.AssignedBy;
 
             // Tạo danh sách UserTask cho từng staff
@@ -108,14 +108,8 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
                 throw new KeyNotFoundException($"Task with ID {id} not found");
 
             // Cập nhật thông tin task
-            task.JobTitle = taskRequest.JobTitle;
-            task.Description = taskRequest.Description;
-            task.AssignedBy = taskRequest.AssignedBy;
-            task.StartDate = taskRequest.StartDate;
-            task.EndDate = taskRequest.EndDate;
-            task.Status = taskRequest.Status;
-            task.ImageUrl = taskRequest.ImageUrl;
-            task.ProductFieldId = taskRequest.ProductField.ProductFieldId;
+            _mapper.Map(taskRequest, task);
+            task.ProductFieldId = taskRequest.ProductFieldId;
 
             // Tạo danh sách UserTask mới
             var userTasks = taskRequest.UserTasks.Select(userTask => new UserTask
@@ -221,15 +215,13 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
                 throw new ArgumentException("Job title is required");
             if (string.IsNullOrWhiteSpace(taskRequest.Description))
                 throw new ArgumentException("Description is required");
-            if (string.IsNullOrWhiteSpace(taskRequest.AssignedBy))
-                throw new ArgumentException("AssignedBy is required");
             if (taskRequest.StartDate >= taskRequest.EndDate)
                 throw new ArgumentException("Start date must be before end date");
 
             // Validate ProductField và các bảng liên quan
-            var productField = await _unitOfWork.ProductFieldRepository.GetByIdAsync(taskRequest.ProductField.ProductFieldId);
+            var productField = await _unitOfWork.ProductFieldRepository.GetByIdAsync(taskRequest.ProductFieldId);
             if (productField == null)
-                throw new ArgumentException($"ProductField with ID {taskRequest.ProductField.ProductFieldId} not found");
+                throw new ArgumentException($"ProductField with ID {taskRequest.ProductFieldId} not found");
 
             // Kiểm tra Product
             var product = await _unitOfWork.ProductRepository.GetByIdAsync(productField.ProductId);

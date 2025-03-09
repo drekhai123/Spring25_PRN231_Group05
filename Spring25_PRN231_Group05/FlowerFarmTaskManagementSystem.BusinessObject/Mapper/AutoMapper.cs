@@ -18,7 +18,6 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Mapper
             CreateMap<Category, CategoryResponseDTO>();
             CreateMap<Category, CategoryResponseInfo>();
             CreateMap<CategoryRequestDTO, Category>();
-            CreateMap<CategoryRequestInfo, Category>();
 
             // User mappings
             CreateMap<User, UserResponseDTO>();
@@ -34,41 +33,41 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Mapper
                 .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category));
             CreateMap<ProductAddDTO, Product>();
             CreateMap<ProductUpdateDTO, Product>();
-            CreateMap<ProductRequestInfo, Product>();
 
             // Field mappings
             CreateMap<Field, FieldDTO>()
                 .ForMember(dest => dest.Length, opt => opt.MapFrom(src => Convert.ToDouble(src.Length)))
                 .ForMember(dest => dest.Width, opt => opt.MapFrom(src => Convert.ToDouble(src.Width)));
             CreateMap<Field, FieldResponseInfo>();
-            CreateMap<FieldRequestInfo, Field>();
 
             // ProductField mappings
-            CreateMap<ProductField, ProductFieldDetailDTO>();
+            CreateMap<ProductField, ProductFieldDetailDTO>()
+                .ForMember(dest => dest.Product, opt => opt.MapFrom(src => src.Product));
             CreateMap<ProductField, ProductFieldResponseInfo>()
                 .ForMember(dest => dest.Field, opt => opt.MapFrom(src => src.Field))
                 .ForMember(dest => dest.Product, opt => opt.MapFrom(src => src.Product));
-            CreateMap<ProductFieldRequestInfo, ProductField>();
 
             // Task mappings
             CreateMap<TaskWork, TaskResponseDTO>()
-                .ForMember(dest => dest.TaskId, opt => opt.MapFrom(src => src.TaskWorkId));
+                .ForMember(dest => dest.TaskWorkId, opt => opt.MapFrom(src => src.TaskWorkId))
+                .ForMember(dest => dest.UserTasks, opt => opt.MapFrom(src => src.UserTasks))
+                .ForMember(dest => dest.ProductField, opt => opt.MapFrom(src => src.ProductField));
+
             CreateMap<TaskRequestDTO, TaskWork>()
-                .ForMember(dest => dest.ProductFieldId, opt => opt.MapFrom(src => src.ProductField.ProductFieldId))
-                .ForMember(dest => dest.UserTasks, opt => opt.Ignore())
-                .ForMember(dest => dest.ProductField, opt => opt.Ignore());
+                .ForMember(dest => dest.ProductFieldId, opt => opt.MapFrom(src => src.ProductFieldId))
+                .ForMember(dest => dest.UserTasks, opt => opt.Ignore());
 
             // UserTask mappings
-            CreateMap<UserTask, UserTaskDTO>();
-            CreateMap<UserTask, UserTaskResponseDTO>()
-                .ForMember(dest => dest.JobTitle, opt => opt.MapFrom(src => src.TaskWork.JobTitle))
-                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName));
-            CreateMap<UserTaskRequestDTO, UserTask>()
-                .ForMember(dest => dest.UserTaskId, opt => opt.MapFrom(src => Guid.NewGuid()))
-                .ForMember(dest => dest.CreateDate, opt => opt.Ignore())
-                .ForMember(dest => dest.UpdateDate, opt => opt.Ignore());
+            CreateMap<UserTask, UserTaskDTO>()
+                .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User));
+
             CreateMap<UserTaskRequest, UserTask>()
                 .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => Guid.Parse(src.AssignedTo)));
+
+            // User mapping
+            CreateMap<User, UserTaskResponseDTO>()
+                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.UserName));
 
             // FarmTool mappings
             CreateMap<FarmToolCategoriesRequestDTO, FarmToolCategories>()

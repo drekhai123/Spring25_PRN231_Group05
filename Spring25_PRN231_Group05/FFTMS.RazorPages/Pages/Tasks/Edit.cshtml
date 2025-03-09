@@ -37,28 +37,56 @@
                     <div asp-validation-summary="All" class="text-danger"></div>
                     <input type="hidden" asp-for="TaskId" />
                     <input type="hidden" asp-for="Task.AssignedBy" />
+
                     <div class="form-group">
                         <label asp-for="Task.JobTitle">Job Title</label>
                         <input asp-for="Task.JobTitle" class="form-control" />
                     </div>
+
                     <div class="form-group">
                         <label asp-for="Task.Description">Description</label>
                         <textarea asp-for="Task.Description" class="form-control"></textarea>
                     </div>
+
                     <div class="form-group">
-                        <label asp-for="Task.AssignedTo">Assigned To</label>
-                        <select asp-for="Task.AssignedTo" asp-items="@Model.UserList" class="form-control">
-                            <option value="">-- Select User --</option>
+                        <label asp-for="Task.ProductFieldId">Product Field</label>
+                        <select asp-for="Task.ProductFieldId" asp-items="@Model.ProductFieldList" class="form-control">
+                            <option value="">Select Product Field</option>
                         </select>
                     </div>
+
+                    <div class="form-group">
+                        <label class="control-label">Staff Assignments</label>
+                        <div id="staffAssignments">
+                            @for (var i = 0; i < Model.Task.UserTasks.Count; i++)
+                            {
+                                <div class="staff-assignment">
+                                    <select name="Task.UserTasks[@i].AssignedTo" asp-items="@Model.UserList"
+                                        class="form-control mb-2">
+                                        <option value="">Select Staff</option>
+                                    </select>
+                                    <textarea name="Task.UserTasks[@i].UserTaskDescription" class="form-control mb-2"
+                                        placeholder="Task description for this staff">@Model.Task.UserTasks[i].UserTaskDescription</textarea>
+                                    @if (i > 0)
+                                    {
+                                        <button type="button" class="btn btn-danger mb-3 remove-staff">Remove</button>
+                                    }
+                                </div>
+                            }
+                        </div>
+                        <button type="button" id="addStaff" class="btn btn-secondary mt-2">Add Another Staff</button>
+                    </div>
+
                     <div class="form-group">
                         <label asp-for="Task.StartDate">Start Date</label>
                         <input asp-for="Task.StartDate" type="date" class="form-control" />
                     </div>
+
                     <div class="form-group">
                         <label asp-for="Task.EndDate">End Date</label>
                         <input asp-for="Task.EndDate" type="date" class="form-control" />
                     </div>
+
                     <div class="form-group">
                         <label asp-for="Task.Status">Status</label>
                         <select asp-for="Task.Status" class="form-control">
@@ -66,6 +94,7 @@
                             <option value="false">Inactive</option>
                         </select>
                     </div>
+
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary">Save Changes</button>
                         <a asp-page="Index" class="btn btn-secondary">Cancel</a>
@@ -80,4 +109,36 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        $(document).ready(function () {
+            let staffCount = @Model.Task.UserTasks.Count;
+
+            $('#addStaff').click(function () {
+                if (staffCount < 5) {
+                    const newStaff = `
+                                <div class="staff-assignment">
+                                    <select name="Task.UserTasks[${staffCount}].AssignedTo" 
+                                        class="form-control mb-2">
+                                        ${$('select[name="Task.UserTasks[0].AssignedTo"]').html()}
+                                    </select>
+                                    <textarea name="Task.UserTasks[${staffCount}].UserTaskDescription" 
+                                        class="form-control mb-2" 
+                                        placeholder="Task description for this staff"></textarea>
+                                    <button type="button" class="btn btn-danger mb-3 remove-staff">Remove</button>
+                                </div>`;
+                    $('#staffAssignments').append(newStaff);
+                    staffCount++;
+                }
+                if (staffCount >= 5) {
+                    $('#addStaff').prop('disabled', true);
+                }
+            });
+
+            $(document).on('click', '.remove-staff', function () {
+                $(this).closest('.staff-assignment').remove();
+                staffCount--;
+                $('#addStaff').prop('disabled', false);
+            });
+        });
+    </script>
 }

@@ -8,8 +8,8 @@ public class TaskRequestDTO
     public bool Status { get; set; }
     public string? ImageUrl { get; set; }
 
-    // Thông tin ProductField và các quan hệ
-    public ProductFieldRequestInfo ProductField { get; set; }
+    // Chỉ cần ProductFieldId
+    public Guid ProductFieldId { get; set; }
 
     // Danh sách UserTask (1-5 staff)
     public List<UserTaskRequest> UserTasks { get; set; } = new();
@@ -21,41 +21,7 @@ public class UserTaskRequest
     public string UserTaskDescription { get; set; }  // Mô tả công việc cho staff này
 }
 
-public class ProductFieldRequestInfo
-{
-    public Guid ProductFieldId { get; set; }
-    public double Productivity { get; set; }
-    public string ProductivityUnit { get; set; }
 
-    // Thông tin Field
-    public FieldRequestInfo Field { get; set; }
-    // Thông tin Product
-    public ProductRequestInfo Product { get; set; }
-}
-
-public class FieldRequestInfo
-{
-    public Guid FieldId { get; set; }
-    public string FieldName { get; set; }
-    public string? FieldImageUrl { get; set; }
-}
-
-public class ProductRequestInfo
-{
-    public Guid ProductId { get; set; }
-    public string ProductName { get; set; }
-    public string? ProductImageUrl { get; set; }
-
-    // Thông tin Category
-    public CategoryRequestInfo Category { get; set; }
-}
-
-public class CategoryRequestInfo
-{
-    public Guid CategoryId { get; set; }
-    public string CategoryName { get; set; }
-    public string? CategoryImageUrl { get; set; }
-}
 
 public class UserTaskCreateDTO
 {

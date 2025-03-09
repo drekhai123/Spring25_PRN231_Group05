@@ -34,25 +34,19 @@
             <div class="card-box mb-30" style="padding: 30px;">
                 <div class="pb-20">
                     <div class="row align-items-center pb-3">
-                        <div class="col-md-6">
-                            <h4 class="text-blue h4">Tasks</h4>
-                        </div>
-                    </div>
-
-                    <div class="row align-items-center pb-3">
                         <div class="col-sm-12 col-md-6 d-flex align-items-center">
-                            <span>Hiển thị</span>
+                            <span>Show</span>
                             <select class="mx-2 form-select form-select-sm" style="width: auto; min-width: 80px">
                                 <option value="10">10</option>
                                 <option value="25">25</option>
                                 <option value="50">50</option>
                             </select>
-                            <span>mục</span>
+                            <span>entries</span>
                         </div>
                         <div class="col-sm-12 col-md-6">
                             <div class="d-flex justify-content-md-end align-items-center">
                                 <input type="search" class="form-control form-control-sm me-2" style="width: 200px"
-                                    placeholder="Tìm kiếm...">
+                                    placeholder="Search...">
                                 <button class="btn btn-success btn-sm" onclick="location.href='@Url.Page("./Create")'">
                                     Add Task
                                 </button>
@@ -64,42 +58,11 @@
                         <table class="table table-hover" style="width:100%">
                             <thead>
                                 <tr>
-                                    <th>
-                                        <div class="d-flex align-items-center">
-                                            Job Title
-                                            <i class="fa fa-sort ms-2"></i>
-                                        </div>
-                                    </th>
-                                    <th>
-                                        <div class="d-flex align-items-center">
-                                            Description
-                                            <i class="fa fa-sort ms-2"></i>
-                                        </div>
-                                    </th>
-                                    <th>
-                                        <div class="d-flex align-items-center">
-                                            Assigned To
-                                            <i class="fa fa-sort ms-2"></i>
-                                        </div>
-                                    </th>
-                                    <th>
-                                        <div class="d-flex align-items-center">
-                                            Start Date
-                                            <i class="fa fa-sort ms-2"></i>
-                                        </div>
-                                    </th>
-                                    <th>
-                                        <div class="d-flex align-items-center">
-                                            End Date
-                                            <i class="fa fa-sort ms-2"></i>
-                                        </div>
-                                    </th>
-                                    <th>
-                                        <div class="d-flex align-items-center">
-                                            Status
-                                            <i class="fa fa-sort ms-2"></i>
-                                        </div>
-                                    </th>
+                                    <th>Job Title</th>
+                                    <th>Description</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th>Status</th>
                                     <th class="text-center">Actions</th>
                                 </tr>
                             </thead>
@@ -109,7 +72,6 @@
                                     <tr>
                                         <td>@item.JobTitle</td>
                                         <td>@item.Description</td>
-                                        <td>@item.AssignedTo</td>
                                         <td>@item.StartDate.ToString("dd/MM/yyyy")</td>
                                         <td>@item.EndDate.ToString("dd/MM/yyyy")</td>
                                         <td>
@@ -136,18 +98,18 @@
 
                     <div class="row mt-3">
                         <div class="col-sm-12 col-md-5">
-                            Hiển thị 1 - @Model.Tasks.Count() trong tổng số @Model.Tasks.Count() mục
+                            Showing 1 - @Model.Tasks.Count() of @Model.Tasks.Count() entries
                         </div>
                         <div class="col-sm-12 col-md-7">
                             <ul class="pagination justify-content-end mb-0">
                                 <li class="page-item disabled">
-                                    <a class="page-link" href="#">Trước</a>
+                                    <a class="page-link" href="#">Previous</a>
                                 </li>
                                 <li class="page-item active">
                                     <a class="page-link" href="#">1</a>
                                 </li>
                                 <li class="page-item">
-                                    <a class="page-link" href="#">Sau</a>
+                                    <a class="page-link" href="#">Next</a>
                                 </li>
                             </ul>
                         </div>

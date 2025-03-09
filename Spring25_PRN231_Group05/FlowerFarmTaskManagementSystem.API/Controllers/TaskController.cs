@@ -47,7 +47,7 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
             try
             {
                 var task = await _taskService.CreateTaskAsync(taskRequest);
-                return CreatedAtAction(nameof(GetTaskById), new { id = task.TaskId }, task);
+                return CreatedAtAction(nameof(GetTaskById), new { id = task.TaskWorkId }, task);
             }
             catch (ArgumentException ex)
             {

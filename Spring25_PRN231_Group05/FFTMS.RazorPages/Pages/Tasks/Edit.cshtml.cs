@@ -22,6 +22,7 @@ namespace FFTMS.RazorPages.Pages.Tasks
         [BindProperty]
         public TaskRequestDTO Task { get; set; } = new TaskRequestDTO();
         public SelectList UserList { get; set; }
+        public SelectList ProductFieldList { get; set; }
         public string ErrorMessage { get; set; }
         public Guid TaskId { get; set; }
 
@@ -57,15 +58,21 @@ namespace FFTMS.RazorPages.Pages.Tasks
                     {
                         JobTitle = taskResponse.JobTitle,
                         Description = taskResponse.Description,
-                        AssignedTo = taskResponse.AssignedTo,
                         AssignedBy = userId,
                         StartDate = taskResponse.StartDate,
                         EndDate = taskResponse.EndDate,
                         Status = taskResponse.Status,
-                        ImageUrl = taskResponse.ImageUrl
+                        ImageUrl = taskResponse.ImageUrl,
+                        ProductFieldId = taskResponse.ProductField.ProductFieldId,
+                        UserTasks = taskResponse.UserTasks.Select(ut => new UserTaskRequest
+                        {
+                            AssignedTo = ut.User.UserId.ToString(),
+                            UserTaskDescription = ut.UserTaskDescription
+                        }).ToList()
                     };
 
                     await LoadUserList();
+                    await LoadProductFieldList();
                     return Page();
                 }
                 return NotFound();
@@ -106,6 +113,34 @@ namespace FFTMS.RazorPages.Pages.Tasks
             }
         }
 
+        private async Task LoadProductFieldList()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync("https://localhost:7207/odata/ProductField");
+                if (response.IsSuccessStatusCode)
+                {
+                    var jsonResponse = await response.Content.ReadAsStringAsync();
+                    var productFields = JsonSerializer.Deserialize<List<ProductFieldDetailDTO>>(jsonResponse, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+
+                    var productFieldsList = productFields.Select(pf => new SelectListItem
+                    {
+                        Value = pf.ProductFieldId.ToString(),
+                        Text = $"{pf.Product.ProductName} - {pf.ProductivityUnit}"
+                    });
+
+                    ProductFieldList = new SelectList(productFieldsList, "Value", "Text");
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Error loading product fields: {ex.Message}";
+            }
+        }
+
         public async Task<IActionResult> OnPostAsync(Guid id)
         {
             try
@@ -129,12 +164,14 @@ namespace FFTMS.RazorPages.Pages.Tasks
 
                 ErrorMessage = "Error updating task";
                 await LoadUserList();
+                await LoadProductFieldList();
                 return Page();
             }
             catch (Exception ex)
             {
                 ErrorMessage = $"Error: {ex.Message}";
                 await LoadUserList();
+                await LoadProductFieldList();
                 return Page();
             }
         }

@@ -20,6 +20,7 @@ namespace FFTMS.RazorPages.Pages.Tasks
         [BindProperty]
         public TaskRequestDTO Task { get; set; } = new TaskRequestDTO();
         public SelectList UserList { get; set; }
+        public SelectList ProductFieldList { get; set; }
         public string ErrorMessage { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
@@ -39,6 +40,12 @@ namespace FFTMS.RazorPages.Pages.Tasks
                 }
 
                 await LoadUserList();
+                await LoadProductFieldList();
+
+                // Set default dates
+                Task.StartDate = DateTime.Today;
+                Task.EndDate = DateTime.Today.AddDays(1);
+
                 return Page();
             }
             catch (Exception ex)
@@ -77,6 +84,34 @@ namespace FFTMS.RazorPages.Pages.Tasks
             }
         }
 
+        private async Task LoadProductFieldList()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync("https://localhost:7207/odata/ProductField");
+                if (response.IsSuccessStatusCode)
+                {
+                    var jsonResponse = await response.Content.ReadAsStringAsync();
+                    var productFields = JsonSerializer.Deserialize<List<ProductFieldDetailDTO>>(jsonResponse, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+
+                    var productFieldsList = productFields.Select(pf => new SelectListItem
+                    {
+                        Value = pf.ProductFieldId.ToString(),
+                        Text = $"{pf.Product.ProductName} - {pf.ProductivityUnit}"
+                    });
+
+                    ProductFieldList = new SelectList(productFieldsList, "Value", "Text");
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Error loading product fields: {ex.Message}";
+            }
+        }
+
         public async Task<IActionResult> OnPostAsync()
         {
             try
@@ -87,20 +122,10 @@ namespace FFTMS.RazorPages.Pages.Tasks
                     return RedirectToPage("/Auth/LoginPage");
                 }
 
-                var role = JwtHelper.GetRoleFromToken(token);
-                if (role != "Manager")
-                {
-                    return RedirectToPage("/Index");
-                }
-
-                // Lấy userId từ token và gán vào AssignedBy
                 var userId = JwtHelper.GetUserIdFromToken(token);
                 Task.AssignedBy = userId;
+                Task.Status = true;
 
-                // Set default values nếu cần
-                Task.Status = true; // Active by default
-
-                // Gửi request tạo task mới
                 var response = await _httpClient.PostAsJsonAsync("https://localhost:7207/odata/Task", Task);
                 var responseContent = await response.Content.ReadAsStringAsync();
 
@@ -111,12 +136,14 @@ namespace FFTMS.RazorPages.Pages.Tasks
 
                 ErrorMessage = $"Error creating task: {responseContent}";
                 await LoadUserList();
+                await LoadProductFieldList();
                 return Page();
             }
             catch (Exception ex)
             {
                 ErrorMessage = $"Error: {ex.Message}";
                 await LoadUserList();
+                await LoadProductFieldList();
                 return Page();
             }
         }
