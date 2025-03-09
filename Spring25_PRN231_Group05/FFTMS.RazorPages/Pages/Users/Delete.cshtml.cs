@@ -1,3 +1,4 @@
+using FFTMS.RazorPages.Helpers;
 using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -20,13 +21,20 @@ namespace FFTMS.RazorPages.Pages.Users
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
-            if (string.IsNullOrEmpty(id))
-            {
-                return NotFound();
-            }
-
             try
             {
+                var token = Request.Cookies["AuthToken"];
+                if (string.IsNullOrEmpty(token))
+                {
+                    return RedirectToPage("/Auth/LoginPage");
+                }
+
+                var role = JwtHelper.GetRoleFromToken(token);
+                if (role != "Admin")
+                {
+                    return RedirectToPage("/Index");
+                }
+
                 var response = await _httpClient.GetAsync($"https://localhost:7207/odata/User/{id}");
 
                 if (response.IsSuccessStatusCode)
@@ -53,6 +61,18 @@ namespace FFTMS.RazorPages.Pages.Users
 
         public async Task<IActionResult> OnPostAsync()
         {
+            var token = Request.Cookies["AuthToken"];
+            if (string.IsNullOrEmpty(token))
+            {
+                return RedirectToPage("/Auth/LoginPage");
+            }
+
+            var role = JwtHelper.GetRoleFromToken(token);
+            if (role != "Admin")
+            {
+                return RedirectToPage("/Index");
+            }
+
             try
             {
                 var response = await _httpClient.DeleteAsync($"https://localhost:7207/odata/User/{User.UserId}");

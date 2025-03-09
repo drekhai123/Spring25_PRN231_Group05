@@ -1,0 +1,85 @@
+@page
+@model FFTMS.RazorPages.Pages.UserTasks.IndexModel
+@{
+    ViewData["Title"] = "My Tasks";
+    Layout = "_Layout";
+}
+
+<div class="main-container">
+    <div class="pd-ltr-20">
+        <div class="min-height-200px">
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-md-6 col-sm-12">
+                        <div class="title">
+                            <h4>My Tasks</h4>
+                        </div>
+                        <nav aria-label="breadcrumb" role="navigation">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+                                <li class="breadcrumb-item active">My Tasks</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <div class="alert alert-danger">
+                    @Model.ErrorMessage
+                </div>
+            }
+
+            <div class="card-box mb-30" style="padding: 30px;">
+                <div class="pb-20">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Task Description</th>
+                                    <th>Created Date</th>
+                                    <th>Updated Date</th>
+                                    <th>Status</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var task in Model.UserTasks)
+                                {
+                                    <tr>
+                                        <td>@task.UserTaskDescription</td>
+                                        <td>@task.CreateDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td>@task.UpdateDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td>
+                                            <span class="badge @(task.Status ? "bg-success" : "bg-danger")">
+                                                @(task.Status ? "Active" : "Inactive")
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <a asp-page="./Details" asp-route-id="@task.UserTaskId"
+                                                class="btn btn-info btn-sm">
+                                                <i class="dw dw-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .table {
+        margin: 0;
+    }
+
+    .badge {
+        padding: 0.4em 0.8em;
+        font-size: 12px;
+    }
+</style>

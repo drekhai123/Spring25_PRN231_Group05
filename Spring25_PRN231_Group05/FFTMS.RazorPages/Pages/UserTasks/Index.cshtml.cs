@@ -1,22 +1,21 @@
-using FFTMS.RazorPages.Helpers;
 using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Text.Json;
+using FFTMS.RazorPages.Helpers;
 
-namespace FFTMS.RazorPages.Pages.Users
+namespace FFTMS.RazorPages.Pages.UserTasks
 {
     public class IndexModel : PageModel
     {
         private readonly HttpClient _httpClient;
+        public List<UserTaskResponseDTO> UserTasks { get; set; } = new();
+        public string ErrorMessage { get; set; }
 
         public IndexModel(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }
-
-        public IList<UserResponseDTO> Users { get; set; } = new List<UserResponseDTO>();
-        public string ErrorMessage { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -29,34 +28,32 @@ namespace FFTMS.RazorPages.Pages.Users
                 }
 
                 var role = JwtHelper.GetRoleFromToken(token);
-                if (role != "Admin")
+                if (role != "Staff")
                 {
                     return RedirectToPage("/Index");
                 }
 
-                var response = await _httpClient.GetAsync("https://localhost:7207/odata/User");
+                var userId = JwtHelper.GetUserIdFromToken(token);
+                var response = await _httpClient.GetAsync($"https://localhost:7207/odata/UserTask?$filter=UserId eq {userId}");
 
                 if (response.IsSuccessStatusCode)
                 {
                     var jsonResponse = await response.Content.ReadAsStringAsync();
-                    var allUsers = JsonSerializer.Deserialize<List<UserResponseDTO>>(jsonResponse, new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    }) ?? new List<UserResponseDTO>();
-
-                    // Filter out users with Admin role
-                    Users = allUsers.Where(u => u.Role != "Admin").ToList();
+                    UserTasks = JsonSerializer.Deserialize<List<UserTaskResponseDTO>>(jsonResponse,
+                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 }
                 else
                 {
-                    ErrorMessage = $"API returned status code: {response.StatusCode}";
+                    ErrorMessage = "Failed to load tasks.";
                 }
+
+                return Page();
             }
             catch (Exception ex)
             {
-                ErrorMessage = "Error connecting to API. Please try again later.";
+                ErrorMessage = $"Error: {ex.Message}";
+                return Page();
             }
-            return Page();
         }
     }
 }

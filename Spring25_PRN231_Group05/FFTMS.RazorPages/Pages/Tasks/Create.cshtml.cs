@@ -3,18 +3,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Text.Json;
+using System.Security.Claims;
 using FFTMS.RazorPages.Helpers;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 
 namespace FFTMS.RazorPages.Pages.Tasks
 {
-    public class EditModel : PageModel
+    public class CreateModel : PageModel
     {
         private readonly HttpClient _httpClient;
 
-        public EditModel(HttpClient httpClient)
+        public CreateModel(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }
@@ -24,9 +22,8 @@ namespace FFTMS.RazorPages.Pages.Tasks
         public SelectList UserList { get; set; }
         public SelectList ProductFieldList { get; set; }
         public string ErrorMessage { get; set; }
-        public Guid TaskId { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(string id)
+        public async Task<IActionResult> OnGetAsync()
         {
             try
             {
@@ -42,44 +39,18 @@ namespace FFTMS.RazorPages.Pages.Tasks
                     return RedirectToPage("/Index");
                 }
 
-                var userId = JwtHelper.GetUserIdFromToken(token);
+                await LoadUserList();
+                await LoadProductFieldList();
 
-                TaskId = Guid.Parse(id);
-                var response = await _httpClient.GetAsync($"https://localhost:7207/odata/Task/{id}");
-                if (response.IsSuccessStatusCode)
-                {
-                    var jsonResponse = await response.Content.ReadAsStringAsync();
-                    var taskResponse = JsonSerializer.Deserialize<TaskResponseDTO>(jsonResponse, new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    });
+                // Set default dates
+                Task.StartDate = DateTime.Today;
+                Task.EndDate = DateTime.Today.AddDays(1);
 
-                    Task = new TaskRequestDTO
-                    {
-                        JobTitle = taskResponse.JobTitle,
-                        Description = taskResponse.Description,
-                        AssignedBy = userId,
-                        StartDate = taskResponse.StartDate,
-                        EndDate = taskResponse.EndDate,
-                        Status = taskResponse.Status,
-                        ImageUrl = taskResponse.ImageUrl,
-                        ProductFieldId = taskResponse.ProductFieldId,
-                        UserTasks = taskResponse.UserTasks.Select(ut => new UserTaskRequest
-                        {
-                            AssignedTo = ut.UserId.ToString(),
-                            UserTaskDescription = ut.UserTaskDescription
-                        }).ToList()
-                    };
-
-                    await LoadUserList();
-                    await LoadProductFieldList();
-                    return Page();
-                }
-                return NotFound();
+                return Page();
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"Error loading task: {ex.Message}";
+                ErrorMessage = $"Error: {ex.Message}";
                 return Page();
             }
         }
@@ -141,7 +112,7 @@ namespace FFTMS.RazorPages.Pages.Tasks
             }
         }
 
-        public async Task<IActionResult> OnPostAsync(Guid id)
+        public async Task<IActionResult> OnPostAsync()
         {
             try
             {
@@ -151,18 +122,19 @@ namespace FFTMS.RazorPages.Pages.Tasks
                     return RedirectToPage("/Auth/LoginPage");
                 }
 
-                // Lấy userId trực tiếp từ helper
                 var userId = JwtHelper.GetUserIdFromToken(token);
                 Task.AssignedBy = userId;
+                Task.Status = true;
 
-                var response = await _httpClient.PutAsJsonAsync($"https://localhost:7207/odata/Task/{id}", Task);
+                var response = await _httpClient.PostAsJsonAsync("https://localhost:7207/odata/Task", Task);
+                var responseContent = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
                 {
                     return RedirectToPage("./Index");
                 }
 
-                ErrorMessage = "Error updating task";
+                ErrorMessage = $"Error creating task: {responseContent}";
                 await LoadUserList();
                 await LoadProductFieldList();
                 return Page();

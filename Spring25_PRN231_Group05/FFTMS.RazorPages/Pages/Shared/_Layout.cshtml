@@ -192,30 +192,52 @@
 				<ul id="accordion-menu">
 					<li>
 						<a asp-page="/Index" class="dropdown-toggle no-arrow">
-							<span class="micon dw dw-house-1"></span>
-							<span class="mtext">Trang chủ</span>
+							<span class="micon bi bi-house"></span>
+							<span class="mtext">Home</span>
 						</a>
 					</li>
 
-					<li>
-						<a asp-page="/Users/Index" class="dropdown-toggle no-arrow">
-							<span class="micon dw dw-user-2"></span>
-							<span class="mtext">User Management</span>
-						</a>
-					</li>
+					@using FFTMS.RazorPages.Helpers
 
-					<li>
-						<a asp-page="/Tasks/Index" class="dropdown-toggle no-arrow">
-							<span class="micon dw dw-clipboard"></span>
-							<span class="mtext">Tasks Management</span>
-						</a>
-					</li>
-					<li>
-						<a asp-page="/ProductPages/ListProduct" class="dropdown-toggle no-arrow">
-							<span class="micon dw dw-clipboard"></span>
-							<span class="mtext">Product Management</span>
-						</a>
-					</li>
+					@{
+						var role = JwtHelper.GetRoleFromToken(Context.Request.Cookies["AuthToken"]);
+					}
+
+					@if (role == "Admin")
+					{
+						<li>
+							<a asp-page="/Users/Index" class="dropdown-toggle no-arrow">
+								<span class="micon dw dw-user-2"></span>
+								<span class="mtext">User Management</span>
+							</a>
+						</li>
+					}
+
+					@if (role == "Manager")
+					{
+						<li>
+							<a asp-page="/Tasks/Index" class="dropdown-toggle no-arrow">
+								<span class="micon bi bi-list-task"></span>
+								<span class="mtext">Tasks Management</span>
+							</a>
+						</li>
+						<li>
+							<a asp-page="/Products/Index" class="dropdown-toggle no-arrow">
+								<span class="micon bi bi-box"></span>
+								<span class="mtext">Product Management</span>
+							</a>
+						</li>
+					}
+					else if (role == "Staff")
+					{
+						<li>
+							<a asp-page="/UserTasks/Index" class="dropdown-toggle no-arrow">
+								<span class="micon bi bi-list-check"></span>
+								<span class="mtext">My Tasks</span>
+							</a>
+						</li>
+					}
+
 					<li>
 						<a asp-page="/FarmToolCategories/Index" class="dropdown-toggle no-arrow">
 							<span class="micon dw dw-clipboard"></span>
@@ -235,12 +257,18 @@
 					<li>
 						<div class="sidebar-small-cap">Extra</div>
 					</li>
-					<li>
-						<a href="https://github.com/drekhai123/Spring25_PRN231_Group05" target="_blank"
-							class="dropdown-toggle no-arrow">
-							<span class="micon dw dw-paper-plane1"></span>
-							<span class="mtext">Github Repository</span>
+					<li class="dropdown">
+						<a href="javascript:;" class="dropdown-toggle">
+							<span class="micon bi bi-command"></span>
+							<span class="mtext">EXTRA</span>
 						</a>
+						<ul class="submenu">
+							<li>
+								<a href="https://github.com/drekhai123/Spring25_PRN231_Group05" target="_blank">
+									Github Repository
+								</a>
+							</li>
+						</ul>
 					</li>
 				</ul>
 			</div>

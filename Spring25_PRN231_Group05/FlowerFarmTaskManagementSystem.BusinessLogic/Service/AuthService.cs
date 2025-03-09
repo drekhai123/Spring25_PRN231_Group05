@@ -46,7 +46,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 			//	return null; // or throw an exception for incorrect password
 			//}
 
-			if(user.Password !=  request.Password)
+			if (user.Password != request.Password)
 			{
 				return null;
 			}
