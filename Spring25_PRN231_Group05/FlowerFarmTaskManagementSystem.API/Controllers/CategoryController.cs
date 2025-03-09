@@ -30,7 +30,7 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
             return Ok(categories);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("get-categories-by-id")]
         public async Task<ActionResult<CategoryResponseDTO>> GetCategoryById(Guid id)
         {
             try
@@ -44,7 +44,7 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost("create-category")]
         public async Task<ActionResult<CategoryResponseDTO>> CreateCategory([FromBody] CategoryRequestDTO categoryRequest)
         {
             if (!ModelState.IsValid)
@@ -56,7 +56,7 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
             return CreatedAtAction(nameof(GetCategoryById), new { id = category.CategoryId }, category);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("update-category")]
         public async Task<ActionResult<CategoryResponseDTO>> UpdateCategory(Guid id, [FromBody] CategoryRequestDTO categoryRequest)
         {
             if (!ModelState.IsValid)
@@ -75,7 +75,7 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("delete-category")]
         public async Task<ActionResult<bool>> DeleteCategory(Guid id)
         {
             try

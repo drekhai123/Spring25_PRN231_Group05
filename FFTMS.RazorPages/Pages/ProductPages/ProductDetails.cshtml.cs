@@ -1,5 +1,4 @@
 using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
-using FlowerFarmTaskManagementSystem.BusinessObject.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Text.Json;
@@ -30,7 +29,7 @@ namespace FFTMS.RazorPages.Pages.ProductPages
 
                 var apiUrl = $"https://localhost:7207/odata/Product/by-id?id={id}";
                 var response = await _httpClient.GetAsync(apiUrl);
-
+                
                 if (!response.IsSuccessStatusCode)
                 {
                     return NotFound();
@@ -70,4 +69,4 @@ namespace FFTMS.RazorPages.Pages.ProductPages
             }
         }
     }
-}
+} 

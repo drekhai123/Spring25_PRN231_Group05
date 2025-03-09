@@ -1,7 +1,7 @@
 ﻿@page
-@model FFTMS.RazorPages.Pages.Auth.LoginPageModel
+@model FFTMS.RazorPages.Pages.Auth.SignUpPageModel
 @{
-    ViewData["Title"] = "Flower Farm Task Management - Login";
+    ViewData["Title"] = "Flower Farm Task Management - Sign Up";
     Layout = null;
 }
 
@@ -46,10 +46,10 @@
             .image-container img {
                 width: 100%;
                 height: 100%;
-                object-fit: cover; /* Ensure the image covers the container without distortion */
+                object-fit: cover;
             }
 
-        /* Right side for the login form */
+        /* Right side for the signup form */
         .form-container {
             flex: 1;
             display: flex;
@@ -59,8 +59,8 @@
             box-sizing: border-box;
         }
 
-        /* Login card styling */
-        .login-card {
+        /* Signup card styling */
+        .signup-card {
             background: white;
             border-radius: 1.5rem;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
@@ -70,7 +70,7 @@
             transition: transform 0.3s ease;
         }
 
-            .login-card:hover {
+            .signup-card:hover {
                 transform: translateY(-5px);
             }
 
@@ -93,7 +93,8 @@
             margin-bottom: 1.5rem;
         }
 
-            .input-group input {
+            .input-group input,
+            .input-group select {
                 width: 100%;
                 padding: 0.75rem 1rem;
                 border: 1px solid #e2e8f0;
@@ -103,7 +104,8 @@
                 transition: border-color 0.3s ease, box-shadow 0.3s ease;
             }
 
-                .input-group input:focus {
+                .input-group input:focus,
+                .input-group select:focus {
                     outline: none;
                     border-color: #4A6CF7;
                     box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.1);
@@ -118,24 +120,6 @@
             font-size: 0.85rem;
             margin-top: 0.25rem;
         }
-
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-            .checkbox-group input {
-                width: 1rem;
-                height: 1rem;
-                accent-color: #4A6CF7;
-                margin-right: 0.5rem;
-            }
-
-            .checkbox-group label {
-                font-size: 0.9rem;
-                color: #2d3748;
-            }
 
         .submit-button {
             width: 100%;
@@ -155,21 +139,21 @@
                 transform: scale(1.02);
             }
 
-        .signup-link {
+        .login-link {
             text-align: center;
             margin-top: 1.5rem;
             font-size: 0.9rem;
             color: #718096;
         }
 
-            .signup-link a {
+            .login-link a {
                 color: #4A6CF7;
                 font-weight: 500;
                 text-decoration: none;
                 transition: color 0.3s ease;
             }
 
-                .signup-link a:hover {
+                .login-link a:hover {
                     color: #3A5AE5;
                     text-decoration: underline;
                 }
@@ -227,7 +211,7 @@
 
             .image-container {
                 flex: 0;
-                height: 40vh; /* Reduce height on mobile */
+                height: 40vh;
             }
 
             .form-container {
@@ -238,10 +222,10 @@
 
         @@media (max-width: 480px) {
             .image-container {
-                height: 30vh; /* Further reduce height on smaller screens */
+                height: 30vh;
             }
 
-            .login-card {
+            .signup-card {
                 padding: 1.5rem;
             }
         }
@@ -259,42 +243,59 @@
             <img src="\images\NorthenBlossoms_OlenCo.png" alt="Flower Farm Image">
         </div>
 
-        <!-- Right side: Login Form -->
+        <!-- Right side: Sign Up Form -->
         <div class="form-container">
-            <div class="login-card">
+            <div class="signup-card">
                 <h2 class="logo">Flower Farm TMS</h2>
-                <p class="subtitle">Login to manage your farm tasks</p>
+                <p class="subtitle">Create an account to manage your farm tasks</p>
+
                 <form method="post" class="space-y-6">
                     <div asp-validation-summary="ModelOnly" class="error-message text-center"></div>
 
                     <div class="input-group">
-                        <input asp-for="Input.UsernameOrEmail"
-                               autocomplete="username"
-                               placeholder="Username or Email"
-                               required />
-                        <span asp-validation-for="Input.UsernameOrEmail" class="error-message"></span>
+                        <input asp-for="Input.Username" placeholder="Username" required />
+                        <span asp-validation-for="Input.Username" class="error-message"></span>
                     </div>
 
                     <div class="input-group">
-                        <input asp-for="Input.Password"
-                               type="password"
-                               autocomplete="current-password"
-                               placeholder="Password"
-                               required />
+                        <input asp-for="Input.Email" type="email" placeholder="Email" required />
+                        <span asp-validation-for="Input.Email" class="error-message"></span>
+                    </div>
+
+                    <div class="input-group">
+                        <input asp-for="Input.Password" type="password" placeholder="Password" required />
                         <span asp-validation-for="Input.Password" class="error-message"></span>
                     </div>
 
-                    <div class="checkbox-group">
-                        <input asp-for="Input.RememberMe" />
-                        <label asp-for="Input.RememberMe">Remember me</label>
+                    <div class="input-group">
+                        <input asp-for="Input.ConfirmPassword" type="password" placeholder="Confirm Password" required />
+                        <span asp-validation-for="Input.ConfirmPassword" class="error-message"></span>
                     </div>
 
-                    <button type="submit" class="submit-button">Sign In</button>
+                    <div class="input-group">
+                        <input asp-for="Input.Phone" placeholder="Phone Number" required />
+                        <span asp-validation-for="Input.Phone" class="error-message"></span>
+                    </div>
 
-                    <div class="signup-link">
+                    <div class="input-group">
+                        <input asp-for="Input.Address" placeholder="Address" required />
+                        <span asp-validation-for="Input.Address" class="error-message"></span>
+                    </div>
+
+                    <div class="input-group">
+                        <input asp-for="Input.DateOfBirth" type="date" required />
+                        <span asp-validation-for="Input.DateOfBirth" class="error-message"></span>
+                    </div>
+
+                    <!-- Role is hidden and set to User by default -->
+                    <input asp-for="Input.Role" type="hidden" value="User" />
+
+                    <button type="submit" class="submit-button">Sign Up</button>
+
+                    <div class="login-link">
                         <p>
-                            Don't have an account?
-                            <a asp-page="./SignupPage">Sign up</a>
+                            Already have an account?
+                            <a asp-page="./LoginPage">Sign in</a>
                         </p>
                     </div>
                 </form>

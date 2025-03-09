@@ -4,6 +4,7 @@ using FlowerFarmTaskManagementSystem.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FlowerFarmTaskManagementSystem.DataAccess.Migrations
 {
     [DbContext(typeof(FlowerFarmTaskManagementSystemDbContext))]
-    partial class FlowerFarmTaskManagementSystemDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250306174317_[update-table-Field]")]
+    partial class updatetableField
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -175,8 +178,9 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<double>("Length")
-                        .HasColumnType("double");
+                    b.Property<string>("Length")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<bool>("Status")
                         .HasColumnType("tinyint(1)");
@@ -184,8 +188,9 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.Migrations
                     b.Property<DateTime>("UpdateDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<double>("Width")
-                        .HasColumnType("double");
+                    b.Property<string>("Width")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.HasKey("FieldId");
 
@@ -343,9 +348,6 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<Guid?>("ProductFieldId")
-                        .HasColumnType("char(36)");
-
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime(6)");
 
@@ -353,8 +355,6 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.HasKey("TaskWorkId");
-
-                    b.HasIndex("ProductFieldId");
 
                     b.ToTable("TaskWorks");
                 });
@@ -474,9 +474,6 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.Migrations
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<Guid?>("FarmToolsId")
-                        .HasColumnType("char(36)");
-
                     b.Property<bool>("Status")
                         .HasColumnType("tinyint(1)");
 
@@ -494,8 +491,6 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.Migrations
                         .HasColumnType("longtext");
 
                     b.HasKey("UserTaskId");
-
-                    b.HasIndex("FarmToolsId");
 
                     b.HasIndex("TaskWorkId");
 
@@ -564,15 +559,6 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskWork", b =>
-                {
-                    b.HasOne("FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductField", "ProductField")
-                        .WithMany()
-                        .HasForeignKey("ProductFieldId");
-
-                    b.Navigation("ProductField");
-                });
-
             modelBuilder.Entity("FlowerFarmTaskManagementSystem.BusinessObject.Models.TypeOfSupplier", b =>
                 {
                     b.HasOne("FlowerFarmTaskManagementSystem.BusinessObject.Models.Supplier", "Supplier")
@@ -594,10 +580,6 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.Migrations
 
             modelBuilder.Entity("FlowerFarmTaskManagementSystem.BusinessObject.Models.UserTask", b =>
                 {
-                    b.HasOne("FlowerFarmTaskManagementSystem.BusinessObject.Models.FarmTools", "FarmTools")
-                        .WithMany()
-                        .HasForeignKey("FarmToolsId");
-
                     b.HasOne("FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskWork", "TaskWork")
                         .WithMany()
                         .HasForeignKey("TaskWorkId")
@@ -609,8 +591,6 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("FarmTools");
 
                     b.Navigation("TaskWork");
 
