@@ -16,7 +16,6 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.DTO
         public DateTime CreateDate { get; set; }
         public DateTime UpdateDate { get; set; }
         public bool Status { get; set; }
-        public Guid CategoryId { get; set; }
-        public string? CategoryName { get; set; }
+        public CategoryResponseDTO Category { get; set; }
     }
 }

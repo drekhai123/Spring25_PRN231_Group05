@@ -17,10 +17,53 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.DTO
         public DateTime CreateDate { get; set; }
         public string? ImageUrl { get; set; }
 
-        // Chỉ giữ các DTO cần thiết
+        // Thông tin ProductField và các quan hệ
+        public ProductFieldResponseInfo ProductField { get; set; }
         public List<UserTaskResponseDTO> UserTasks { get; set; }
-        public ProductDTO Product { get; set; }
-        public FieldDTO Field { get; set; }
+    }
+
+    public class ProductFieldResponseInfo
+    {
+        public Guid ProductFieldId { get; set; }
+        public double Productivity { get; set; }
+        public string ProductivityUnit { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public DateTime CreateDate { get; set; }
+        public DateTime UpdateDate { get; set; }
+        public bool Status { get; set; }
+
+        // Thông tin Field
+        public FieldResponseInfo Field { get; set; }
+        // Thông tin Product
+        public ProductResponseInfo Product { get; set; }
+    }
+
+    public class FieldResponseInfo
+    {
+        public Guid FieldId { get; set; }
+        public string FieldName { get; set; }
+        public string? FieldImageUrl { get; set; }
+        public bool Status { get; set; }
+    }
+
+    public class ProductResponseInfo
+    {
+        public Guid ProductId { get; set; }
+        public string ProductName { get; set; }
+        public string? ProductImageUrl { get; set; }
+        public bool Status { get; set; }
+
+        // Thông tin Category
+        public CategoryResponseInfo Category { get; set; }
+    }
+
+    public class CategoryResponseInfo
+    {
+        public Guid CategoryId { get; set; }
+        public string CategoryName { get; set; }
+        public string? CategoryImageUrl { get; set; }
+        public bool Status { get; set; }
     }
 }
 
@@ -41,15 +84,10 @@ public class ProductFieldDetailDTO
     public Guid ProductFieldId { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
-    public DateTime CreatedDate { get; set; }
-    public DateTime? UpdatedDate { get; set; }
     public double Productivity { get; set; }
     public string ProductivityUnit { get; set; }
+    public DateTime CreateDate { get; set; }
+    public DateTime UpdateDate { get; set; }
     public bool Status { get; set; }
-
-    // Thông tin Product và Category
     public ProductDTO Product { get; set; }
-
-    // Thông tin Field
-    public FieldDTO Field { get; set; }
 }

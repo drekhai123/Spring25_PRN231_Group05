@@ -6,4 +6,11 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Enums
         Manager,
         Staff
     }
+
+    public enum UserTaskStatus
+    {
+        Waiting = 0,
+        Processing = 1,
+        Completed = 2
+    }
 }
