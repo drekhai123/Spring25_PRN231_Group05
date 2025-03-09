@@ -24,7 +24,9 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 
         public async Task<IEnumerable<UserTaskResponseDTO>> GetAllUserTasksAsync()
         {
-            var userTasks = _unitOfWork.UserTaskRepository.Get(includeProperties: "User,TaskWork");
+            var userTasks = await Task.FromResult(_unitOfWork.UserTaskRepository.Get(
+                includeProperties: "User"
+            ));
             return _mapper.Map<IEnumerable<UserTaskResponseDTO>>(userTasks);
         }
 

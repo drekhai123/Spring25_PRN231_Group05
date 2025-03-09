@@ -17,15 +17,15 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<ProductFieldDetailDTO>> GetAllProductFieldsAsync()
+        public async Task<IEnumerable<ProductFieldDTO>> GetAllProductFieldsAsync()
         {
             var productFields = await Task.FromResult(_unitOfWork.ProductFieldRepository.Get(
                 includeProperties: "Product.Category,Field"
             ));
-            return _mapper.Map<IEnumerable<ProductFieldDetailDTO>>(productFields);
+            return _mapper.Map<IEnumerable<ProductFieldDTO>>(productFields);
         }
 
-        public async Task<ProductFieldDetailDTO> GetProductFieldByIdAsync(Guid id)
+        public async Task<ProductFieldDTO> GetProductFieldByIdAsync(Guid id)
         {
             var productField = await Task.FromResult(_unitOfWork.ProductFieldRepository.Get(
                 filter: pf => pf.ProductFieldId == id,
@@ -35,7 +35,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             if (productField == null)
                 throw new KeyNotFoundException($"ProductField with ID {id} not found");
 
-            return _mapper.Map<ProductFieldDetailDTO>(productField);
+            return _mapper.Map<ProductFieldDTO>(productField);
         }
     }
 }

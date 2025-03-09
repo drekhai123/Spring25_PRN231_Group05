@@ -18,14 +18,14 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
 
         [HttpGet]
         [EnableQuery]
-        public async Task<ActionResult<IEnumerable<ProductFieldDetailDTO>>> GetAllProductFields()
+        public async Task<ActionResult<IEnumerable<ProductFieldDTO>>> GetAllProductFields()
         {
             var productFields = await _productFieldService.GetAllProductFieldsAsync();
             return Ok(productFields);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ProductFieldDetailDTO>> GetProductFieldById(Guid id)
+        public async Task<ActionResult<ProductFieldDTO>> GetProductFieldById(Guid id)
         {
             try
             {

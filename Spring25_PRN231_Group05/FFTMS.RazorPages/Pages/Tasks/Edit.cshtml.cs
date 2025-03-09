@@ -63,10 +63,10 @@ namespace FFTMS.RazorPages.Pages.Tasks
                         EndDate = taskResponse.EndDate,
                         Status = taskResponse.Status,
                         ImageUrl = taskResponse.ImageUrl,
-                        ProductFieldId = taskResponse.ProductField.ProductFieldId,
+                        ProductFieldId = taskResponse.ProductFieldId,
                         UserTasks = taskResponse.UserTasks.Select(ut => new UserTaskRequest
                         {
-                            AssignedTo = ut.User.UserId.ToString(),
+                            AssignedTo = ut.UserId.ToString(),
                             UserTaskDescription = ut.UserTaskDescription
                         }).ToList()
                     };
@@ -121,7 +121,7 @@ namespace FFTMS.RazorPages.Pages.Tasks
                 if (response.IsSuccessStatusCode)
                 {
                     var jsonResponse = await response.Content.ReadAsStringAsync();
-                    var productFields = JsonSerializer.Deserialize<List<ProductFieldDetailDTO>>(jsonResponse, new JsonSerializerOptions
+                    var productFields = JsonSerializer.Deserialize<List<ProductFieldDTO>>(jsonResponse, new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
                     });

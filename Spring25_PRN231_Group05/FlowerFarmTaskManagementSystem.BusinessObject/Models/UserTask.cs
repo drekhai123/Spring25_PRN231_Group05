@@ -24,8 +24,8 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Models
 
         [ForeignKey(nameof(UserId))]
         public virtual User User { get; set; }
-    }
-        public User? User { get; set; }
+    
+        //public User? User { get; set; }
 
         public Guid? FarmToolsId { get; set; }
 
