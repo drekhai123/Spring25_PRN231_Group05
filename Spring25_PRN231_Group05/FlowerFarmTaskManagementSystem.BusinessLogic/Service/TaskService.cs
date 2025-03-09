@@ -3,6 +3,7 @@ using FlowerFarmTaskManagementSystem.BusinessLogic.IService;
 using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
 using FlowerFarmTaskManagementSystem.BusinessObject.Models;
 using FlowerFarmTaskManagementSystem.DataAccess.IRepositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 {
@@ -19,15 +20,22 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 
         public async Task<IEnumerable<TaskResponseDTO>> GetAllTasksAsync()
         {
-            var tasks = await _unitOfWork.TaskWorkRepository.GetAllAsync();
+            var tasks = _unitOfWork.TaskWorkRepository.Get(
+                includeProperties: "UserTasks,ProductField"
+            );
             return _mapper.Map<IEnumerable<TaskResponseDTO>>(tasks);
         }
 
         public async Task<TaskResponseDTO> GetTaskByIdAsync(Guid id)
         {
-            var task = await _unitOfWork.TaskWorkRepository.GetByIdAsync(id);
+            var task = _unitOfWork.TaskWorkRepository.Get(
+                filter: t => t.TaskWorkId == id,
+                includeProperties: "UserTasks.User,ProductField.Product"
+            ).FirstOrDefault();
+
             if (task == null)
                 throw new KeyNotFoundException($"Task with ID {id} not found");
+
             return _mapper.Map<TaskResponseDTO>(task);
         }
 

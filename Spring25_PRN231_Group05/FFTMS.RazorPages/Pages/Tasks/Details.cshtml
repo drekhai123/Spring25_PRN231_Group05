@@ -27,9 +27,9 @@
 
             @if (!string.IsNullOrEmpty(Model.ErrorMessage))
             {
-                    <div class="alert alert-danger">
-                        @Model.ErrorMessage
-                    </div>
+                <div class="alert alert-danger">
+                    @Model.ErrorMessage
+                </div>
             }
 
             <div class="pd-20 card-box mb-30">
@@ -62,10 +62,10 @@
 
                         @if (!string.IsNullOrEmpty(Model.Task.ImageUrl))
                         {
-                                <dt class="col-sm-3">Image</dt>
-                                <dd class="col-sm-9">
-                                    <img src="@Model.Task.ImageUrl" alt="Task Image" style="max-width: 300px;" />
-                                </dd>
+                            <dt class="col-sm-3">Image</dt>
+                            <dd class="col-sm-9">
+                                <img src="@Model.Task.ImageUrl" alt="Task Image" style="max-width: 300px;" />
+                            </dd>
                         }
 
                         <dt class="col-sm-3">Created Date</dt>
@@ -80,4 +80,4 @@
             </div>
         </div>
     </div>
-</div> 
+</div>

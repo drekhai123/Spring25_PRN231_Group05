@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Text.Json;
 using FFTMS.RazorPages.Helpers;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 
 namespace FFTMS.RazorPages.Pages.Tasks
 {
@@ -38,6 +41,8 @@ namespace FFTMS.RazorPages.Pages.Tasks
                     return RedirectToPage("/Index");
                 }
 
+                var userId = JwtHelper.GetUserIdFromToken(token);
+
                 TaskId = Guid.Parse(id);
                 var response = await _httpClient.GetAsync($"https://localhost:7207/odata/Task/{id}");
                 if (response.IsSuccessStatusCode)
@@ -48,20 +53,18 @@ namespace FFTMS.RazorPages.Pages.Tasks
                         PropertyNameCaseInsensitive = true
                     });
 
-                    // Map từ TaskResponseDTO sang TaskRequestDTO
                     Task = new TaskRequestDTO
                     {
                         JobTitle = taskResponse.JobTitle,
                         Description = taskResponse.Description,
                         AssignedTo = taskResponse.AssignedTo,
-                        AssignedBy = taskResponse.AssignedBy,
+                        AssignedBy = userId,
                         StartDate = taskResponse.StartDate,
                         EndDate = taskResponse.EndDate,
                         Status = taskResponse.Status,
                         ImageUrl = taskResponse.ImageUrl
                     };
 
-                    // Load users cho dropdown
                     await LoadUserList();
                     return Page();
                 }
@@ -76,54 +79,61 @@ namespace FFTMS.RazorPages.Pages.Tasks
 
         private async Task LoadUserList()
         {
-            var token = Request.Cookies["token"];
-            if (!string.IsNullOrEmpty(token))
+            try
             {
-                var userResponse = await _httpClient.GetAsync("https://localhost:7207/odata/User");
-                if (userResponse.IsSuccessStatusCode)
+                var response = await _httpClient.GetAsync("https://localhost:7207/odata/User");
+                if (response.IsSuccessStatusCode)
                 {
-                    var userJsonResponse = await userResponse.Content.ReadAsStringAsync();
-                    var users = JsonSerializer.Deserialize<List<UserResponseDTO>>(userJsonResponse, new JsonSerializerOptions
+                    var jsonResponse = await response.Content.ReadAsStringAsync();
+                    var users = JsonSerializer.Deserialize<List<UserResponseDTO>>(jsonResponse, new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
                     });
 
-                    // Chỉ lấy Staff để assign task
                     var usersList = users.Where(u => u.Role == "Staff")
                                       .Select(u => new SelectListItem
                                       {
-                                          Value = u.Email,
+                                          Value = u.UserId.ToString(),
                                           Text = $"{u.UserName} ({u.Email})"
                                       });
 
                     UserList = new SelectList(usersList, "Value", "Text");
                 }
             }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Error loading users: {ex.Message}";
+            }
         }
 
         public async Task<IActionResult> OnPostAsync(Guid id)
         {
-            if (!ModelState.IsValid)
-            {
-                await LoadUserList();
-                return Page();
-            }
-
             try
             {
+                var token = Request.Cookies["AuthToken"];
+                if (string.IsNullOrEmpty(token))
+                {
+                    return RedirectToPage("/Auth/LoginPage");
+                }
+
+                // Lấy userId trực tiếp từ helper
+                var userId = JwtHelper.GetUserIdFromToken(token);
+                Task.AssignedBy = userId;
+
                 var response = await _httpClient.PutAsJsonAsync($"https://localhost:7207/odata/Task/{id}", Task);
+
                 if (response.IsSuccessStatusCode)
                 {
                     return RedirectToPage("./Index");
                 }
 
-                ErrorMessage = $"Error updating task. Status code: {response.StatusCode}";
+                ErrorMessage = "Error updating task";
                 await LoadUserList();
                 return Page();
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"Error updating task: {ex.Message}";
+                ErrorMessage = $"Error: {ex.Message}";
                 await LoadUserList();
                 return Page();
             }

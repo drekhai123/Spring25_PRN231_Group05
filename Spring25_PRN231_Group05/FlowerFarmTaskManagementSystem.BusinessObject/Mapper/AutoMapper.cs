@@ -48,8 +48,16 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Mapper
             .ForMember(dest => dest.FarmToolCategoriesId, opt => opt.MapFrom(src => src.FarmToolCategoriesId.ToString()))
             .ForMember(dest => dest.FarmToolsId, opt => opt.MapFrom(src => src.FarmToolsId.ToString()));
 
+            CreateMap<TaskWork, TaskResponseDTO>()
+                .ForMember(dest => dest.TaskId, opt => opt.MapFrom(src => src.TaskWorkId));
+
             CreateMap<TaskRequestDTO, TaskWork>();
-            CreateMap<TaskWork, TaskResponseDTO>();
+
+            CreateMap<UserTask, UserTaskDTO>();
+            CreateMap<User, UserResponseDTO>();
+            CreateMap<ProductField, ProductFieldDetailDTO>();
+            CreateMap<Category, CategoryResponseDTO>();
+            CreateMap<Field, FieldDTO>();
         }
     }
 }

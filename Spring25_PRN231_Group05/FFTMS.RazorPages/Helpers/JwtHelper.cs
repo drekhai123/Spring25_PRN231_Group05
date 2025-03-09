@@ -8,8 +8,10 @@ namespace FFTMS.RazorPages.Helpers
         public static string GetUserIdFromToken(string token)
         {
             var handler = new JwtSecurityTokenHandler();
-            var jwtToken = handler.ReadJwtToken(token);
-            return jwtToken.Claims.First(claim => claim.Type == "UserId").Value;
+            var jsonToken = handler.ReadToken(token) as JwtSecurityToken;
+
+            var userId = jsonToken?.Claims.FirstOrDefault(claim => claim.Type == "UserId")?.Value;
+            return userId ?? string.Empty;
         }
 
         public static string GetRoleFromToken(string token)
