@@ -10,7 +10,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.IService
 	public interface IFarmToolsService
 	{
 		Task<IEnumerable<FarmToolsResponseDTO>> GetAllFarmToolsAsync();
-		Task<FarmToolsResponseDTO> GetFarmToolsByIdAsync(String FarmToolCategoriesId);
+		Task<FarmToolsResponseDTO> GetFarmToolsByIdAsync(String FarmToolsId);
 		Task<FarmToolsResponseDTO> CreateFarmToolsAsync(FarmToolsRequestDTO farmToolsRequest);
 		Task<FarmToolsResponseDTO> UpdateFarmToolsAsync(FarmToolsRequestDTO farmToolsRequest);
 		Task<FarmToolsResponseDTO> UpdateFarmToolsStatusAsync(String FarmToolsId);

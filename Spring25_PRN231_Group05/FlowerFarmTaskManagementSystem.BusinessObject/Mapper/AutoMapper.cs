@@ -91,6 +91,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Mapper
             CreateMap<FarmToolsRequestDTO, FarmTools>();
             CreateMap<FarmTools, FarmToolsResponseDTO>()
                 .ForMember(dest => dest.FarmToolCategoriesId, opt => opt.MapFrom(src => src.FarmToolCategoriesId.ToString()))
+<<<<<<< HEAD
                 .ForMember(dest => dest.FarmToolsId, opt => opt.MapFrom(src => src.FarmToolsId.ToString()))
                 .ForMember(dest => dest.FarmToolCategories, opt => opt.MapFrom(src => src.FarmToolCategories));
 
@@ -111,5 +112,15 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Mapper
                 .ForMember(dest => dest.Product, opt => opt.MapFrom(src => src.ProductField != null ? src.ProductField.Product : null))
                 .ForMember(dest => dest.Field, opt => opt.MapFrom(src => src.ProductField != null ? src.ProductField.Field : null));
         }
+=======
+                .ForMember(dest => dest.FarmToolsId, opt => opt.MapFrom(src => src.FarmToolsId.ToString()));
+			CreateMap<FarmToolsOfTaskRequestDTO, FarmToolsOfTask>();
+			CreateMap<FarmToolsOfTask, FarmToolsOfTaskResponseDTO>()
+				.ForMember(dest => dest.FarmToolsOfTaskId, opt => opt.MapFrom(src => src.FarmToolsOfTaskId.ToString()))
+				.ForMember(dest => dest.FarmToolsId, opt => opt.MapFrom(src => src.FarmToolsId.ToString()))
+				.ForMember(dest => dest.UserTaskId, opt => opt.MapFrom(src => src.UserTaskId.ToString()));
+
+		}
+>>>>>>> Add_API_FarmToolsOfTasks
     }
 }
