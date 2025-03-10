@@ -12,11 +12,13 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.DTO
 		public String? FarmToolsOfTaskId { get; set; }
 		public DateTime StartDate { get; set; }
 		public DateTime EndDate { get; set; }
-		public DateTime CreateDate { get; set; }
+        public int FarmToolOfTaskQuantity { get; set; }
+        public string? FarmToolOfTaskUnit { get; set; }
+        public DateTime CreateDate { get; set; }
 		public DateTime UpdateDate { get; set; }
 		public String FarmToolsId { get; set; }
 		public String UserTaskId { get; set; }
-		public List<String>? ListFarmToolsId { get; set; }
+		public List<FarmToolQuantityDTO>? ListFarmTools { get; set; }
 		public UserTask? UserTask { get; set; }
 	}
 }

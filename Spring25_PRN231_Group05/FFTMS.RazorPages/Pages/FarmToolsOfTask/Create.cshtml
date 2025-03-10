@@ -10,39 +10,89 @@
 
 <form method="post">
     <div class="form-group">
-        <label for="UserTaskId">User Task</label>
-        <select asp-for="FarmToolsOfTask.UserTaskId" asp-items="ViewBag.UserTaskId" class="form-control">
-            <option value="">-- Select Task --</option>
+        <label asp-for="FarmToolsOfTask.StartDate">Start Date</label>
+        <input asp-for="FarmToolsOfTask.StartDate" class="form-control" type="date" required />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="FarmToolsOfTask.EndDate">End Date</label>
+        <input asp-for="FarmToolsOfTask.EndDate" class="form-control" type="date" required />
+    </div>
+
+    <div class="form-group">
+        <label>Select Farm Tools</label>
+        <select id="farmToolsDropdown" class="form-control">
+            <option value="">-- Select a Farm Tool --</option>
+            @foreach (var tool in (SelectList)ViewData["FarmToolsId"])
+            {
+                <option value="@tool.Value">@tool.Text</option>
+            }
         </select>
     </div>
 
     <div class="form-group">
-        <label>Select Farm Tools:</label>
-        @foreach (var tool in (SelectList)ViewData["FarmToolsId"])
-        {
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" name="SelectedFarmToolsIds" value="@tool.Value" />
-                <label class="form-check-label">@tool.Text</label>
-            </div>
-        }
+        <label>Selected Farm Tools</label>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Tool Name</th>
+                    <th>Quantity</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="selectedToolsTable">
+                <!-- Selected tools will appear here -->
+            </tbody>
+        </table>
     </div>
 
-    <div class="form-group">
-        <label for="StartDate">Start Date</label>
-        <input asp-for="FarmToolsOfTask.StartDate" type="date" class="form-control" />
-    </div>
-
-    <div class="form-group">
-        <label for="EndDate">End Date</label>
-        <input asp-for="FarmToolsOfTask.EndDate" type="date" class="form-control" />
-    </div>
+    <input type="hidden" asp-for="SelectedFarmTools" id="selectedFarmToolsInput" />
 
     <button type="submit" class="btn btn-primary">Create</button>
 </form>
 
-<div>
-    <a asp-page="Index">Back to List</a>
-</div>
+@section Scripts {
+    <script>
+        document.getElementById("farmToolsDropdown").addEventListener("change", function () {
+            var selectedToolId = this.value;
+            var selectedToolName = this.options[this.selectedIndex].text;
+
+            if (!selectedToolId) return;
+
+            var existingRow = document.querySelector(`#selectedToolsTable tr[data-id='${selectedToolId}']`);
+            if (existingRow) return;
+
+            var newRow = document.createElement("tr");
+            newRow.setAttribute("data-id", selectedToolId);
+            newRow.innerHTML = `
+                <td>${selectedToolName}</td>
+                <td><input type="number" class="form-control tool-quantity" min="1" value="1" /></td>
+                <td><button type="button" class="btn btn-danger btn-remove">Remove</button></td>
+            `;
+
+            newRow.querySelector(".btn-remove").addEventListener("click", function () {
+                newRow.remove();
+                updateHiddenField();
+            });
+
+            newRow.querySelector(".tool-quantity").addEventListener("change", updateHiddenField);
+
+            document.getElementById("selectedToolsTable").appendChild(newRow);
+            updateHiddenField();
+        });
+
+        function updateHiddenField() {
+            var selectedTools = [];
+            document.querySelectorAll("#selectedToolsTable tr").forEach(row => {
+                var id = row.getAttribute("data-id");
+                var quantity = row.querySelector(".tool-quantity").value;
+                selectedTools.push({ FarmToolsId: id, Quantity: parseInt(quantity) });
+            });
+
+            document.getElementById("selectedFarmToolsInput").value = JSON.stringify(selectedTools);
+        }
+    </script>
+}
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

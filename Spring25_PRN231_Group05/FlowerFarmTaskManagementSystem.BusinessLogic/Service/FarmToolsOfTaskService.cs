@@ -21,55 +21,58 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 			_mapper = mapper;
 		}
 
-		public async Task<List<FarmToolsOfTaskResponseDTO>> CreateFarmToolsOfTasksAsync(CreateFarmToolsOfTaskRequestDTO request)
-		{
-			var responseList = new List<FarmToolsOfTaskResponseDTO>();
+        public async Task<List<FarmToolsOfTaskResponseDTO>> CreateFarmToolsOfTasksAsync(CreateFarmToolsOfTaskRequestDTO request)
+        {
+            var responseList = new List<FarmToolsOfTaskResponseDTO>();
 
-			if (request.ListFarmToolsId == null || !request.ListFarmToolsId.Any())
-			{
-				throw new Exception("ListFarmToolsId cannot be null or empty.");
-			}
+            if (request.ListFarmTools == null || !request.ListFarmTools.Any())
+            {
+                throw new Exception("ListFarmTools cannot be null or empty.");
+            }
 
-			foreach (var farmToolsIdString in request.ListFarmToolsId)
-			{
-				if (!Guid.TryParse(farmToolsIdString, out var farmToolsId))
-				{
-					throw new Exception($"Invalid FarmToolsId: {farmToolsIdString}");
-				}
+            foreach (var farmTool in request.ListFarmTools)
+            {
+                if (!Guid.TryParse(farmTool.FarmToolsId, out var farmToolsId))
+                {
+                    throw new Exception($"Invalid FarmToolsId: {farmTool.FarmToolsId}");
+                }
 
-				var farmTools = await _unitOfWork.FarmToolsRepository.GetByIdAsync(farmToolsId);
-				if (farmTools == null)
-				{
-					throw new Exception($"Farm tool with ID {farmToolsId} not found.");
-				}
+                var farmTools = await _unitOfWork.FarmToolsRepository.GetByIdAsync(farmToolsId);
+                if (farmTools == null)
+                {
+                    throw new Exception($"Farm tool with ID {farmToolsId} not found.");
+                }
 
-				if (farmTools.FarmToolsQuantity <= 0)
-				{
-					throw new Exception($"Not enough farm tools for ID {farmToolsId}.");
-				}
+                if (farmTools.FarmToolsQuantity < farmTool.Quantity)
+                {
+                    throw new Exception($"Not enough farm tools for ID {farmToolsId}. Available: {farmTools.FarmToolsQuantity}, Requested: {farmTool.Quantity}");
+                }
 
-				var farmToolsOfTask = new FarmToolsOfTask
-				{
-					FarmToolsOfTaskId = Guid.NewGuid(),
-					CreateDate = DateTime.UtcNow,
-					UpdateDate = DateTime.UtcNow,
-					Status = 1,
-					FarmToolsOfTaskQuantity = farmTools.FarmToolsQuantity,
-					FarmToolsOfTaskUnit = farmTools.FarmToolsUnit,
-					FarmToolsId = farmToolsId,
-					UserTaskId = Guid.Parse(request.UserTaskId) 
-				};
+                var farmToolsOfTask = new FarmToolsOfTask
+                {
+                    FarmToolsOfTaskId = Guid.NewGuid(),
+                    StartDate = request.StartDate,
+                    EndDate = request.EndDate,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    Status = 1,
+                    FarmToolOfTaskQuantity = farmTool.Quantity,
+                    FarmToolOfTaskUnit = request.FarmToolOfTaskUnit,
+                    FarmToolsId = farmToolsId,
+                    UserTaskId = Guid.Parse(request.UserTaskId)
+                };
 
-				await _unitOfWork.FarmToolsOfTaskRepository.AddAsync(farmToolsOfTask);
-				responseList.Add(_mapper.Map<FarmToolsOfTaskResponseDTO>(farmToolsOfTask));
-			}
+                await _unitOfWork.FarmToolsOfTaskRepository.AddAsync(farmToolsOfTask);
+                responseList.Add(_mapper.Map<FarmToolsOfTaskResponseDTO>(farmToolsOfTask));
+            }
 
-			await _unitOfWork.SaveChangesAsync();
-			return responseList;
-		}
+            await _unitOfWork.SaveChangesAsync();
+            return responseList;
+        }
 
 
-		public async Task<bool> DeleteFarmToolsOfTasksAsync(string FarmToolsOfTasksId)
+
+        public async Task<bool> DeleteFarmToolsOfTasksAsync(string FarmToolsOfTasksId)
 		{
 			var farmToolsOfTaskId = Guid.Parse(FarmToolsOfTasksId);
 			var farmToolsOfTask = await _unitOfWork.FarmToolsOfTaskRepository.GetByIdAsync(farmToolsOfTaskId);

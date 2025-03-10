@@ -19,9 +19,9 @@ namespace FFTMS.RazorPages.Pages.FarmToolsOfTask
             _httpClient = httpClient;
         }
 
-        public async Task<IActionResult> OnGetAsync(String userTaskId)
+        public async Task<IActionResult> OnGetAsync(string userTaskId)
         {
-            if (userTaskId == null)
+            if (string.IsNullOrEmpty(userTaskId))
             {
                 return BadRequest("UserTaskId is required.");
             }
@@ -39,7 +39,7 @@ namespace FFTMS.RazorPages.Pages.FarmToolsOfTask
         public CreateFarmToolsOfTaskRequestDTO FarmToolsOfTask { get; set; } = new();
 
         [BindProperty]
-        public List<string> SelectedFarmToolsIds { get; set; } = new(); 
+        public List<FarmToolQuantityDTO> SelectedFarmTools { get; set; } = new();
 
         public async Task<IActionResult> OnPostAsync()
         {
@@ -48,13 +48,13 @@ namespace FFTMS.RazorPages.Pages.FarmToolsOfTask
                 return Page();
             }
 
-            if (SelectedFarmToolsIds == null || !SelectedFarmToolsIds.Any())
+            if (SelectedFarmTools == null || !SelectedFarmTools.Any())
             {
-                ModelState.AddModelError("", "Please select at least one farm tool.");
+                ModelState.AddModelError("", "Please select at least one farm tool with a valid quantity.");
                 return Page();
             }
 
-            FarmToolsOfTask.ListFarmToolsId = SelectedFarmToolsIds;
+            FarmToolsOfTask.ListFarmTools = SelectedFarmTools;
             FarmToolsOfTask.CreateDate = DateTime.UtcNow;
             FarmToolsOfTask.UpdateDate = DateTime.UtcNow;
 
