@@ -77,29 +77,29 @@
                             </dd>
                         }
 
-                        <dt class="col-sm-3">Product Field Information</dt>
-                        <dd class="col-sm-9">
-                            <dl class="row mb-0">
-                                <dt class="col-sm-4">Product Field ID</dt>
-                                <dd class="col-sm-8">@Model.Task.ProductField.ProductFieldId</dd>
+                        @* <dt class="col-sm-3">Product Field Information</dt> *@
+                        @* <dd class="col-sm-9"> *@
+                        @*     <dl class="row mb-0"> *@
+                        @*         <dt class="col-sm-4">Product Field ID</dt> *@
+                        @*         <dd class="col-sm-8">@Model.Task.ProductField.ProductFieldId</dd> *@
 
-                                <dt class="col-sm-4">Start Date</dt>
-                                <dd class="col-sm-8">@Model.Task.ProductField.StartDate.ToString("dd/MM/yyyy")</dd>
+                        @*         <dt class="col-sm-4">Start Date</dt> *@
+                        @*         <dd class="col-sm-8">@Model.Task.ProductField.StartDate.ToString("dd/MM/yyyy")</dd> *@
 
-                                <dt class="col-sm-4">End Date</dt>
-                                <dd class="col-sm-8">@Model.Task.ProductField.EndDate.ToString("dd/MM/yyyy")</dd>
+                        @*         <dt class="col-sm-4">End Date</dt> *@
+                        @*         <dd class="col-sm-8">@Model.Task.ProductField.EndDate.ToString("dd/MM/yyyy")</dd> *@
 
-                                <dt class="col-sm-4">Productivity</dt>
-                                <dd class="col-sm-8">@Model.Task.ProductField.Productivity
-                                    @Model.Task.ProductField.ProductivityUnit</dd>
+                        @*         <dt class="col-sm-4">Productivity</dt> *@
+                        @*         <dd class="col-sm-8">@Model.Task.ProductField.Productivity *@
+                        @*             @Model.Task.ProductField.ProductivityUnit</dd> *@
 
-                                <dt class="col-sm-4">Product Name</dt>
-                                <dd class="col-sm-8">@Model.Task.ProductField.Product.ProductName</dd>
+                        @*         <dt class="col-sm-4">Product Name</dt> *@
+                        @*         <dd class="col-sm-8">@Model.Task.ProductField.Product.ProductName</dd> *@
 
-                                <dt class="col-sm-4">Category</dt>
-                                <dd class="col-sm-8">@Model.Task.ProductField.Product.Category.CategoryName</dd>
-                            </dl>
-                        </dd>
+                        @*         <dt class="col-sm-4">Category</dt> *@
+                        @*         <dd class="col-sm-8">@Model.Task.ProductField.Product.Category.CategoryName</dd> *@
+                        @*     </dl> *@
+                        @* </dd> *@
 
                         <dt class="col-sm-3">Staff Assignments</dt>
                         <dd class="col-sm-9">
@@ -118,7 +118,7 @@
                                             @foreach (var userTask in Model.Task.UserTasks)
                                             {
                                                 <tr>
-                                                    <td>@userTask.User.UserName</td>
+                                                    @* <td>@userTask.User.UserName</td> *@
                                                     <td>@userTask.UserTaskDescription</td>
                                                     <td>
                                                         <span class="badge @(userTask.Status ? "bg-success" : "bg-danger")">

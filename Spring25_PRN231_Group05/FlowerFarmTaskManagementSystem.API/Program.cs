@@ -37,6 +37,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserTaskService, UserTaskService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IProductFieldService, ProductFieldService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IFarmToolsService, FarmToolsService>();
 builder.Services.AddScoped<IFarmToolCategoriesService, FarmToolCategoriesService>();
