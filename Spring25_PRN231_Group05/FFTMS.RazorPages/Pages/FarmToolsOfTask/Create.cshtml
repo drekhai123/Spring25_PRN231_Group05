@@ -1,0 +1,49 @@
+﻿@page
+@model FFTMS.RazorPages.Pages.FarmToolsOfTask.CreateModel
+
+@{
+    ViewData["Title"] = "Create Farm Tools Task";
+    Layout = "_Layout";
+}
+
+<h2>Create Farm Tools Task</h2>
+
+<form method="post">
+    <div class="form-group">
+        <label for="UserTaskId">User Task</label>
+        <select asp-for="FarmToolsOfTask.UserTaskId" asp-items="ViewBag.UserTaskId" class="form-control">
+            <option value="">-- Select Task --</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Select Farm Tools:</label>
+        @foreach (var tool in (SelectList)ViewData["FarmToolsId"])
+        {
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" name="SelectedFarmToolsIds" value="@tool.Value" />
+                <label class="form-check-label">@tool.Text</label>
+            </div>
+        }
+    </div>
+
+    <div class="form-group">
+        <label for="StartDate">Start Date</label>
+        <input asp-for="FarmToolsOfTask.StartDate" type="date" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label for="EndDate">End Date</label>
+        <input asp-for="FarmToolsOfTask.EndDate" type="date" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create</button>
+</form>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
