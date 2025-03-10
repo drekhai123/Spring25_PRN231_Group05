@@ -6,9 +6,10 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.DTO
         public string UserTaskDescription { get; set; }
         public DateTime CreateDate { get; set; }
         public DateTime UpdateDate { get; set; }
-        public bool Status { get; set; }
+        public int Status { get; set; }
         public Guid TaskWorkId { get; set; }
         public Guid UserId { get; set; }
         public string UserName { get; set; }
+        public TaskBasicResponseDTO Task { get; set; }
     }
 }

@@ -61,14 +61,14 @@ namespace FFTMS.RazorPages.Pages.Tasks
                         AssignedBy = userId,
                         StartDate = taskResponse.StartDate,
                         EndDate = taskResponse.EndDate,
-                        Status = taskResponse.Status,
+                        Status = Convert.ToInt32(taskResponse.Status) == 1,
                         ImageUrl = taskResponse.ImageUrl,
                         ProductFieldId = taskResponse.ProductFieldId,
-                        UserTasks = taskResponse.UserTasks.Select(ut => new UserTaskRequest
+                        UserTasks = taskResponse.UserTasks?.Select(ut => new UserTaskRequest
                         {
                             AssignedTo = ut.UserId.ToString(),
                             UserTaskDescription = ut.UserTaskDescription
-                        }).ToList()
+                        }).ToList() ?? new List<UserTaskRequest>()
                     };
 
                     await LoadUserList();

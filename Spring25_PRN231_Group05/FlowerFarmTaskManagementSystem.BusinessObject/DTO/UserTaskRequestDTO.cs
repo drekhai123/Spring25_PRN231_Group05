@@ -1,7 +1,7 @@
+using FlowerFarmTaskManagementSystem.BusinessObject.Enums;
+
 public class UserTaskRequestDTO
 {
-    public string UserTaskDescription { get; set; }
-    public Guid TaskWorkId { get; set; }
-    public Guid UserId { get; set; }
-    public bool Status { get; set; }
+    public UserTaskStatus Status { get; set; }
+    public List<Guid> FarmToolIds { get; set; } = new();
 }
