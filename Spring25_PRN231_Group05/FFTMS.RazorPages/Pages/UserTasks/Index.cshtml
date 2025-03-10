@@ -5,6 +5,10 @@
     Layout = "_Layout";
 }
 
+<form id="antiforgeryForm">
+    @Html.AntiForgeryToken()
+</form>
+
 <div class="main-container">
     <div class="pd-ltr-20">
         <div class="min-height-200px">
@@ -34,9 +38,10 @@
             <div class="card-box mb-30" style="padding: 30px;">
                 <div class="pb-20">
                     <div class="table-responsive">
-                        <table class="table table-hover">
+                        <table class="table table-hover" style="width:100%">
                             <thead>
                                 <tr>
+                                    <th></th>
                                     <th>Task Description</th>
                                     <th>Created Date</th>
                                     <th>Updated Date</th>
@@ -45,24 +50,97 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var task in Model.UserTasks)
+                                @if (Model.UserTasks != null)
                                 {
-                                    <tr>
-                                        <td>@task.UserTaskDescription</td>
-                                        <td>@task.CreateDate.ToString("dd/MM/yyyy HH:mm")</td>
-                                        <td>@task.UpdateDate.ToString("dd/MM/yyyy HH:mm")</td>
-                                        <td>
-                                            <span class="badge @(task.Status ? "bg-success" : "bg-danger")">
-                                                @(task.Status ? "Active" : "Inactive")
+                                    @foreach (var task in Model.UserTasks)
+                                    {
+                                        <tr class="task-row" data-task-id="@task.UserTaskId">
+                                            <td class="text-center">
+                                                <i class="fa-solid fa-chevron-down toggle-details cursor-pointer"></i>
+                                            </td>
+                                            <td>@task.UserTaskDescription</td>
+                                            <td>@task.CreateDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                            <td>@task.UpdateDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                            <td>
+                                                <span
+                                                    class="badge @(task.Status == 0 ? "bg-danger" : task.Status == 1 ? "bg-warning" : "bg-success")">
+                                                    @(task.Status == 0 ? "Waiting" : task.Status == 1 ? "Processing" :
+                                                                                                "Completed")
                                             </span>
                                         </td>
                                         <td class="text-center">
-                                            <a asp-page="./Details" asp-route-id="@task.UserTaskId"
-                                                class="btn btn-info btn-sm">
-                                                <i class="dw dw-eye"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
+                                            <div class="d-flex justify-content-center align-items-center">
+                                            @if (task.Status == 0) // Waiting
+                                                    {
+                                                        <form method="post" asp-page-handler="ConfirmTask" style="margin:0">
+                                                            <input type="hidden" name="id" value="@task.UserTaskId" />
+                                                            <button type="submit" class="btn btn-sm btn-success">
+                                                                <i class="fa-solid fa-check"></i> Start
+                                                            </button>
+                                                        </form>
+                                                    }
+                                                    else if (task.Status == 1) // Processing
+                                                    {
+                                                        <form method="post" asp-page-handler="CompleteTask" style="margin:0">
+                                                            <input type="hidden" name="id" value="@task.UserTaskId" />
+                                                            <button type="submit" class="btn btn-sm btn-success">
+                                                                <i class="fa-solid fa-check"></i> Complete
+                                                            </button>
+                                                        </form>
+                                                    }
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr class="task-details hidden" id="details-@task.UserTaskId">
+                                            <td colspan="6">
+                                                <div class="p-4 bg-light rounded">
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <h5 class="mb-3">Task Information</h5>
+                                                            <div class="mb-2">
+                                                                <strong>Staff Name:</strong> @task.UserName
+                                                            </div>
+                                                            <div class="mb-2">
+                                                                <strong>Job Title:</strong> @task.Task.JobTitle
+                                                            </div>
+                                                            <div class="mb-2">
+                                                                <strong>Description:</strong> @task.Task.Description
+                                                            </div>
+                                                            <div class="mb-2">
+                                                                <strong>Start Date:</strong>
+                                                                @task.Task.StartDate.ToString("dd/MM/yyyy HH:mm")
+                                                            </div>
+                                                            <div class="mb-2">
+                                                                <strong>End Date:</strong>
+                                                                @task.Task.EndDate.ToString("dd/MM/yyyy HH:mm")
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <h5 class="mb-3">Product Information</h5>
+                                                            @if (task.Task.Product != null)
+                                                            {
+                                                                <div class="mb-2">
+                                                                    <strong>Product:</strong> @task.Task.Product.ProductName
+                                                                </div>
+                                                                <div class="mb-2">
+                                                                    <strong>Category:</strong>
+                                                                    @task.Task.Product.Category.CategoryName
+                                                                </div>
+                                                                <div class="mb-2">
+                                                                    <strong>Productivity:</strong>
+                                                                    @task.Task.Productivity @task.Task.ProductivityUnit
+                                                                </div>
+                                                            }
+                                                            else
+                                                            {
+                                                                <div>No product information available</div>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
                                 }
                             </tbody>
                         </table>
@@ -76,10 +154,142 @@
 <style>
     .table {
         margin: 0;
+        width: 100% !important;
+    }
+
+    .table thead th {
+        padding: 1rem;
+        font-weight: 500;
+        border-bottom: 2px solid #e5e5e5;
+        white-space: nowrap;
+    }
+
+    .table tbody td {
+        padding: 1rem;
+        vertical-align: middle;
     }
 
     .badge {
         padding: 0.4em 0.8em;
         font-size: 12px;
     }
+
+    .cursor-pointer {
+        cursor: pointer;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .task-details {
+        background-color: #f8f9fa;
+    }
+
+    .toggle-details {
+        transition: transform 0.3s ease;
+    }
+
+    .rotate {
+        transform: rotate(180deg);
+    }
+
+    .task-row:hover {
+        background-color: #f5f5f5;
+    }
+
+    .task-row {
+        cursor: pointer;
+    }
+
+    .task-details {
+        background-color: #f8f9fa;
+        transition: all 0.3s ease;
+    }
+
+    .toggle-details {
+        font-size: 16px;
+        color: #666;
+        transition: transform 0.3s ease;
+    }
+
+    .rotate {
+        transform: rotate(180deg);
+    }
+
+    .details-content {
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+    }
+
+    .badge {
+        font-weight: 500;
+        padding: 6px 12px;
+    }
+
+    .btn-sm {
+        padding: 5px 10px;
+    }
+
+    .farmtool-select {
+        min-width: 150px;
+        font-size: 14px;
+    }
+
+    .form-select-sm {
+        padding: 0.25rem 0.5rem;
+    }
 </style>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Setup for AJAX
+            $.ajaxSetup({
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                }
+            });
+
+            // Click vào hàng để toggle details
+            $('.task-row').click(function (e) {
+                if (!$(e.target).closest('button, form').length) {
+                    const taskId = $(this).data('task-id');
+                    const detailsRow = $(`#details-${taskId}`);
+                    const icon = $(this).find('.toggle-details');
+
+                    icon.toggleClass('rotate');
+                    detailsRow.slideToggle(300);
+
+                    $('.task-details').not(detailsRow).slideUp(300);
+                    $('.toggle-details').not(icon).removeClass('rotate');
+                }
+            });
+
+            // DataTable initialization
+            $('.table').DataTable({
+                autoWidth: true,
+                searching: true,
+                lengthChange: true,
+                pageLength: 10,
+                ordering: true,
+                info: true,
+                scrollX: false,
+                columnDefs: [
+                    { orderable: false, targets: [0, 5] }
+                ],
+                language: {
+                    search: "Search tasks:",
+                    lengthMenu: "Show _MENU_ tasks per page",
+                    info: "Showing _START_ to _END_ of _TOTAL_ tasks"
+                }
+            });
+        });
+    </script>
+}
