@@ -13,7 +13,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.IService
 		Task<FarmToolsOfTaskResponseDTO> GetFarmToolsOfTasksByIdAsync(String FarmToolsOfTasksId);
 		Task<List<FarmToolsOfTaskResponseDTO>> CreateFarmToolsOfTasksAsync(CreateFarmToolsOfTaskRequestDTO request);
 		Task<FarmToolsOfTaskResponseDTO> UpdateFarmToolsOfTasksAsync(FarmToolsOfTaskRequestDTO request);
-		Task<FarmToolsOfTaskResponseDTO> UpdateFarmToolsOfTasksExcuteAsync(FarmToolsOfTaskRequestDTO request);
+		Task<FarmToolsOfTaskResponseDTO> UpdateFarmToolsOfTasksExtendAsync(FarmToolsOfTaskRequestDTO request);
 		Task<FarmToolsOfTaskResponseDTO> UpdateFarmToolsOfTasksStatusFinishAsync(String FarmToolsOfTasksId);
 		Task<FarmToolsOfTaskResponseDTO> UpdateFarmToolsOfTasksStatusPendingAsync(String FarmToolsOfTasksId);
 		Task<bool> DeleteFarmToolsOfTasksAsync(String FarmToolsOfTasksId);

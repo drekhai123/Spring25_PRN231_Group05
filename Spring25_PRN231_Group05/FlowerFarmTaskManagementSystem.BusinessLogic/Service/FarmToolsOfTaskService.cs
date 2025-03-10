@@ -118,7 +118,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 			return _mapper.Map<FarmToolsOfTaskResponseDTO>(farmToolsOfTask);
 		}
 
-		public async Task<FarmToolsOfTaskResponseDTO> UpdateFarmToolsOfTasksExcuteAsync(FarmToolsOfTaskRequestDTO request)
+		public async Task<FarmToolsOfTaskResponseDTO> UpdateFarmToolsOfTasksExtendAsync(FarmToolsOfTaskRequestDTO request)
 		{
 			var farmToolsOfTaskId = Guid.Parse(request.FarmToolsOfTaskId);
 			var farmToolsOfTask = await _unitOfWork.FarmToolsOfTaskRepository.GetByIdAsync(farmToolsOfTaskId);

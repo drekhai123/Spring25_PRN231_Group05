@@ -27,10 +27,10 @@
                 @Html.DisplayNameFor(model => model.FarmToolsOfTask[0].UpdateDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.FarmToolsOfTask[0].FarmToolsOfTaskQuantity)
+                @Html.DisplayNameFor(model => model.FarmToolsOfTask[0].FarmToolOfTaskQuantity)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.FarmToolsOfTask[0].FarmToolsOfTaskUnit)
+                @Html.DisplayNameFor(model => model.FarmToolsOfTask[0].FarmToolOfTaskUnit)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.FarmToolsOfTask[0].Status)
@@ -60,14 +60,18 @@
                 @Html.DisplayFor(modelItem => item.UpdateDate)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.FarmToolsOfTaskQuantity)
+                @Html.DisplayFor(modelItem => item.FarmToolOfTaskQuantity)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.FarmToolsOfTaskUnit)
+                @Html.DisplayFor(modelItem => item.FarmToolOfTaskUnit)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
+                    <span>
+                        @(item.Status == 1 ? "Pending" :
+                            item.Status == 2 ? "Extend" :
+                            item.Status == 3 ? "Finish" : "Unknown")
+                    </span>
+                </td>
             <td>
                 @Html.DisplayFor(modelItem => item.FarmTools.FarmToolsName)
             </td>
@@ -75,7 +79,7 @@
                 @Html.DisplayFor(modelItem => item.UserTask.UserTaskDescription)
             </td>
             <td>
-                <a asp-page="./Edit" asp-route-id="@item.FarmToolsOfTaskId">Edit</a> |
+                <a asp-page="./Extend" asp-route-id="@item.FarmToolsOfTaskId">Edit</a> |
                 <a asp-page="./Details" asp-route-id="@item.FarmToolsOfTaskId">Details</a> |
                 <a asp-page="./Delete" asp-route-id="@item.FarmToolsOfTaskId">Delete</a>
             </td>
