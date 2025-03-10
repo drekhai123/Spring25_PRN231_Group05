@@ -23,18 +23,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Models
         public virtual TaskWork TaskWork { get; set; }
 
         [ForeignKey(nameof(UserId))]
-<<<<<<< HEAD
         public virtual User User { get; set; }
-    
-        //public User? User { get; set; }
-
-        public Guid? FarmToolsId { get; set; }
-
-        [ForeignKey(nameof(FarmToolsId))]
-        public FarmTools? FarmTools { get; set; }
-    }
-=======
-        public User? User { get; set; }
+     
 	}
->>>>>>> Update_Database
 }
