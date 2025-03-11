@@ -5,7 +5,7 @@
     Layout = "_Layout";
 }
 
-<div class="container mt-4">
+<div class="container mt-5 pt-4">
     <div class="card shadow-sm">
         <div class="card-header bg-primary text-white">
             <h3 class="mb-0">Create New Field</h3>
@@ -39,9 +39,30 @@
                 </div>
 
                 <div class="mb-3">
+                    <label class="form-label">Field Image</label>
+                    <div class="input-group">
+                        <input type="file" id="imageUpload" class="form-control" accept="image/*" />
+                        <button type="button" id="uploadButton" class="btn btn-outline-secondary">Upload</button>
+                    </div>
+                    <div class="mt-2">
+                        <div class="progress d-none" id="uploadProgress">
+                            <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <small class="form-text text-muted">Upload an image for the field</small>
+                </div>
+
+                <div class="mb-3">
                     <label asp-for="Field.FieldImageUrl" class="form-label">Image URL</label>
-                    <input asp-for="Field.FieldImageUrl" class="form-control" />
+                    <input asp-for="Field.FieldImageUrl" id="fieldImageUrl" class="form-control" readonly />
                     <span asp-validation-for="Field.FieldImageUrl" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3" id="imagePreviewContainer" style="display: none;">
+                    <label class="form-label">Image Preview</label>
+                    <div>
+                        <img id="imagePreview" src="" alt="Field image preview" class="img-fluid img-thumbnail" style="max-height: 200px;" />
+                    </div>
                 </div>
 
                 <div class="mb-3">
@@ -61,5 +82,77 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-} 
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-storage.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBrhzHppn0MSFRv8Y70pL--IjAqE_dqYP8",
+            authDomain: "farm-task-management-1b5e2.firebaseapp.com",
+            projectId: "farm-task-management-1b5e2",
+            storageBucket: "farm-task-management-1b5e2.firebasestorage.app",
+            messagingSenderId: "523429271962",
+            appId: "1:523429271962:web:a5025d2fb87bdb7b75c223"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const storage = getStorage(app);
+
+        // Handle file upload
+        document.getElementById('uploadButton').addEventListener('click', function () {
+            const fileInput = document.getElementById('imageUpload');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('Please select a file first');
+                return;
+            }
+
+            // Show progress bar
+            const progressBar = document.querySelector('#uploadProgress .progress-bar');
+            document.getElementById('uploadProgress').classList.remove('d-none');
+
+            // Create a storage reference
+            const storageRef = ref(storage, 'field_images/' + new Date().getTime() + '_' + file.name);
+
+            // Upload file
+            const uploadTask = uploadBytesResumable(storageRef, file);
+
+            // Register three observers:
+            // 1. 'state_changed' observer, called any time the state changes
+            // 2. Error observer, called on failure
+            // 3. Completion observer, called on successful completion
+            uploadTask.on('state_changed',
+                (snapshot) => {
+                    // Observe state change events such as progress, pause, and resume
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    progressBar.style.width = progress + '%';
+                    progressBar.textContent = Math.round(progress) + '%';
+                },
+                (error) => {
+                    // Handle unsuccessful uploads
+                    console.error('Upload failed:', error);
+                    alert('Upload failed: ' + error.message);
+                    document.getElementById('uploadProgress').classList.add('d-none');
+                },
+                () => {
+                    // Handle successful uploads on complete
+                    getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                        document.getElementById('fieldImageUrl').value = downloadURL;
+                        document.getElementById('imagePreview').src = downloadURL;
+                        document.getElementById('imagePreviewContainer').style.display = 'block';
+                        document.getElementById('uploadProgress').classList.add('d-none');
+                    });
+                }
+            );
+        });
+    </script>
+}
