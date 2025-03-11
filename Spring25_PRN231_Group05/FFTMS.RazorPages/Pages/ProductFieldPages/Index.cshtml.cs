@@ -7,25 +7,35 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using FlowerFarmTaskManagementSystem.BusinessObject.Models;
 using FlowerFarmTaskManagementSystem.DataAccess;
+using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
+using System.Text.Json;
 
 namespace FFTMS.RazorPages.Pages.ProductFieldPages
 {
     public class IndexModel : PageModel
     {
-        private readonly FlowerFarmTaskManagementSystem.DataAccess.FlowerFarmTaskManagementSystemDbContext _context;
+        private readonly HttpClient _httpClient;
 
-        public IndexModel(FlowerFarmTaskManagementSystem.DataAccess.FlowerFarmTaskManagementSystemDbContext context)
+        public IndexModel(HttpClient httpClient)
         {
-            _context = context;
+            _httpClient = httpClient;
         }
 
-        public IList<ProductField> ProductField { get;set; } = default!;
+        public IList<ProductFieldResponse> ProductField { get;set; } = default!;
 
         public async Task OnGetAsync()
         {
-            ProductField = await _context.ProductFields
-                .Include(p => p.Field)
-                .Include(p => p.Product).ToListAsync();
+            var apiUrl = "https://localhost:7207/odata/ProductField";
+            var response = await _httpClient.GetAsync(apiUrl);
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                ProductField = JsonSerializer.Deserialize<List<ProductFieldResponse>>(jsonResponse, 
+                    new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+            }
         }
     }
 }

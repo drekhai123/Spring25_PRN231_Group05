@@ -37,7 +37,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Mapper
                 .ForMember(dest => dest.Width, opt => opt.MapFrom(src => Convert.ToDouble(src.Width)));
 
             // ProductField mappings
-            CreateMap<ProductField, ProductFieldDTO>()
+            CreateMap<ProductField, ProductFieldRequest>()
                 .ForMember(dest => dest.Product, opt => opt.MapFrom(src => src.Product))
                 .ForMember(dest => dest.Field, opt => opt.MapFrom(src => src.Field));
 

@@ -12,11 +12,11 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
 {
     public class DeleteModel : PageModel
     {
-        private readonly FlowerFarmTaskManagementSystem.DataAccess.FlowerFarmTaskManagementSystemDbContext _context;
+        private readonly HttpClient _httpClient;
 
-        public DeleteModel(FlowerFarmTaskManagementSystem.DataAccess.FlowerFarmTaskManagementSystemDbContext context)
+        public DeleteModel(HttpClient httpClient)
         {
-            _context = context;
+            _httpClient = httpClient;
         }
 
         [BindProperty]
@@ -24,38 +24,38 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            //if (id == null)
+            //{
+            //    return NotFound();
+            //}
 
-            var productfield = await _context.ProductFields.FirstOrDefaultAsync(m => m.ProductFieldId == id);
+            //var productfield = await _context.ProductFields.FirstOrDefaultAsync(m => m.ProductFieldId == id);
 
-            if (productfield == null)
-            {
-                return NotFound();
-            }
-            else
-            {
-                ProductField = productfield;
-            }
+            //if (productfield == null)
+            //{
+            //    return NotFound();
+            //}
+            //else
+            //{
+            //    ProductField = productfield;
+            //}
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            //if (id == null)
+            //{
+            //    return NotFound();
+            //}
 
-            var productfield = await _context.ProductFields.FindAsync(id);
-            if (productfield != null)
-            {
-                ProductField = productfield;
-                _context.ProductFields.Remove(ProductField);
-                await _context.SaveChangesAsync();
-            }
+            //var productfield = await _context.ProductFields.FindAsync(id);
+            //if (productfield != null)
+            //{
+            //    ProductField = productfield;
+            //    _context.ProductFields.Remove(ProductField);
+            //    await _context.SaveChangesAsync();
+            //}
 
             return RedirectToPage("./Index");
         }

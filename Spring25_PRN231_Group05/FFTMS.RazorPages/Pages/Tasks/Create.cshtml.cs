@@ -92,7 +92,7 @@ namespace FFTMS.RazorPages.Pages.Tasks
                 if (response.IsSuccessStatusCode)
                 {
                     var jsonResponse = await response.Content.ReadAsStringAsync();
-                    var productFields = JsonSerializer.Deserialize<List<ProductFieldDTO>>(jsonResponse, new JsonSerializerOptions
+                    var productFields = JsonSerializer.Deserialize<List<ProductFieldRequest>>(jsonResponse, new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
                     });

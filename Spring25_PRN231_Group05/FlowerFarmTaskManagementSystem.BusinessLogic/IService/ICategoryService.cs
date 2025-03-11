@@ -17,3 +17,4 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.IService
         Task<bool> DeleteCategoryAsync(Guid id);
     }
 }
+

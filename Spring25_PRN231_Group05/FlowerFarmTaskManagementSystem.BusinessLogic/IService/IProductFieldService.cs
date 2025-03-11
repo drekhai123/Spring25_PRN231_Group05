@@ -5,12 +5,12 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.IService
 {
     public interface IProductFieldService
     {
-        Task<IEnumerable<ProductFieldDTO>> GetAllProductFieldsAsync();
-        Task<ProductFieldDTO> GetProductFieldByIdAsync(Guid id);
-    
-         Task<ProductFieldDTO> UpdateProductFieldsAsync(Guid id, ProductFieldDTO productField);
-         Task<bool> DeleteProductFieldsAsync(Guid id);
-         Task<ProductFieldDTO>  CreateProductFieldsAsync(ProductFieldDTO newPorductField);
-         Task<IEnumerable<ProductFieldDTO>> SearchProductFieldsAsync(string Productivity, string ProductivityUnit);
+        Task<IEnumerable<ProductFieldRequest>> GetAllProductFieldsAsync();
+        Task<ProductFieldRequest> GetProductFieldByIdAsync(Guid id);
+        Task<ProductFieldResponse> UpdateProductFieldsAsync(Guid id, ProductFieldRequest productField);
+        Task<bool> DeleteProductFieldsAsync(Guid id);
+        Task<ProductFieldResponse>  CreateProductFieldsAsync(ProductFieldRequest newPorductField);
+        Task<IEnumerable<ProductFieldResponse>> SearchProductFieldsAsync(string Productivity, string ProductivityUnit);
     }
 }
+

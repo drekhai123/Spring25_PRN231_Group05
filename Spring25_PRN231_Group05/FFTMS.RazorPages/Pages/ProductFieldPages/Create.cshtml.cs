@@ -12,19 +12,19 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
 {
     public class CreateModel : PageModel
     {
-        private readonly FlowerFarmTaskManagementSystem.DataAccess.FlowerFarmTaskManagementSystemDbContext _context;
+        private readonly HttpClient _httpClient;
 
-        public CreateModel(FlowerFarmTaskManagementSystem.DataAccess.FlowerFarmTaskManagementSystemDbContext context)
+        public CreateModel(HttpClient httpClient)
         {
-            _context = context;
+            _httpClient = httpClient;
         }
 
-        public IActionResult OnGet()
-        {
-        ViewData["FieldId"] = new SelectList(_context.Fields, "FieldId", "Description");
-        ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "Description");
-            return Page();
-        }
+        //public IActionResult OnGet()
+        //{
+        //ViewData["FieldId"] = new SelectList(_context.Fields, "FieldId", "Description");
+        //ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "Description");
+        //    return Page();
+        //}
 
         [BindProperty]
         public ProductField ProductField { get; set; } = default!;
@@ -32,13 +32,13 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
+            //if (!ModelState.IsValid)
+            //{
+            //    return Page();
+            //}
 
-            _context.ProductFields.Add(ProductField);
-            await _context.SaveChangesAsync();
+            //_context.ProductFields.Add(ProductField);
+            //await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");
         }

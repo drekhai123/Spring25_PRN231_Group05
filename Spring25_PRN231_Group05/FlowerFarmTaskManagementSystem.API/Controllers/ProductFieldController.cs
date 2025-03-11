@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.OData.Query;
 
 namespace FlowerFarmTaskManagementSystem.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("odata/[controller]")]
     [ApiController]
     public class ProductFieldController : ControllerBase
     {
@@ -19,14 +19,14 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
 
         [HttpGet]
         [EnableQuery]
-        public async Task<ActionResult<IEnumerable<ProductFieldDTO>>> GetAllProductFields()
+        public async Task<ActionResult<IEnumerable<ProductFieldRequest>>> GetAllProductFields()
         {
             var productFields = await _productFieldService.GetAllProductFieldsAsync();
             return Ok(productFields);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ProductFieldDTO>> GetProductFieldById(Guid id)
+        public async Task<ActionResult<ProductFieldRequest>> GetProductFieldById(Guid id)
         {
             try
             {
@@ -52,13 +52,14 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
                 return NotFound(new { Message = ex.Message });
             }
         }
-        [HttpPost]
-        public async Task<ActionResult<ProductFieldDTO>> CreateProductField([FromBody] ProductFieldDTO newproductField)
+        [HttpPost("create-productField")]
+        public async Task<ActionResult<ProductFieldResponse>> CreateProductField([FromBody] ProductFieldRequest newproductField)
         {
             try
             {
                 var productField = await _productFieldService.CreateProductFieldsAsync(newproductField);
-                return CreatedAtAction(nameof(GetProductFieldById), new { id = productField.ProductFieldId }, productField);
+                return CreatedAtAction(nameof(GetProductFieldById), new { id = productField.ProductFieldId },
+                    productField);
             }
             catch (ArgumentException ex)
             {
@@ -67,7 +68,7 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<ProductFieldDTO>> UpdateTProductFieldask(Guid id, [FromBody] ProductFieldDTO productFieldDto)
+        public async Task<ActionResult<ProductFieldRequest>> UpdateProductFieldAsync(Guid id, [FromBody] ProductFieldRequest productFieldDto)
         {
             try
             {
