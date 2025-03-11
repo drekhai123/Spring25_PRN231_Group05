@@ -5,9 +5,88 @@
     Layout = "_Layout";
 }
 
-<form id="antiforgeryForm">
-    @Html.AntiForgeryToken()
-</form>
+<style>
+    .table {
+        margin: 0;
+        width: 100% !important;
+    }
+
+    .table thead th {
+        padding: 1rem;
+        font-weight: 500;
+        border-bottom: 2px solid #e5e5e5;
+        white-space: nowrap;
+    }
+
+    .table tbody td {
+        padding: 1rem;
+        vertical-align: middle;
+    }
+
+    .badge {
+        padding: 0.4em 0.8em;
+        font-size: 12px;
+    }
+
+    .cursor-pointer {
+        cursor: pointer;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .task-details {
+        background-color: #f8f9fa;
+        transition: all 0.3s ease;
+    }
+
+    .toggle-details {
+        font-size: 16px;
+        color: #666;
+        transition: transform 0.3s ease;
+    }
+
+    .rotate {
+        transform: rotate(180deg);
+    }
+
+    .task-row {
+        cursor: pointer;
+    }
+
+    .task-row:hover {
+        background-color: #f5f5f5;
+    }
+
+    .details-content {
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+    }
+
+    .badge {
+        font-weight: 500;
+        padding: 6px 12px;
+    }
+
+    .btn-sm {
+        padding: 5px 10px;
+    }
+
+    .farmtool-select {
+        min-width: 150px;
+        font-size: 14px;
+    }
+
+    .form-select-sm {
+        padding: 0.25rem 0.5rem;
+    }
+</style>
 
 <div class="main-container">
     <div class="pd-ltr-20">
@@ -35,10 +114,24 @@
                 </div>
             }
 
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["SuccessMessage"]
+                </div>
+            }
+
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger">
+                    @TempData["ErrorMessage"]
+                </div>
+            }
+
             <div class="card-box mb-30" style="padding: 30px;">
                 <div class="pb-20">
                     <div class="table-responsive">
-                        <table class="table table-hover" style="width:100%">
+                        <table class="table table-hover">
                             <thead>
                                 <tr>
                                     <th></th>
@@ -52,7 +145,7 @@
                             <tbody>
                                 @if (Model.UserTasks != null)
                                 {
-                                    @foreach (var task in Model.UserTasks)
+                                    foreach (var task in Model.UserTasks)
                                     {
                                         <tr class="task-row" data-task-id="@task.UserTaskId">
                                             <td class="text-center">
@@ -66,27 +159,23 @@
                                                     class="badge @(task.Status == 0 ? "bg-danger" : task.Status == 1 ? "bg-warning" : "bg-success")">
                                                     @(task.Status == 0 ? "Waiting" : task.Status == 1 ? "Processing" :
                                                                                                 "Completed")
-                                            </span>
-                                        </td>
-                                        <td class="text-center">
-                                            <div class="d-flex justify-content-center align-items-center">
-                                            @if (task.Status == 0) // Waiting
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="d-flex justify-content-center align-items-center gap-2">
+                                            @if (task.Status == 0)
                                                     {
-                                                        <form method="post" asp-page-handler="ConfirmTask" style="margin:0">
-                                                            <input type="hidden" name="id" value="@task.UserTaskId" />
-                                                            <button type="submit" class="btn btn-sm btn-success">
-                                                                <i class="fa-solid fa-check"></i> Start
-                                                            </button>
-                                                        </form>
+                                                        <a asp-page="/FarmToolsOfTask/Create"
+                                                            asp-route-userTaskId="@task.UserTaskId" class="btn btn-sm btn-primary">
+                                                            <i class="fa-solid fa-plus"></i> Add Tools
+                                                        </a>
                                                     }
-                                                    else if (task.Status == 1) // Processing
+                                                    @if (task.Status == 1)
                                                     {
-                                                        <form method="post" asp-page-handler="CompleteTask" style="margin:0">
-                                                            <input type="hidden" name="id" value="@task.UserTaskId" />
-                                                            <button type="submit" class="btn btn-sm btn-success">
-                                                                <i class="fa-solid fa-check"></i> Complete
-                                                            </button>
-                                                        </form>
+                                                        <button type="button" class="btn btn-sm btn-success complete-task-btn"
+                                                            data-task-id="@task.UserTaskId">
+                                                            <i class="fa-solid fa-check"></i> Complete
+                                                        </button>
                                                     }
                                                 </div>
                                             </td>
@@ -151,100 +240,32 @@
     </div>
 </div>
 
-<style>
-    .table {
-        margin: 0;
-        width: 100% !important;
-    }
-
-    .table thead th {
-        padding: 1rem;
-        font-weight: 500;
-        border-bottom: 2px solid #e5e5e5;
-        white-space: nowrap;
-    }
-
-    .table tbody td {
-        padding: 1rem;
-        vertical-align: middle;
-    }
-
-    .badge {
-        padding: 0.4em 0.8em;
-        font-size: 12px;
-    }
-
-    .cursor-pointer {
-        cursor: pointer;
-    }
-
-    .hidden {
-        display: none;
-    }
-
-    .task-details {
-        background-color: #f8f9fa;
-    }
-
-    .toggle-details {
-        transition: transform 0.3s ease;
-    }
-
-    .rotate {
-        transform: rotate(180deg);
-    }
-
-    .task-row:hover {
-        background-color: #f5f5f5;
-    }
-
-    .task-row {
-        cursor: pointer;
-    }
-
-    .task-details {
-        background-color: #f8f9fa;
-        transition: all 0.3s ease;
-    }
-
-    .toggle-details {
-        font-size: 16px;
-        color: #666;
-        transition: transform 0.3s ease;
-    }
-
-    .rotate {
-        transform: rotate(180deg);
-    }
-
-    .details-content {
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .table-hover tbody tr:hover {
-        background-color: rgba(0, 0, 0, 0.02);
-    }
-
-    .badge {
-        font-weight: 500;
-        padding: 6px 12px;
-    }
-
-    .btn-sm {
-        padding: 5px 10px;
-    }
-
-    .farmtool-select {
-        min-width: 150px;
-        font-size: 14px;
-    }
-
-    .form-select-sm {
-        padding: 0.25rem 0.5rem;
-    }
-</style>
+<!-- Thêm modal xác nhận vào cuối trang -->
+<div class="modal fade" id="completeTaskModal" tabindex="-1" role="dialog" aria-labelledby="completeTaskModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="completeTaskModalLabel">Xác nhận hoàn thành</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Bạn có chắc muốn đánh dấu task này là đã hoàn thành?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                <form id="completeTaskForm" method="post">
+                    <input type="hidden" id="taskToCompleteId" name="id" value="" />
+                    <button type="submit" asp-page-handler="Complete" class="btn btn-success">
+                        <i class="fa-solid fa-check"></i> Hoàn thành
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
     <script>
@@ -289,6 +310,13 @@
                     lengthMenu: "Show _MENU_ tasks per page",
                     info: "Showing _START_ to _END_ of _TOTAL_ tasks"
                 }
+            });
+
+            // Xử lý nút Complete
+            $('.complete-task-btn').click(function () {
+                const taskId = $(this).data('task-id');
+                $('#taskToCompleteId').val(taskId);
+                $('#completeTaskModal').modal('show');
             });
         });
     </script>

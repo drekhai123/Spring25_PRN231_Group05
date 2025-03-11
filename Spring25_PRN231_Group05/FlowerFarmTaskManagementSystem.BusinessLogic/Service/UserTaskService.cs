@@ -101,15 +101,12 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             userTask.Status = (int)userTaskRequest.Status;
             userTask.UpdateDate = DateTime.UtcNow;
 
-            // Cập nhật FarmToolsId (lấy tool đầu tiên nếu có)
-            //userTask.FarmToolsId = userTaskRequest.FarmToolIds.FirstOrDefault();
-
             _unitOfWork.UserTaskRepository.Update(userTask);
             await _unitOfWork.SaveChangesAsync();
 
             var updatedUserTask = await Task.FromResult(_unitOfWork.UserTaskRepository.Get(
                 filter: ut => ut.UserTaskId == id,
-                includeProperties: "User,TaskWork.ProductField.Product.Category,TaskWork.ProductField.Field,FarmTools.FarmToolCategories"
+                includeProperties: "User,TaskWork.ProductField.Product.Category,TaskWork.ProductField.Field,FarmToolsOfTasks.FarmTools"
             ).FirstOrDefault());
 
             return _mapper.Map<UserTaskResponseDTO>(updatedUserTask);

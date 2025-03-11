@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Text.Json;
 using FFTMS.RazorPages.Helpers;
+using System.Text.Json.Serialization;
+using System.Text;
 
 namespace FFTMS.RazorPages.Pages.UserTasks
 {
@@ -133,6 +135,58 @@ namespace FFTMS.RazorPages.Pages.UserTasks
             catch (Exception ex)
             {
                 TempData["ErrorMessage"] = ex.Message;
+                return RedirectToPage();
+            }
+        }
+
+        public async Task<IActionResult> OnPostCompleteAsync(string id)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(id))
+                    return BadRequest("Task ID is required");
+
+                using (var httpClient = new HttpClient())
+                {
+                    // Lấy token nếu cần
+                    var token = Request.Cookies["AuthToken"];
+                    if (!string.IsNullOrEmpty(token))
+                    {
+                        httpClient.DefaultRequestHeaders.Authorization =
+                            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                    }
+
+                    // Tạo request cập nhật status của UserTask thành 2 (Completed)
+                    var updateTaskRequest = new
+                    {
+                        status = 2 // Completed
+                    };
+
+                    var updateTaskJson = JsonSerializer.Serialize(updateTaskRequest);
+                    var updateTaskContent = new StringContent(updateTaskJson, Encoding.UTF8, "application/json");
+
+                    // Gọi API cập nhật UserTask
+                    var updateTaskUrl = $"https://localhost:7207/odata/UserTask/update-status/{id}";
+                    var response = await httpClient.PutAsync(updateTaskUrl, updateTaskContent);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        TempData["SuccessMessage"] = "Task marked as completed successfully";
+                    }
+                    else
+                    {
+                        var errorContent = await response.Content.ReadAsStringAsync();
+                        TempData["ErrorMessage"] = $"Failed to complete task: {response.StatusCode}";
+                        // Log lỗi nếu cần
+                        Console.WriteLine($"Error completing task: {errorContent}");
+                    }
+                }
+
+                return RedirectToPage();
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"An error occurred: {ex.Message}";
                 return RedirectToPage();
             }
         }
