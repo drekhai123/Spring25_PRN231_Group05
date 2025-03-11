@@ -9,9 +9,11 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.DTO
         public DateTime EndDate { get; set; }
         public double Productivity { get; set; }
         public string ProductivityUnit { get; set; }
-        public DateTime CreateDate { get; set; }
-        public DateTime UpdateDate { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime UpdatedDate { get; set; }
         public bool Status { get; set; }
+        public Guid ProductId { get; set; }
+        public Guid FieldId { get; set; }
         public ProductDTO Product { get; set; }
         public FieldDTO Field { get; set; }
     }

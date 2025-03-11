@@ -28,7 +28,10 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             await _unitOfWork.FieldRepository.AddAsync(field);
             await _unitOfWork.SaveChangesAsync();
 
-            return _mapper.Map<FieldDTO>(field);
+            var fieldDto = _mapper.Map<FieldDTO>(field);
+            fieldDto.CreatedDate = field.CreateDate;
+            fieldDto.UpdatedDate = field.UpdateDate;
+            return fieldDto;
         }
 
         public async Task<FieldDTO> UpdateFieldAsync(Guid id, FieldUpdateDTO fieldUpdateDTO)
@@ -42,7 +45,10 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             _unitOfWork.FieldRepository.Update(field);
             await _unitOfWork.SaveChangesAsync();
 
-            return _mapper.Map<FieldDTO>(field);
+            var fieldDto = _mapper.Map<FieldDTO>(field);
+            fieldDto.CreatedDate = field.CreateDate;
+            fieldDto.UpdatedDate = field.UpdateDate;
+            return fieldDto;
         }
 
         public async Task<bool> DeleteFieldAsync(Guid fieldId)

@@ -40,11 +40,8 @@
                 <dt class="col-sm-3">Created Date</dt>
                 <dd class="col-sm-9">@Model.ProductField.CreatedDate.ToString("g")</dd>
 
-                @if (Model.ProductField.UpdatedDate.HasValue)
-                {
-                    <dt class="col-sm-3">Last Updated</dt>
-                    <dd class="col-sm-9">@Model.ProductField.UpdatedDate.Value.ToString("g")</dd>
-                }
+                <dt class="col-sm-3">Last Updated</dt>
+                <dd class="col-sm-9">@Model.ProductField.UpdatedDate.ToString("g")</dd>
             </dl>
 
             <div class="d-flex justify-content-between mt-4">

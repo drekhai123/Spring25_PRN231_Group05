@@ -57,7 +57,7 @@ namespace FFTMS.RazorPages.Pages.ProductField
 
             try
             {
-                ProductField.UpdateDate = DateTime.Now;
+                ProductField.UpdatedDate = DateTime.Now;
                 var response = await _httpClient.PutAsJsonAsync($"odata/ProductField/update-product-field?id={ProductField.ProductFieldId}", ProductField);
                 
                 if (response.IsSuccessStatusCode)

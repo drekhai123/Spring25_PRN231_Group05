@@ -41,7 +41,10 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
                 includeProperties: "Product.Category,Field"
             ).FirstOrDefault());
 
-            return _mapper.Map<ProductFieldDTO>(createdProductField);
+            var result = _mapper.Map<ProductFieldDTO>(createdProductField);
+            result.CreatedDate = productField.CreateDate;
+            result.UpdatedDate = productField.UpdateDate;
+            return result;
         }
 
         public async Task<ProductFieldDTO> UpdateProductFieldAsync(Guid id, ProductFieldUpdateDTO productFieldUpdateDTO)
@@ -78,7 +81,10 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
                 includeProperties: "Product.Category,Field"
             ).FirstOrDefault());
 
-            return _mapper.Map<ProductFieldDTO>(updatedProductField);
+            var result = _mapper.Map<ProductFieldDTO>(updatedProductField);
+            result.CreatedDate = productField.CreateDate;
+            result.UpdatedDate = productField.UpdateDate;
+            return result;
         }
 
         public async Task<bool> DeleteProductFieldAsync(Guid productFieldId)

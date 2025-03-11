@@ -39,7 +39,7 @@ namespace FFTMS.RazorPages.Pages.ProductField
                         StartDate = DateTime.Today,
                         EndDate = DateTime.Today.AddDays(30),
                         Status = true,
-                        CreateDate = DateTime.Now,
+                        CreatedDate = DateTime.Now,
                         Product = new ProductDTO(),
                         Field = new FieldDTO()
                     };

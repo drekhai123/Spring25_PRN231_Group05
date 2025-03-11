@@ -35,18 +35,25 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Mapper
             // Field mappings
             CreateMap<Field, FieldDTO>()
                 .ForMember(dest => dest.Length, opt => opt.MapFrom(src => Convert.ToDouble(src.Length)))
-                .ForMember(dest => dest.Width, opt => opt.MapFrom(src => Convert.ToDouble(src.Width)));
+                .ForMember(dest => dest.Width, opt => opt.MapFrom(src => Convert.ToDouble(src.Width)))
+                .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => src.CreateDate))
+                .ForMember(dest => dest.UpdatedDate, opt => opt.MapFrom(src => src.UpdateDate));
             CreateMap<FieldCreateDTO, Field>()
-                .ForMember(dest => dest.FieldId, opt => opt.MapFrom(src => Guid.NewGuid()))
-                .ForMember(dest => dest.CreateDate, opt => opt.MapFrom(src => DateTime.UtcNow))
-                .ForMember(dest => dest.UpdateDate, opt => opt.MapFrom(src => DateTime.UtcNow));
+                .ForMember(dest => dest.FieldId, opt => opt.Ignore())
+                .ForMember(dest => dest.CreateDate, opt => opt.Ignore())
+                .ForMember(dest => dest.UpdateDate, opt => opt.Ignore())
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => true));
             CreateMap<FieldUpdateDTO, Field>()
                 .ForMember(dest => dest.UpdateDate, opt => opt.MapFrom(src => DateTime.UtcNow));
 
             // ProductField mappings
             CreateMap<ProductField, ProductFieldDTO>()
                 .ForMember(dest => dest.Product, opt => opt.MapFrom(src => src.Product))
-                .ForMember(dest => dest.Field, opt => opt.MapFrom(src => src.Field));
+                .ForMember(dest => dest.Field, opt => opt.MapFrom(src => src.Field))
+                .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => src.CreateDate))
+                .ForMember(dest => dest.UpdatedDate, opt => opt.MapFrom(src => src.UpdateDate))
+                .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.ProductId))
+                .ForMember(dest => dest.FieldId, opt => opt.MapFrom(src => src.FieldId));
             CreateMap<ProductFieldCreateDTO, ProductField>()
                 .ForMember(dest => dest.ProductFieldId, opt => opt.MapFrom(src => Guid.NewGuid()))
                 .ForMember(dest => dest.CreateDate, opt => opt.MapFrom(src => DateTime.UtcNow))
