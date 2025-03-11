@@ -15,7 +15,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Models
         public string UserTaskDescription { get; set; }
         public DateTime CreateDate { get; set; }
         public DateTime UpdateDate { get; set; }
-        public int Status { get; set; }
+        public int? Status { get; set; }
         public Guid TaskWorkId { get; set; }
         public Guid UserId { get; set; }
 
