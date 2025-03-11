@@ -1,0 +1,94 @@
+@page
+@model FFTMS.RazorPages.Pages.ProductField.ListProductFieldModel
+@{
+    ViewData["Title"] = "List Product Fields";
+    Layout = "_Layout";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">Product Fields</h3>
+            <a asp-page="./CreateProductField" class="btn btn-light">Create New</a>
+        </div>
+        <div class="card-body">
+            @if (Model.ProductFields != null && Model.ProductFields.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Field</th>
+                                <th>Productivity</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.ProductFields)
+                            {
+                                <tr>
+                                    <td>@item.Product.ProductName</td>
+                                    <td>@item.Field.FieldName</td>
+                                    <td>@item.Productivity</td>
+                                    <td>@item.StartDate.ToString("d")</td>
+                                    <td>@item.EndDate.ToString("d")</td>
+                                    <td>
+                                        <span class="badge @(item.Status ? "bg-success" : "bg-danger")">
+                                            @(item.Status ? "Active" : "Inactive")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a asp-page="./DetailsProductField" asp-route-id="@item.ProductFieldId"
+                                               class="btn btn-info btn-sm">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a asp-page="./UpdateProductField" asp-route-id="@item.ProductFieldId"
+                                               class="btn btn-primary btn-sm">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a asp-page="./DeleteProductField" asp-route-id="@item.ProductFieldId"
+                                               class="btn btn-danger btn-sm">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    No product fields found. <a asp-page="./CreateProductField">Create one</a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <script>
+            $(document).ready(function () {
+                toastr.success('@TempData["SuccessMessage"]');
+            });
+        </script>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <script>
+            $(document).ready(function () {
+                toastr.error('@TempData["ErrorMessage"]');
+            });
+        </script>
+    }
+} 

@@ -1,0 +1,68 @@
+@page "{id:guid}"
+@model FFTMS.RazorPages.Pages.Field.DetailsFieldModel
+@{
+    ViewData["Title"] = "Field Details";
+    Layout = "_Layout";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Field Details</h3>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Field Name</dt>
+                <dd class="col-sm-9">@Model.Field.FieldName</dd>
+
+                <dt class="col-sm-3">Length</dt>
+                <dd class="col-sm-9">@Model.Field.Length</dd>
+
+                <dt class="col-sm-3">Width</dt>
+                <dd class="col-sm-9">@Model.Field.Width</dd>
+
+                <dt class="col-sm-3">Area</dt>
+                <dd class="col-sm-9">@(Model.Field.Length * Model.Field.Width) square meters</dd>
+
+                <dt class="col-sm-3">Description</dt>
+                <dd class="col-sm-9">@Model.Field.Description</dd>
+
+                <dt class="col-sm-3">Image URL</dt>
+                <dd class="col-sm-9">
+                    @if (!string.IsNullOrEmpty(Model.Field.ImageUrl))
+                    {
+                        <img src="@Model.Field.ImageUrl" alt="Field Image" class="img-fluid" style="max-width: 300px;" />
+                    }
+                    else
+                    {
+                        <span>No image available</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-3">Status</dt>
+                <dd class="col-sm-9">
+                    <span class="badge @(Model.Field.Status ? "bg-success" : "bg-danger")">
+                        @(Model.Field.Status ? "Active" : "Inactive")
+                    </span>
+                </dd>
+
+                <dt class="col-sm-3">Created Date</dt>
+                <dd class="col-sm-9">@Model.Field.CreatedDate.ToString("g")</dd>
+
+                @if (Model.Field.UpdatedDate.HasValue)
+                {
+                    <dt class="col-sm-3">Last Updated</dt>
+                    <dd class="col-sm-9">@Model.Field.UpdatedDate.Value.ToString("g")</dd>
+                }
+            </dl>
+
+            <div class="d-flex justify-content-between mt-4">
+                <a asp-page="./ListField" class="btn btn-secondary">Back to List</a>
+                <div>
+                    <a asp-page="./UpdateField" asp-route-id="@Model.Field.FieldId" class="btn btn-primary me-2">Edit</a>
+                    <a asp-page="./DeleteField" asp-route-id="@Model.Field.FieldId" class="btn btn-danger">Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
