@@ -218,6 +218,12 @@
 								<span class="mtext">User Management</span>
 							</a>
 						</li>
+						<li>
+							<a asp-page="/FarmToolCategories/Index" class="dropdown-toggle no-arrow">
+								<span class="micon dw dw-clipboard"></span>
+								<span class="mtext">Farm Tool Categories</span>
+							</a>
+						</li>
 					}
 
 					@if (role == "Manager")
@@ -234,6 +240,13 @@
 								<span class="mtext">Product Management</span>
 							</a>
 						</li>
+						
+						<li>
+							<a asp-page="/FarmTools/ListFarmTools" class="dropdown-toggle no-arrow">
+								<span class="micon dw dw-clipboard"></span>
+								<span class="mtext">Farm Tools</span>
+							</a>
+						</li>
 					}
 					else if (role == "Staff")
 					{
@@ -245,18 +258,7 @@
 						</li>
 					}
 
-					<li>
-						<a asp-page="/FarmToolCategories/Index" class="dropdown-toggle no-arrow">
-							<span class="micon dw dw-clipboard"></span>
-							<span class="mtext">FarmToolCategories Management</span>
-						</a>
-					</li>
-					<li>
-						<a asp-page="/FarmTools/ListFarmTools" class="dropdown-toggle no-arrow">
-							<span class="micon dw dw-clipboard"></span>
-							<span class="mtext">FarmTools Management</span>
-						</a>
-					</li>
+					
 					<li>
 						<div class="dropdown-divider"></div>
 					</li>

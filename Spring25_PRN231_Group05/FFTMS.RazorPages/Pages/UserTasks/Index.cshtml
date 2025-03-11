@@ -184,7 +184,7 @@
                                             <td colspan="6">
                                                 <div class="p-4 bg-light rounded">
                                                     <div class="row">
-                                                        <div class="col-md-6">
+                                                        <div class="col-md-4">
                                                             <h5 class="mb-3">Task Information</h5>
                                                             <div class="mb-2">
                                                                 <strong>Staff Name:</strong> @task.UserName
@@ -204,7 +204,7 @@
                                                                 @task.Task.EndDate.ToString("dd/MM/yyyy HH:mm")
                                                             </div>
                                                         </div>
-                                                        <div class="col-md-6">
+                                                        <div class="col-md-4">
                                                             <h5 class="mb-3">Product Information</h5>
                                                             @if (task.Task.Product != null)
                                                             {
@@ -223,6 +223,24 @@
                                                             else
                                                             {
                                                                 <div>No product information available</div>
+                                                            }
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <h5 class="mb-3">Farm Tools List</h5>
+                                                            @if (Model.FarmTools != null && Model.FarmTools.Any())
+                                                            {
+                                                                <ul class="list-group">
+                                                                    @foreach (var tool in Model.FarmTools)
+                                                                    {
+                                                                        <li class="list-group-item">
+                                                                            <strong>@tool.FarmToolsName</strong> - Quantity: @tool.FarmToolsQuantity @tool.FarmToolsUnit
+                                                                        </li>
+                                                                    }
+                                                                </ul>
+                                                            }
+                                                            else
+                                                            {
+                                                                <div>No farm tools available</div>
                                                             }
                                                         </div>
                                                     </div>

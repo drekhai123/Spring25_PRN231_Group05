@@ -5,6 +5,7 @@ using System.Text.Json;
 using FFTMS.RazorPages.Helpers;
 using System.Text.Json.Serialization;
 using System.Text;
+using NuGet.Packaging;
 
 namespace FFTMS.RazorPages.Pages.UserTasks
 {
@@ -36,27 +37,63 @@ namespace FFTMS.RazorPages.Pages.UserTasks
                 var userId = JwtHelper.GetUserIdFromToken(token);
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
+                // 1. Lấy danh sách UserTasks của User
                 var userTaskResponse = await _httpClient.GetAsync($"https://localhost:7207/odata/UserTask?$filter=UserId eq {userId}");
-                var farmToolsResponse = await _httpClient.GetAsync("https://localhost:7207/odata/FarmTools/get-all-farm-tools");
 
-                if (userTaskResponse.IsSuccessStatusCode && farmToolsResponse.IsSuccessStatusCode)
+                if (!userTaskResponse.IsSuccessStatusCode)
                 {
-                    var jsonUserTasks = await userTaskResponse.Content.ReadAsStringAsync();
-                    var jsonFarmTools = await farmToolsResponse.Content.ReadAsStringAsync();
-
-                    UserTasks = JsonSerializer.Deserialize<List<UserTaskResponseDTO>>(jsonUserTasks, new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    }) ?? new List<UserTaskResponseDTO>();
-
-                    FarmTools = JsonSerializer.Deserialize<List<FarmToolsResponseDTO>>(jsonFarmTools, new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    }) ?? new List<FarmToolsResponseDTO>();
+                    ErrorMessage = "Failed to load user tasks from API";
+                    return Page();
                 }
-                else
+
+                var jsonUserTasks = await userTaskResponse.Content.ReadAsStringAsync();
+                UserTasks = JsonSerializer.Deserialize<List<UserTaskResponseDTO>>(jsonUserTasks, new JsonSerializerOptions
                 {
-                    ErrorMessage = "Failed to load data from API";
+                    PropertyNameCaseInsensitive = true
+                }) ?? new List<UserTaskResponseDTO>();
+
+                // 2. Lấy danh sách FarmToolOfTask bằng vòng lặp for
+                var farmToolIds = new HashSet<Guid>(); // Dùng HashSet để tránh trùng lặp
+
+                for (int i = 0; i < UserTasks.Count; i++)
+                {
+                    var userTaskId = UserTasks[i].UserTaskId;
+                    var farmToolOfTaskResponse = await _httpClient.GetAsync($"https://localhost:7207/api/FarmToolsOfTasks/get-all-farm-tools-of-task?$filter=UserTaskId eq '{userTaskId}'");
+
+                    if (farmToolOfTaskResponse.IsSuccessStatusCode)
+                    {
+                        var jsonFarmToolOfTask = await farmToolOfTaskResponse.Content.ReadAsStringAsync();
+                        var farmToolOfTaskList = JsonSerializer.Deserialize<List<FarmToolsOfTaskResponseDTO>>(jsonFarmToolOfTask, new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true
+                        }) ?? new List<FarmToolsOfTaskResponseDTO>();
+
+                        foreach (var farmToolOfTask in farmToolOfTaskList)
+                        {
+                            farmToolIds.Add(Guid.Parse(farmToolOfTask.FarmToolsId));
+                        }
+                    }
+                }
+
+                // 3. Lấy danh sách FarmTools dựa vào FarmToolIds đã thu thập được
+                var farmToolIdList = farmToolIds.ToList();
+                FarmTools = new List<FarmToolsResponseDTO>();
+
+                for (int i = 0; i < farmToolIdList.Count; i++)
+                {
+                    var farmToolId = farmToolIdList[i];
+                    var farmToolResponse = await _httpClient.GetAsync($"https://localhost:7207/odata/FarmTools/get-all-farm-tools?$filter=FarmToolsId eq '{farmToolId}'");
+
+                    if (farmToolResponse.IsSuccessStatusCode)
+                    {
+                        var jsonFarmTool = await farmToolResponse.Content.ReadAsStringAsync();
+                        var farmTool = JsonSerializer.Deserialize<List<FarmToolsResponseDTO>>(jsonFarmTool, new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true
+                        }) ?? new List<FarmToolsResponseDTO>();
+
+                        FarmTools.AddRange(farmTool);
+                    }
                 }
 
                 return Page();
