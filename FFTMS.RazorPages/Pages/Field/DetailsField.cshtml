@@ -7,7 +7,7 @@
 
 <div class="container mt-4">
     <div class="card shadow-sm">
-        <div class="card-header bg-info text-white">
+        <div class="card-header bg-primary text-white">
             <h3 class="mb-0">Field Details</h3>
         </div>
         <div class="card-body">
@@ -30,9 +30,16 @@
                 @if (!string.IsNullOrEmpty(Model.Field.FieldImageUrl))
                 {
                     <dt class="col-sm-3">Field Image</dt>
-                    <dd class="col-sm-9">
-                        <img src="@Model.Field.FieldImageUrl" alt="Field Image" class="img-fluid rounded" style="max-width: 300px;" />
-                    </dd>
+                    <dd class="col-sm-9"><img src="@Model.Field.FieldImageUrl" alt="Field Image" class="img-fluid" /></dd>
+                }
+
+                <dt class="col-sm-3">Created Date</dt>
+                <dd class="col-sm-9">@Model.Field.CreatedDate.ToString("yyyy-MM-dd HH:mm:ss")</dd>
+
+                @if (Model.Field.UpdatedDate.HasValue)
+                {
+                    <dt class="col-sm-3">Last Updated</dt>
+                    <dd class="col-sm-9">@Model.Field.UpdatedDate.Value.ToString("yyyy-MM-dd HH:mm:ss")</dd>
                 }
 
                 <dt class="col-sm-3">Status</dt>
@@ -41,23 +48,11 @@
                         @(Model.Field.Status ? "Active" : "Inactive")
                     </span>
                 </dd>
-
-                <dt class="col-sm-3">Created Date</dt>
-                <dd class="col-sm-9">@Model.Field.CreatedDate.ToString("g")</dd>
-
-                @if (Model.Field.UpdatedDate.HasValue)
-                {
-                    <dt class="col-sm-3">Last Updated</dt>
-                    <dd class="col-sm-9">@Model.Field.UpdatedDate.Value.ToString("g")</dd>
-                }
             </dl>
 
-            <div class="d-flex justify-content-between mt-4">
+            <div class="mt-3">
                 <a asp-page="./ListField" class="btn btn-secondary">Back to List</a>
-                <div>
-                    <a asp-page="./UpdateField" asp-route-id="@Model.Field.FieldId" class="btn btn-primary">Edit</a>
-                    <a asp-page="./DeleteField" asp-route-id="@Model.Field.FieldId" class="btn btn-danger">Delete</a>
-                </div>
+                <a asp-page="./UpdateField" asp-route-id="@Model.Field.FieldId" class="btn btn-primary">Edit</a>
             </div>
         </div>
     </div>

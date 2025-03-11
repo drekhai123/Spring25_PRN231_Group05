@@ -11,11 +11,6 @@ namespace FFTMS.RazorPages.Pages.ProductField
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
 
-        [BindProperty]
-        public ProductFieldDTO ProductField { get; set; } = new();
-        public SelectList Products { get; set; }
-        public SelectList Fields { get; set; }
-
         public UpdateProductFieldModel(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
@@ -23,28 +18,33 @@ namespace FFTMS.RazorPages.Pages.ProductField
             _httpClient.BaseAddress = new Uri(_configuration["ApiSettings:BaseUrl"]);
         }
 
+        [BindProperty]
+        public ProductFieldDTO ProductField { get; set; }
+        public SelectList Products { get; set; }
+        public SelectList Fields { get; set; }
+
         public async Task<IActionResult> OnGetAsync(Guid id)
         {
             try
             {
-                var response = await _httpClient.GetAsync($"odata/ProductField/by-id?id={id}");
-                if (response.IsSuccessStatusCode)
-                {
-                    ProductField = await response.Content.ReadFromJsonAsync<ProductFieldDTO>();
-                    if (ProductField == null)
-                    {
-                        return NotFound();
-                    }
+                var products = await _httpClient.GetFromJsonAsync<List<ProductDTO>>("odata/Product/get-all-product");
+                var fields = await _httpClient.GetFromJsonAsync<List<FieldDTO>>("odata/Field/get-all-field");
+                var productField = await _httpClient.GetFromJsonAsync<ProductFieldDTO>($"odata/ProductField/by-id?id={id}");
 
-                    await LoadSelectLists();
+                if (products != null && fields != null && productField != null)
+                {
+                    Products = new SelectList(products, "ProductId", "ProductName");
+                    Fields = new SelectList(fields, "FieldId", "FieldName");
+                    ProductField = productField;
                     return Page();
                 }
-                return NotFound();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return RedirectToPage("./ListProductField");
+                TempData["ErrorMessage"] = $"Error loading data: {ex.Message}";
             }
+
+            return RedirectToPage("./ListProductField");
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -57,21 +57,25 @@ namespace FFTMS.RazorPages.Pages.ProductField
 
             try
             {
+                ProductField.UpdatedDate = DateTime.Now;
                 var response = await _httpClient.PutAsJsonAsync($"odata/ProductField/update-product-field?id={ProductField.ProductFieldId}", ProductField);
+                
                 if (response.IsSuccessStatusCode)
                 {
+                    TempData["SuccessMessage"] = "Product Field updated successfully.";
                     return RedirectToPage("./ListProductField");
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Failed to update product field. Please try again.");
+                    var error = await response.Content.ReadAsStringAsync();
+                    ModelState.AddModelError("", $"Error updating Product Field: {error}");
                     await LoadSelectLists();
                     return Page();
                 }
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", $"Error updating product field: {ex.Message}");
+                ModelState.AddModelError("", $"Error updating Product Field: {ex.Message}");
                 await LoadSelectLists();
                 return Page();
             }
@@ -81,18 +85,12 @@ namespace FFTMS.RazorPages.Pages.ProductField
         {
             try
             {
-                var productsResponse = await _httpClient.GetAsync("odata/Product/get-all-product");
-                var fieldsResponse = await _httpClient.GetAsync("odata/Field/get-all-field");
+                var products = await _httpClient.GetFromJsonAsync<List<ProductDTO>>("odata/Product/get-all-product");
+                var fields = await _httpClient.GetFromJsonAsync<List<FieldDTO>>("odata/Field/get-all-field");
 
-                if (productsResponse.IsSuccessStatusCode)
+                if (products != null && fields != null)
                 {
-                    var products = await productsResponse.Content.ReadFromJsonAsync<List<ProductDTO>>();
                     Products = new SelectList(products, "ProductId", "ProductName");
-                }
-
-                if (fieldsResponse.IsSuccessStatusCode)
-                {
-                    var fields = await fieldsResponse.Content.ReadFromJsonAsync<List<FieldDTO>>();
                     Fields = new SelectList(fields, "FieldId", "FieldName");
                 }
             }

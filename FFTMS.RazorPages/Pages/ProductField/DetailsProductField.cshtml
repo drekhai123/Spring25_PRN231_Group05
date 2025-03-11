@@ -7,28 +7,39 @@
 
 <div class="container mt-4">
     <div class="card shadow-sm">
-        <div class="card-header bg-info text-white">
+        <div class="card-header bg-primary text-white">
             <h3 class="mb-0">Product Field Details</h3>
         </div>
         <div class="card-body">
             <dl class="row">
                 <dt class="col-sm-3">Product</dt>
-                <dd class="col-sm-9">@Model.ProductField.Product?.ProductName</dd>
+                <dd class="col-sm-9">@Model.ProductField.Product.ProductName</dd>
 
                 <dt class="col-sm-3">Field</dt>
-                <dd class="col-sm-9">@Model.ProductField.Field?.FieldName</dd>
+                <dd class="col-sm-9">@Model.ProductField.Field.FieldName</dd>
 
                 <dt class="col-sm-3">Productivity</dt>
-                <dd class="col-sm-9">@Model.ProductField.Productivity @Model.ProductField.ProductivityUnit</dd>
+                <dd class="col-sm-9">@Model.ProductField.Productivity</dd>
+
+                <dt class="col-sm-3">Productivity Unit</dt>
+                <dd class="col-sm-9">@Model.ProductField.ProductivityUnit</dd>
 
                 <dt class="col-sm-3">Start Date</dt>
-                <dd class="col-sm-9">@Model.ProductField.StartDate.ToString("d")</dd>
+                <dd class="col-sm-9">@Model.ProductField.StartDate.ToString("yyyy-MM-dd")</dd>
 
                 <dt class="col-sm-3">End Date</dt>
-                <dd class="col-sm-9">@Model.ProductField.EndDate.ToString("d")</dd>
+                <dd class="col-sm-9">@Model.ProductField.EndDate.ToString("yyyy-MM-dd")</dd>
 
-                <dt class="col-sm-3">Duration</dt>
-                <dd class="col-sm-9">@((Model.ProductField.EndDate - Model.ProductField.StartDate).Days) days</dd>
+                <dt class="col-sm-3">Created Date</dt>
+                <dd class="col-sm-9">@Model.ProductField.CreateDate.ToString("yyyy-MM-dd HH:mm:ss")</dd>
+
+                <dt class="col-sm-3">Last Updated</dt>
+                <dd class="col-sm-9">
+                    @if (Model.ProductField.UpdateDate.HasValue)
+                    {
+                        @Model.ProductField.UpdateDate.Value.ToString("yyyy-MM-dd HH:mm:ss")
+                    }
+                </dd>
 
                 <dt class="col-sm-3">Status</dt>
                 <dd class="col-sm-9">
@@ -36,23 +47,11 @@
                         @(Model.ProductField.Status ? "Active" : "Inactive")
                     </span>
                 </dd>
-
-                <dt class="col-sm-3">Created Date</dt>
-                <dd class="col-sm-9">@Model.ProductField.CreateDate.ToString("g")</dd>
-
-                @if (Model.ProductField.UpdateDate.HasValue)
-                {
-                    <dt class="col-sm-3">Last Updated</dt>
-                    <dd class="col-sm-9">@Model.ProductField.UpdateDate.Value.ToString("g")</dd>
-                }
             </dl>
 
-            <div class="d-flex justify-content-between mt-4">
+            <div class="mt-3">
                 <a asp-page="./ListProductField" class="btn btn-secondary">Back to List</a>
-                <div>
-                    <a asp-page="./UpdateProductField" asp-route-id="@Model.ProductField.ProductFieldId" class="btn btn-primary">Edit</a>
-                    <a asp-page="./DeleteProductField" asp-route-id="@Model.ProductField.ProductFieldId" class="btn btn-danger">Delete</a>
-                </div>
+                <a asp-page="./UpdateProductField" asp-route-id="@Model.ProductField.ProductFieldId" class="btn btn-primary">Edit</a>
             </div>
         </div>
     </div>
