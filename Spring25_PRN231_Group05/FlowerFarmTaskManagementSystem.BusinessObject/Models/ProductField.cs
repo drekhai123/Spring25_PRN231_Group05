@@ -18,7 +18,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Models
         public DateTime EndDate { get; set; }
         public DateTime CreateDate { get; set; }
         public DateTime UpdateDate { get; set; }
-        public bool Status { get; set; }
+        public string Status { get; set; }
 
         public Guid ProductId { get; set; }
         [ForeignKey(nameof(ProductId))]

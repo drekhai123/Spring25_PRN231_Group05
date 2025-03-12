@@ -17,6 +17,8 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Models
         public DateTime UpdateDate { get; set; }
         public int? Status { get; set; }
         public Guid TaskWorkId { get; set; }
+        public string? ImageUrl { get; set; }
+
         public Guid UserId { get; set; }
 
         [ForeignKey(nameof(TaskWorkId))]
