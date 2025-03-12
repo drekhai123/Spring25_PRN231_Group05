@@ -172,10 +172,13 @@
                                                     }
                                                     @if (task.Status == 1)
                                                     {
-                                                        <button type="button" class="btn btn-sm btn-success complete-task-btn"
-                                                            data-task-id="@task.UserTaskId">
-                                                            <i class="fa-solid fa-check"></i> Complete
-                                                        </button>
+                                                        <form method="post" class="d-inline">
+                                                            <input type="hidden" name="id" value="@task.UserTaskId" />
+                                                            <button type="submit" asp-page-handler="Complete"
+                                                                class="btn btn-sm btn-success">
+                                                                <i class="fa-solid fa-check"></i> Complete
+                                                            </button>
+                                                        </form>
                                                     }
                                                 </div>
                                             </td>
@@ -233,7 +236,8 @@
                                                                     @foreach (var tool in Model.FarmTools)
                                                                     {
                                                                         <li class="list-group-item">
-                                                                            <strong>@tool.FarmToolsName</strong> - Quantity: @tool.FarmToolsQuantity @tool.FarmToolsUnit
+                                                                            <strong>@tool.FarmToolsName</strong> - Quantity:
+                                                                            @tool.FarmToolsQuantity @tool.FarmToolsUnit
                                                                         </li>
                                                                     }
                                                                 </ul>
@@ -253,33 +257,6 @@
                         </table>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Thêm modal xác nhận vào cuối trang -->
-<div class="modal fade" id="completeTaskModal" tabindex="-1" role="dialog" aria-labelledby="completeTaskModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="completeTaskModalLabel">Xác nhận hoàn thành</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                Bạn có chắc muốn đánh dấu task này là đã hoàn thành?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
-                <form id="completeTaskForm" method="post">
-                    <input type="hidden" id="taskToCompleteId" name="id" value="" />
-                    <button type="submit" asp-page-handler="Complete" class="btn btn-success">
-                        <i class="fa-solid fa-check"></i> Hoàn thành
-                    </button>
-                </form>
             </div>
         </div>
     </div>
@@ -328,13 +305,6 @@
                     lengthMenu: "Show _MENU_ tasks per page",
                     info: "Showing _START_ to _END_ of _TOTAL_ tasks"
                 }
-            });
-
-            // Xử lý nút Complete
-            $('.complete-task-btn').click(function () {
-                const taskId = $(this).data('task-id');
-                $('#taskToCompleteId').val(taskId);
-                $('#completeTaskModal').modal('show');
             });
         });
     </script>
