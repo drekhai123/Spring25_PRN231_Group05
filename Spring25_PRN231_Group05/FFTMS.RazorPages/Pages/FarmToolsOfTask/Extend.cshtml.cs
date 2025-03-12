@@ -25,7 +25,7 @@ namespace FFTMS.RazorPages.Pages.FarmToolsOfTask
         [BindProperty]
         public FarmToolsOfTaskRequestDTO FarmToolsOfTaskRequest { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync(String? id)
         {
             if (id == null)
             {

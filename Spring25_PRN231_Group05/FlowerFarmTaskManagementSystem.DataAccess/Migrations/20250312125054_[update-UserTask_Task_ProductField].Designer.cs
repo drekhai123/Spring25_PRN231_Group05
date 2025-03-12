@@ -4,6 +4,7 @@ using FlowerFarmTaskManagementSystem.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FlowerFarmTaskManagementSystem.DataAccess.Migrations
 {
     [DbContext(typeof(FlowerFarmTaskManagementSystemDbContext))]
-    partial class FlowerFarmTaskManagementSystemDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250312125054_[update-UserTask_Task_ProductField]")]
+    partial class updateUserTask_Task_ProductField
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
