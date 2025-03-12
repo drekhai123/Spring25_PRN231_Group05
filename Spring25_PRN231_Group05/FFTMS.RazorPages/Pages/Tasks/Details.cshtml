@@ -22,6 +22,14 @@
                             </ol>
                         </nav>
                     </div>
+                    <div class="col-md-6 col-sm-12 text-end">
+                        <a asp-page="./Edit" asp-route-id="@Model.Task.TaskWorkId" class="btn btn-primary">
+                            <i class="icon-copy dw dw-edit2"></i> Edit Task
+                        </a>
+                        <a asp-page="./Index" class="btn btn-secondary">
+                            <i class="icon-copy dw dw-list"></i> Back to List
+                        </a>
+                    </div>
                 </div>
             </div>
 
@@ -32,49 +40,105 @@
                 </div>
             }
 
-            <div class="pd-20 card-box mb-30">
-                <div class="details-view">
-                    <dl class="row">
-                        <dt class="col-sm-3">Task ID</dt>
-                        <dd class="col-sm-9">@Model.Task.TaskWorkId</dd>
+            <div class="row">
+                <!-- Task Basic Info -->
+                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-30">
+                    <div class="pd-20 card-box h-100">
+                        <div class="profile-info">
+                            <h5 class="mb-20 h5 text-blue">Task Information</h5>
+                            <ul>
+                                <li>
+                                    <span>Job Title:</span>
+                                    @Model.Task.JobTitle
+                                </li>
+                                <li>
+                                    <span>Description:</span>
+                                    @Model.Task.Description
+                                </li>
+                                <li>
+                                    <span>Status:</span>
+                                    <span
+                                        class="badge text-white @(Convert.ToInt32(Model.Task.Status) == 1 ? "bg-success" : "bg-danger")">
+                                        @(Convert.ToInt32(Model.Task.Status) == 1 ? "Active" : "Inactive")
+                                    </span>
+                                </li>
+                                <li>
+                                    <span>Start Date:</span>
+                                    @Model.Task.StartDate.ToString("dd/MM/yyyy HH:mm")
+                                </li>
+                                <li>
+                                    <span>End Date:</span>
+                                    @Model.Task.EndDate.ToString("dd/MM/yyyy HH:mm")
+                                </li>
+                                <li>
+                                    <span>Created:</span>
+                                    @Model.Task.CreateDate.ToString("dd/MM/yyyy HH:mm")
+                                </li>
+                                <li>
+                                    <span>Last Updated:</span>
+                                    @(Model.Task.UpdateDate != default(DateTime) ?
+                                                                        Model.Task.UpdateDate.ToString("dd/MM/yyyy HH:mm") : "Not updated")
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
 
-                        <dt class="col-sm-3">Job Title</dt>
-                        <dd class="col-sm-9">@Model.Task.JobTitle</dd>
+                <!-- Product Field Info -->
+                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-30">
+                    <div class="pd-20 card-box h-100">
+                        <h5 class="mb-20 h5 text-blue">Product Field Details</h5>
+                        <div class="profile-info">
+                            <ul>
+                                <li>
+                                    <span>Product Name:</span>
+                                    @Model.Task.Product.ProductName
+                                </li>
+                                <li>
+                                    <span>Category:</span>
+                                    @Model.Task.Product.Category.CategoryName
+                                </li>
+                                <li>
+                                    <span>Productivity:</span>
+                                    @Model.Task.Productivity @Model.Task.ProductivityUnit
+                                </li>
+                                @if (!string.IsNullOrEmpty(Model.Task.ImageUrl))
+                                {
+                                    <li>
+                                        <span>Image:</span>
+                                        <img src="@Model.Task.ImageUrl" alt="Task Image" class="img-fluid mt-2 rounded" />
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
 
-                        <dt class="col-sm-3">Description</dt>
-                        <dd class="col-sm-9">@Model.Task.Description</dd>
-
-                        <dt class="col-sm-3">Assigned By</dt>
-                        <dd class="col-sm-9">@Model.Task.AssignedBy</dd>
-
-                        <dt class="col-sm-3">Start Date</dt>
-                        <dd class="col-sm-9">@Model.Task.StartDate.ToString("dd/MM/yyyy HH:mm")</dd>
-
-                        <dt class="col-sm-3">End Date</dt>
-                        <dd class="col-sm-9">@Model.Task.EndDate.ToString("dd/MM/yyyy HH:mm")</dd>
-
-                        <dt class="col-sm-3">Status</dt>
-                        <dd class="col-sm-9">
-                            <span class="badge @(Model.Task.Status ? "bg-success" : "bg-danger")">
-                                @(Model.Task.Status ? "Active" : "Inactive")
-                            </span>
-                        </dd>
-
-                        <dt class="col-sm-3">Created Date</dt>
-                        <dd class="col-sm-9">@Model.Task.CreateDate.ToString("dd/MM/yyyy HH:mm")</dd>
-
-                        <dt class="col-sm-3">Updated Date</dt>
-                        <dd class="col-sm-9">
-                            @(Model.Task.UpdateDate != default(DateTime) ?
-                                                        Model.Task.UpdateDate.ToString("dd/MM/yyyy HH:mm") : "Not updated")
-                        </dd>
-
-                        @if (!string.IsNullOrEmpty(Model.Task.ImageUrl))
+                <!-- Staff Assignments -->
+                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-30">
+                    <div class="pd-20 card-box h-100">
+                        <h5 class="mb-20 h5 text-blue">Staff Assignments</h5>
+                        @if (Model.Task.UserTasks != null && Model.Task.UserTasks.Any())
                         {
-                            <dt class="col-sm-3">Image</dt>
-                            <dd class="col-sm-9">
-                                <img src="@Model.Task.ImageUrl" alt="Task Image" style="max-width: 300px;" />
-                            </dd>
+                            foreach (var userTask in Model.Task.UserTasks)
+                            {
+                                <div class="staff-card mb-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h6 class="mb-0">@userTask.UserName</h6>
+                                        <span
+                                            class="badge text-white @(Convert.ToInt32(userTask.Status) == 0 ? "bg-danger" : 
+                                                                                   Convert.ToInt32(userTask.Status) == 1 ? "bg-warning" : "bg-success")">
+                                    @(Convert.ToInt32(userTask.Status) == 0 ? "Inactive" :
+                                    Convert.ToInt32(userTask.Status) == 1 ? "Processing" : "Completed")
+                                </span>
+                            </div>
+                            <p class="mb-0 text-muted">@userTask.UserTaskDescription</p>
+                        </div>
+                                                }
+                        }
+                        else
+                        {
+                            <p class="text-muted">No staff assignments</p>
                         }
 
                         @* <dt class="col-sm-3">Product Field Information</dt> *@
@@ -149,20 +213,55 @@
 </div>
 
 <style>
-    .details-view dt {
-        font-weight: 500;
+    .profile-info ul {
+        padding: 0;
+        list-style: none;
     }
 
-    .details-view dd {
-        margin-bottom: 1rem;
+    .profile-info ul li {
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #eee;
     }
 
-    .table {
+    .profile-info ul li:last-child {
         margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: 0;
+    }
+
+    .profile-info ul li span:first-child {
+        display: block;
+        font-weight: 500;
+        color: #666;
+        margin-bottom: 5px;
+    }
+
+    .staff-card {
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 5px;
+        border-left: 4px solid #1b00ff;
     }
 
     .badge {
         padding: 0.4em 0.8em;
         font-size: 12px;
+        color: white !important;
+    }
+
+    .card-box {
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 0 28px 0 rgb(0 0 0 / 8%);
+    }
+
+    .text-blue {
+        color: #1b00ff;
+    }
+
+    .img-fluid {
+        max-width: 100%;
+        height: auto;
     }
 </style>

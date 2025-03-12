@@ -1,0 +1,308 @@
+@page
+@model FFTMS.RazorPages.Pages.Field.CreateFieldModel
+@{
+    ViewData["Title"] = "Create Field";
+    Layout = "_Layout";
+}
+
+<div class="main-container">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h3 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Create New Field</h3>
+            <a asp-page="./ListField" class="btn btn-light btn-sm">
+                <i class="fas fa-arrow-left"></i> Back to List
+            </a>
+        </div>
+        <div class="card-body">
+            <form method="post" class="needs-validation" novalidate>
+                <div class="mb-4">
+                    <label asp-for="Field.FieldName" class="form-label fw-bold">Field Name</label>
+                    <input asp-for="Field.FieldName" class="form-control form-control-lg" required />
+                    <span asp-validation-for="Field.FieldName" class="text-danger"></span>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label asp-for="Field.Length" class="form-label fw-bold">Length (m)</label>
+                        <div class="input-group">
+                            <input asp-for="Field.Length" class="form-control" type="number" step="0.01" min="0" required />
+                            <span class="input-group-text">m</span>
+                        </div>
+                        <span asp-validation-for="Field.Length" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Field.Width" class="form-label fw-bold">Width (m)</label>
+                        <div class="input-group">
+                            <input asp-for="Field.Width" class="form-control" type="number" step="0.01" min="0" required />
+                            <span class="input-group-text">m</span>
+                        </div>
+                        <span asp-validation-for="Field.Width" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Field.Description" class="form-label fw-bold">Description</label>
+                    <textarea asp-for="Field.Description" class="form-control" rows="3"
+                              placeholder="Enter detailed description of the field..."></textarea>
+                    <span asp-validation-for="Field.Description" class="text-danger"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Field Image</label>
+
+                    <!-- Image Upload with Drag & Drop -->
+                    <div id="dropArea" class="border rounded p-3 text-center mb-3"
+                         style="border-style: dashed !important; cursor: pointer;">
+                        <i class="fas fa-cloud-upload-alt fa-2x mb-2 text-muted"></i>
+                        <p class="mb-0">Drag and drop image here or click to browse</p>
+                        <input type="file" id="imageUpload" class="d-none" accept="image/*" />
+                    </div>
+
+                    <!-- Image Preview -->
+                    <div id="imagePreviewContainer" class="mb-3 text-center d-none">
+                        <div class="position-relative d-inline-block">
+                            <img id="imagePreview" src="" alt="Field Image Preview"
+                                 class="img-fluid rounded shadow-sm mb-2" style="max-height: 250px;" />
+                            <button type="button" id="removeImageBtn" class="btn btn-sm btn-danger position-absolute"
+                                    style="top: 5px; right: 5px; border-radius: 50%; width: 30px; height: 30px; padding: 0;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Upload Progress -->
+                    <div class="mt-2">
+                        <div class="progress d-none" id="uploadProgress" style="height: 10px;">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success"
+                                 role="progressbar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hidden field to store the image URL -->
+                <input type="hidden" asp-for="Field.FieldImageUrl" id="fieldImageUrl" />
+
+                <div class="mb-4">
+                    <div class="form-check form-switch">
+                        <input asp-for="Field.Status" class="form-check-input" type="checkbox" role="switch" checked />
+                        <label asp-for="Field.Status" class="form-check-label fw-bold">Active</label>
+                    </div>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-save me-2"></i> Create Field
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-storage.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBrhzHppn0MSFRv8Y70pL--IjAqE_dqYP8",
+            authDomain: "farm-task-management-1b5e2.firebaseapp.com",
+            projectId: "farm-task-management-1b5e2",
+            storageBucket: "farm-task-management-1b5e2.firebasestorage.app",
+            messagingSenderId: "523429271962",
+            appId: "1:523429271962:web:a5025d2fb87bdb7b75c223"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const storage = getStorage(app);
+
+        // DOM Elements
+        const dropArea = document.getElementById('dropArea');
+        const fileInput = document.getElementById('imageUpload');
+        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+        const imagePreview = document.getElementById('imagePreview');
+        const removeImageBtn = document.getElementById('removeImageBtn');
+        const fieldImageUrl = document.getElementById('fieldImageUrl');
+        const progressBar = document.querySelector('#uploadProgress .progress-bar');
+        const progressContainer = document.getElementById('uploadProgress');
+
+        // Drag and drop functionality
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight() {
+            dropArea.classList.add('bg-light');
+        }
+
+        function unhighlight() {
+            dropArea.classList.remove('bg-light');
+        }
+
+        // Handle file drop
+        dropArea.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const file = dt.files[0];
+
+            if (file && file.type.startsWith('image/')) {
+                fileInput.files = dt.files;
+                uploadFile(file);
+            } else {
+                showToast('Please select an image file', 'error');
+            }
+        }
+
+        // Click to select file
+        dropArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // Handle file selection
+        fileInput.addEventListener('change', function () {
+            if (this.files && this.files[0]) {
+                uploadFile(this.files[0]);
+            }
+        });
+
+        // Remove image preview
+        removeImageBtn.addEventListener('click', function () {
+            fieldImageUrl.value = '';
+            imagePreviewContainer.classList.add('d-none');
+            showToast('Image removed', 'success');
+        });
+
+        // Upload file function
+        async function uploadFile(file) {
+            if (!file) return;
+
+            try {
+                // Show progress bar
+                progressContainer.classList.remove('d-none');
+                progressBar.style.width = '0%';
+                progressBar.textContent = '0%';
+
+                // Generate unique filename to avoid conflicts
+                const timestamp = new Date().getTime();
+                const fileName = `field_${timestamp}_${file.name}`;
+                const filePath = `field_images/${fileName}`;
+                const storageRef = ref(storage, filePath);
+
+                // Start upload
+                const uploadTask = uploadBytesResumable(storageRef, file);
+
+                // Monitor upload progress
+                uploadTask.on('state_changed',
+                    (snapshot) => {
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        progressBar.style.width = progress + '%';
+                        progressBar.textContent = Math.round(progress) + '%';
+                    },
+                    (error) => {
+                        // Handle errors
+                        console.error('Upload failed:', error);
+                        showToast('Upload failed: ' + error.message, 'error');
+                        progressContainer.classList.add('d-none');
+                    },
+                    async () => {
+                        // Upload completed successfully
+                        try {
+                            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+
+                            // Update UI
+                            fieldImageUrl.value = downloadURL;
+                            imagePreview.src = downloadURL;
+                            imagePreviewContainer.classList.remove('d-none');
+                            progressContainer.classList.add('d-none');
+
+                            showToast('Image uploaded successfully', 'success');
+                        } catch (error) {
+                            console.error('Error getting download URL:', error);
+                            showToast('Error getting download URL', 'error');
+                        }
+                    }
+                );
+            } catch (error) {
+                console.error('Error during upload setup:', error);
+                showToast('Error during upload setup', 'error');
+            }
+        }
+
+        // Toast notification function
+        function showToast(message, type = 'info') {
+            // Create toast container if it doesn't exist
+            let toastContainer = document.getElementById('toast-container');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.id = 'toast-container';
+                toastContainer.className = 'position-fixed bottom-0 end-0 p-3';
+                document.body.appendChild(toastContainer);
+            }
+
+            // Create toast element
+            const toastId = 'toast-' + Date.now();
+            const bgClass = type === 'error' ? 'bg-danger' :
+                type === 'success' ? 'bg-success' : 'bg-info';
+
+            const toastHtml = `
+                        <div id="${toastId}" class="toast align-items-center ${bgClass} text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                            <div class="d-flex">
+                                <div class="toast-body">
+                                    ${message}
+                                </div>
+                                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                        </div>
+                    `;
+
+            toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+
+            // Initialize and show toast
+            const toastElement = document.getElementById(toastId);
+            const toast = new bootstrap.Toast(toastElement, { delay: 3000 });
+            toast.show();
+
+            // Remove toast after it's hidden
+            toastElement.addEventListener('hidden.bs.toast', function () {
+                toastElement.remove();
+            });
+        }
+
+        // Form validation
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+                showToast('Please fill all required fields correctly', 'error');
+            }
+            form.classList.add('was-validated');
+        });
+    </script>
+}

@@ -30,7 +30,25 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 
         public async Task<IEnumerable<ProductFieldRequest>> GetAllProductFieldsAsync()
         {
-            var productFields = await Task.FromResult(_unitOfWork.ProductFieldRepository.Get(
+            // Validate that Product and Field exist
+            var product = await _unitOfWork.ProductRepository.GetByIdAsync(productFieldCreateDTO.ProductId);
+            if (product == null) throw new KeyNotFoundException($"Product with ID {productFieldCreateDTO.ProductId} not found");
+
+            var field = await _unitOfWork.FieldRepository.GetByIdAsync(productFieldCreateDTO.FieldId);
+            if (field == null) throw new KeyNotFoundException($"Field with ID {productFieldCreateDTO.FieldId} not found");
+
+            var productField = _mapper.Map<ProductField>(productFieldCreateDTO);
+            productField.ProductFieldId = Guid.NewGuid();
+            productField.CreateDate = DateTime.UtcNow;
+            productField.UpdateDate = DateTime.UtcNow;
+            productField.Status = true;
+
+            await _unitOfWork.ProductFieldRepository.AddAsync(productField);
+            await _unitOfWork.SaveChangesAsync();
+
+            // Get the complete ProductField with related entities
+            var createdProductField = await Task.FromResult(_unitOfWork.ProductFieldRepository.Get(
+                filter: pf => pf.ProductFieldId == productField.ProductFieldId,
                 includeProperties: "Product.Category,Field"
             ));
             return _mapper.Map<IEnumerable<ProductFieldRequest>>(productFields);

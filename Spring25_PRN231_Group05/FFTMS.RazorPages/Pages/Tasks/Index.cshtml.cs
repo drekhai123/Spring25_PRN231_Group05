@@ -18,6 +18,9 @@ namespace FFTMS.RazorPages.Pages.Tasks
         public IList<TaskResponseDTO> Tasks { get; set; } = new List<TaskResponseDTO>();
         public string ErrorMessage { get; set; }
 
+        [BindProperty(SupportsGet = true)]
+        public string SearchTerm { get; set; }
+
         public async Task<IActionResult> OnGetAsync()
         {
             try
@@ -34,10 +37,16 @@ namespace FFTMS.RazorPages.Pages.Tasks
                     return RedirectToPage("/Index");
                 }
 
-                // Lấy danh sách tasks
-                var taskResponse = await _httpClient.GetAsync("https://localhost:7207/odata/Task");
+                // Xây dựng query OData
+                var query = "https://localhost:7207/odata/Task";
+                if (!string.IsNullOrWhiteSpace(SearchTerm))
+                {
+                    query += $"?$filter=contains(tolower(JobTitle),tolower('{SearchTerm}')) " +
+                            $"or contains(tolower(Description),tolower('{SearchTerm}'))";
+                }
 
-                // Lấy danh sách users để map username
+                // Lấy danh sách tasks
+                var taskResponse = await _httpClient.GetAsync(query);
                 var userResponse = await _httpClient.GetAsync("https://localhost:7207/odata/User");
 
                 if (taskResponse.IsSuccessStatusCode && userResponse.IsSuccessStatusCode)

@@ -61,8 +61,8 @@
                             @for (var i = 0; i < Model.Task.UserTasks.Count; i++)
                             {
                                 <div class="staff-assignment">
-                                    <select name="Task.UserTasks[@i].AssignedTo" asp-items="@Model.UserList"
-                                        class="form-control mb-2">
+                                    <select name="Task.UserTasks[@i].AssignedTo" class="form-control mb-2 staff-select"
+                                        data-previous="@Model.Task.UserTasks[i].AssignedTo">
                                         <option value="">Select Staff</option>
                                     </select>
                                     <textarea name="Task.UserTasks[@i].UserTaskDescription" class="form-control mb-2"
@@ -112,21 +112,64 @@
     <script>
         $(document).ready(function () {
             let staffCount = @Model.Task.UserTasks.Count;
+            let selectedStaff = new Set();
 
+            // Khởi tạo danh sách staff đã chọn và set selected value cho các staff cũ
+            $('.staff-select').each(function (index) {
+                let assignedTo = '@Html.Raw(Json.Serialize(Model.Task.UserTasks.Select(ut => ut.AssignedTo)))';
+                let assignedUsers = JSON.parse(assignedTo);
+
+                if (assignedUsers[index]) {
+                    selectedStaff.add(assignedUsers[index]);
+                    $(this).data('previous', assignedUsers[index]);
+                }
+            });
+
+            // Cập nhật danh sách staff available
+            function updateAvailableStaff() {
+                $('.staff-select').each(function (index) {
+                    let currentSelect = $(this);
+                    let currentValue = currentSelect.data('previous');
+
+                    let options = '<option value="">-- Select Staff --</option>';
+                                @foreach (var item in Model.UserList)
+                        {
+                            @:if (!selectedStaff.has('@item.Value') || '@item.Value' === currentValue) {
+                                @:options += `<option value="@item.Value" ${('@item.Value' === currentValue ? 'selected' : '')}> @item.Text</option>`;
+                                @:}
+                    }
+                        currentSelect.html(options);
+                });
+            }
+
+            // Xử lý khi thay đổi staff selection
+            $(document).on('change', '.staff-select', function () {
+                let previousValue = $(this).data('previous');
+                let currentValue = $(this).val();
+
+                if (previousValue) selectedStaff.delete(previousValue);
+                if (currentValue) selectedStaff.add(currentValue);
+
+                $(this).data('previous', currentValue);
+                updateAvailableStaff();
+            });
+
+            // Thêm staff mới
             $('#addStaff').click(function () {
                 if (staffCount < 5) {
                     const newStaff = `
-                                <div class="staff-assignment">
-                                    <select name="Task.UserTasks[${staffCount}].AssignedTo" 
-                                        class="form-control mb-2">
-                                        ${$('select[name="Task.UserTasks[0].AssignedTo"]').html()}
-                                    </select>
-                                    <textarea name="Task.UserTasks[${staffCount}].UserTaskDescription" 
-                                        class="form-control mb-2" 
-                                        placeholder="Task description for this staff"></textarea>
-                                    <button type="button" class="btn btn-danger mb-3 remove-staff">Remove</button>
-                                </div>`;
+                                        <div class="staff-assignment">
+                                            <select name="Task.UserTasks[${staffCount}].AssignedTo" 
+                                                class="form-control mb-2 staff-select">
+                                                <option value="">-- Select Staff --</option>
+                                            </select>
+                                            <textarea name="Task.UserTasks[${staffCount}].UserTaskDescription" 
+                                                class="form-control mb-2" 
+                                                placeholder="Task description for this staff"></textarea>
+                                            <button type="button" class="btn btn-danger mb-3 remove-staff">Remove</button>
+                                        </div>`;
                     $('#staffAssignments').append(newStaff);
+                    updateAvailableStaff();
                     staffCount++;
                 }
                 if (staffCount >= 5) {
@@ -134,11 +177,21 @@
                 }
             });
 
+            // Xóa staff
             $(document).on('click', '.remove-staff', function () {
+                let staffSelect = $(this).closest('.staff-assignment').find('.staff-select');
+                let value = staffSelect.val();
+                if (value) selectedStaff.delete(value);
+
                 $(this).closest('.staff-assignment').remove();
                 staffCount--;
                 $('#addStaff').prop('disabled', false);
+
+                updateAvailableStaff();
             });
+
+            // Khởi tạo ban đầu
+            updateAvailableStaff();
         });
     </script>
 }

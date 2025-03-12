@@ -1,0 +1,57 @@
+@page
+@model FFTMS.RazorPages.Pages.ProductField.ListProductFieldModel
+@{
+    ViewData["Title"] = "List Product Fields";
+    Layout = "_Layout";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">Product Fields</h3>
+            <a asp-page="./CreateProductField" class="btn btn-success">Create New Product Field</a>
+        </div>
+        <div class="card-body">
+            @if (Model.ProductFields?.Any() ?? false)
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Field</th>
+                                <th>Productivity</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var productField in Model.ProductFields)
+                            {
+                                <tr>
+                                    <td>@productField.Product?.ProductName</td>
+                                    <td>@productField.Field?.FieldName</td>
+                                    <td>@productField.Productivity @productField.ProductivityUnit</td>
+                                    <td>@productField.StartDate.ToString("d")</td>
+                                    <td>@productField.EndDate.ToString("d")</td>
+                                    <td>@(productField.Status ? "Active" : "Inactive")</td>
+                                    <td>
+                                        <a asp-page="./DetailsProductField" asp-route-id="@productField.ProductFieldId" class="btn btn-info btn-sm">Details</a>
+                                        <a asp-page="./UpdateProductField" asp-route-id="@productField.ProductFieldId" class="btn btn-primary btn-sm">Edit</a>
+                                        <a asp-page="./DeleteProductField" asp-route-id="@productField.ProductFieldId" class="btn btn-danger btn-sm">Delete</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p class="text-center">No product fields found.</p>
+            }
+        </div>
+    </div>
+</div> 

@@ -1,0 +1,151 @@
+@page "{id:guid}"
+@model FFTMS.RazorPages.Pages.Field.DetailsFieldModel
+@{
+    ViewData["Title"] = "Field Details";
+    Layout = "_Layout";
+}
+
+<div class="main-container">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h3 class="mb-0"><i class="fas fa-info-circle me-2"></i>Field Details</h3>
+            <a asp-page="./ListField" class="btn btn-light btn-sm">
+                <i class="fas fa-arrow-left"></i> Back to List
+            </a>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+                <!-- Field Image Section -->
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <div class="text-center">
+                        @if (!string.IsNullOrEmpty(Model.Field.FieldImageUrl))
+                        {
+                            <img src="@Model.Field.FieldImageUrl" alt="@Model.Field.FieldName"
+                                 class="img-fluid rounded shadow-sm" style="max-height: 300px; object-fit: cover;" />
+                        }
+                        else
+                        {
+                            <div class="bg-light d-flex align-items-center justify-content-center rounded"
+                                 style="height: 300px;">
+                                <i class="fas fa-image fa-4x text-muted"></i>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Field Details Section -->
+                <div class="col-md-8">
+                    <h2 class="mb-3 border-bottom pb-2">@Model.Field.FieldName</h2>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <div class="card bg-light h-100">
+                                <div class="card-body text-center">
+                                    <h6 class="text-muted mb-2">Length</h6>
+                                    <h4 class="mb-0">@Model.Field.Length m</h4>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="card bg-light h-100">
+                                <div class="card-body text-center">
+                                    <h6 class="text-muted mb-2">Width</h6>
+                                    <h4 class="mb-0">@Model.Field.Width m</h4>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="card bg-light h-100">
+                                <div class="card-body text-center">
+                                    <h6 class="text-muted mb-2">Total Area</h6>
+                                    <h4 class="mb-0">@(Model.Field.Length * Model.Field.Width) m²</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h5 class="fw-bold mb-2"><i class="fas fa-align-left me-2 text-primary"></i>Description</h5>
+                        <p class="bg-light p-3 rounded">
+                            @if (string.IsNullOrEmpty(Model.Field.Description))
+                            {
+                                <span class="text-muted fst-italic">No description provided</span>
+                            }
+                            else
+                            {
+                                @Model.Field.Description
+                            }
+                        </p>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5 class="fw-bold mb-2"><i class="fas fa-calendar-alt me-2 text-primary"></i>Dates</h5>
+                            <ul class="list-group">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>Created</span>
+                                    <span class="badge bg-secondary rounded-pill">
+                                        @Model.Field.CreatedDate.ToString("yyyy-MM-dd HH:mm")
+                                    </span>
+                                </li>
+                                @if (Model.Field.UpdatedDate.HasValue)
+                                {
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>Last Updated</span>
+                                        <span class="badge bg-info rounded-pill">
+                                            @Model.Field.UpdatedDate.Value.ToString("yyyy-MM-dd HH:mm")
+                                        </span>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+
+                        <div class="col-md-6">
+                            <h5 class="fw-bold mb-2"><i class="fas fa-toggle-on me-2 text-primary"></i>Status</h5>
+                            <div class="p-3 rounded @(Model.Field.Status ? "bg-success bg-opacity-10" : "bg-danger bg-opacity-10")">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3">
+                                        <i class="fas fa-circle @(Model.Field.Status ? "text-success" : "text-danger")"
+                                           style="font-size: 2rem;"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="mb-0 @(Model.Field.Status ? "text-success" : "text-danger")">
+                                            @(Model.Field.Status ? "Active" : "Inactive")
+                                        </h5>
+                                        <small class="text-muted">
+                                            @(Model.Field.Status
+                                                ? "This field is currently in use"
+                                                : "This field is currently not in use")
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer bg-light">
+            <div class="d-flex justify-content-end gap-2">
+                <a asp-page="./ListField" class="btn btn-secondary">
+                    <i class="fas fa-list me-1"></i> Back to List
+                </a>
+                <a asp-page="./UpdateField" asp-route-id="@Model.Field.FieldId" class="btn btn-primary">
+                    <i class="fas fa-edit me-1"></i> Edit
+                </a>
+                <a asp-page="./DeleteField" asp-route-id="@Model.Field.FieldId" class="btn btn-danger">
+                    <i class="fas fa-trash-alt me-1"></i> Delete
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+}

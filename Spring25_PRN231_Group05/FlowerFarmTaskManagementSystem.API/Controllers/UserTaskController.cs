@@ -93,5 +93,33 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
                 return NotFound(new { Success = false, Message = ex.Message });
             }
         }
+
+        [HttpPut("update-status/{id}")]
+        public async Task<IActionResult> UpdateStatus(Guid id, [FromBody] UpdateStatusDTO request)
+        {
+            try
+            {
+                var userTaskRequest = new UserTaskRequestDTO
+                {
+                    Status = (FlowerFarmTaskManagementSystem.BusinessObject.Enums.UserTaskStatus)request.Status
+                };
+
+                var result = await _userTaskService.UpdateUserTaskAsync(id, userTaskRequest);
+                return Ok(result);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+    }
+
+    public class UpdateStatusDTO
+    {
+        public int Status { get; set; }
     }
 }

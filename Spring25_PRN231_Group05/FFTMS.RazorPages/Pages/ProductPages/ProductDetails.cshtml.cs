@@ -9,10 +9,13 @@ namespace FFTMS.RazorPages.Pages.ProductPages
     public class ProductDetailsModel : PageModel
     {
         private readonly HttpClient _httpClient;
+        private readonly IConfiguration _configuration;
 
-        public ProductDetailsModel(HttpClient httpClient)
+        public ProductDetailsModel(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
+            _configuration = configuration;
+            _httpClient.BaseAddress = new Uri(_configuration["ApiSettings:BaseUrl"]);
         }
 
         [BindProperty]
@@ -25,15 +28,16 @@ namespace FFTMS.RazorPages.Pages.ProductPages
             {
                 if (id == Guid.Empty)
                 {
-                    return NotFound();
+                    TempData["ErrorMessage"] = "Invalid product ID.";
+                    return RedirectToPage("./ListProduct");
                 }
 
-                var apiUrl = $"https://localhost:7207/odata/Product/by-id?id={id}";
-                var response = await _httpClient.GetAsync(apiUrl);
+                var response = await _httpClient.GetAsync($"odata/Product/by-id?id={id}");
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    return NotFound();
+                    TempData["ErrorMessage"] = "Failed to retrieve the product.";
+                    return RedirectToPage("./ListProduct");
                 }
 
                 var jsonResponse = await response.Content.ReadAsStringAsync();
@@ -44,7 +48,8 @@ namespace FFTMS.RazorPages.Pages.ProductPages
 
                 if (Product == null)
                 {
-                    return NotFound();
+                    TempData["ErrorMessage"] = "Product not found.";
+                    return RedirectToPage("./ListProduct");
                 }
 
                 if (Product.CategoryId != Guid.Empty)
@@ -65,8 +70,8 @@ namespace FFTMS.RazorPages.Pages.ProductPages
             }
             catch (Exception ex)
             {
-                ViewData["ErrorMessage"] = $"An error occurred: {ex.Message}";
-                return Page();
+                TempData["ErrorMessage"] = $"An error occurred: {ex.Message}";
+                return RedirectToPage("./ListProduct");
             }
         }
     }

@@ -1,0 +1,253 @@
+@page
+@model FFTMS.RazorPages.Pages.FarmToolsOfTask.CreateModel
+@{
+    ViewData["Title"] = "Add Farm Tools";
+    Layout = "_Layout";
+}
+
+<div class="main-container">
+    <div class="pd-ltr-20">
+        <div class="min-height-200px">
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-md-6 col-sm-12">
+                        <div class="title">
+                            <h4>Add Farm Tools to Task</h4>
+                        </div>
+                        <nav aria-label="breadcrumb" role="navigation">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+                                <li class="breadcrumb-item"><a asp-page="/UserTasks/Index">My Tasks</a></li>
+                                <li class="breadcrumb-item active">Add Farm Tools</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <div class="alert alert-danger">
+                    @Model.ErrorMessage
+                </div>
+            }
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["SuccessMessage"]
+                </div>
+            }
+
+            <div class="card-box mb-30">
+                <div class="pd-20">
+                    <h4 class="text-blue h4">Add Farm Tools</h4>
+                </div>
+                <div class="pd-20">
+                    <form method="post">
+                        <input type="hidden" asp-for="FarmToolsOfTask.UserTaskId" />
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="FarmToolsOfTask.StartDate">Start Date</label>
+                                    <input asp-for="FarmToolsOfTask.StartDate" class="form-control"
+                                        type="datetime-local" required
+                                        min="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
+                                    <span asp-validation-for="FarmToolsOfTask.StartDate" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="FarmToolsOfTask.EndDate">End Date</label>
+                                    <input asp-for="FarmToolsOfTask.EndDate" class="form-control" type="datetime-local"
+                                        required min="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
+                                    <span asp-validation-for="FarmToolsOfTask.EndDate" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Farm Tools</label>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <select id="farmToolSelect" class="form-control">
+                                        <option value="">-- Select Farm Tool --</option>
+                                        @foreach (var tool in Model.AvailableTools)
+                                        {
+                                            <option value="@tool.FarmToolsId" data-name="@tool.FarmToolsName"
+                                                data-quantity="@tool.FarmToolsQuantity">
+                                                @tool.FarmToolsName (Available: @tool.FarmToolsQuantity)
+                                            </option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="number" id="toolQuantity" class="form-control" placeholder="Quantity"
+                                        min="1" value="1" />
+                                </div>
+                                <div class="col-md-3">
+                                    <button type="button" id="addTool" class="btn btn-primary">
+                                        <i class="fa fa-plus"></i> Add Tool
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Tool Name</th>
+                                            <th>Quantity</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="selectedToolsTable">
+                                        <!-- Selected tools will be displayed here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="form-group text-right">
+                            <a asp-page="/UserTasks/Index" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+
+                        <input type="hidden" id="selectedToolsJson" name="selectedToolsJson" />
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Biến để lưu trữ các công cụ đã chọn
+            let selectedTools = [];
+
+            // Thêm công cụ
+            $("#addTool").click(function () {
+                const toolId = $("#farmToolSelect").val();
+                const toolName = $("#farmToolSelect option:selected").data("name");
+                const quantity = parseInt($("#toolQuantity").val());
+                const availableQuantity = parseInt($("#farmToolSelect option:selected").data("quantity") || 0);
+
+                if (!toolId) {
+                    alert("Please select a farm tool");
+                    return;
+                }
+
+                if (!quantity || quantity < 1) {
+                    alert("Please enter a valid quantity");
+                    return;
+                }
+
+                // Kiểm tra số lượng có vượt quá tồn kho không
+                if (quantity > availableQuantity) {
+                    alert(`The quantity exceeds available stock (${availableQuantity}). Please enter a smaller quantity.`);
+                    return;
+                }
+
+                // Kiểm tra xem công cụ đã tồn tại chưa
+                const existingTool = selectedTools.find(t => t.FarmToolsId === toolId);
+                if (existingTool) {
+                    // Kiểm tra tổng số lượng
+                    if (existingTool.Quantity + quantity > availableQuantity) {
+                        alert(`Total quantity (${existingTool.Quantity + quantity}) would exceed available stock (${availableQuantity}).`);
+                        return;
+                    }
+
+                    alert("This tool is already added. Please edit the quantity instead.");
+                    return;
+                }
+
+                // Thêm vào mảng
+                selectedTools.push({
+                    FarmToolsId: toolId,
+                    Quantity: quantity
+                });
+
+                // Cập nhật giao diện
+                updateToolsTable();
+                updateHiddenField();
+
+                // Reset form
+                $("#farmToolSelect").val("");
+                $("#toolQuantity").val(1);
+            });
+
+            // Xử lý xóa công cụ
+            $(document).on("click", ".remove-tool", function () {
+                const toolId = $(this).data("id");
+                selectedTools = selectedTools.filter(t => t.FarmToolsId !== toolId);
+                updateToolsTable();
+                updateHiddenField();
+            });
+
+            // Cập nhật bảng công cụ đã chọn
+            function updateToolsTable() {
+                const table = $("#selectedToolsTable");
+                table.empty();
+
+                if (selectedTools.length === 0) {
+                    table.append('<tr><td colspan="3" class="text-center">No tools selected</td></tr>');
+                    return;
+                }
+
+                selectedTools.forEach(tool => {
+                    const toolName = $("#farmToolSelect option[value='" + tool.FarmToolsId + "']").data("name");
+                    table.append(`
+                                <tr>
+                                    <td>${toolName}</td>
+                                    <td>
+                                        <input type="number" class="form-control tool-quantity" 
+                                               data-id="${tool.FarmToolsId}" value="${tool.Quantity}" min="1"
+                                               onchange="updateToolQuantity('${tool.FarmToolsId}', this.value)">
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger btn-sm remove-tool" data-id="${tool.FarmToolsId}">
+                                            <i class="fa fa-trash"></i> Remove
+                                        </button>
+                                    </td>
+                                </tr>
+                            `);
+                });
+            }
+
+            // Cập nhật số lượng
+            window.updateToolQuantity = function (toolId, quantity) {
+                const tool = selectedTools.find(t => t.FarmToolsId === toolId);
+                if (tool) {
+                    const newQuantity = parseInt(quantity);
+                    const availableQuantity = parseInt($(`#farmToolSelect option[value='${toolId}']`).data("quantity") || 0);
+
+                    if (newQuantity > availableQuantity) {
+                        alert(`The quantity exceeds available stock (${availableQuantity}). Please enter a smaller quantity.`);
+                        // Reset về giá trị cũ
+                        $(`.tool-quantity[data-id='${toolId}']`).val(tool.Quantity);
+                        return;
+                    }
+
+                    tool.Quantity = newQuantity;
+                    updateHiddenField();
+                }
+            };
+
+            // Cập nhật trường hidden
+            function updateHiddenField() {
+                $("#selectedToolsJson").val(JSON.stringify(selectedTools));
+            }
+
+            // Khởi tạo
+            updateToolsTable();
+        });
+    </script>
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
