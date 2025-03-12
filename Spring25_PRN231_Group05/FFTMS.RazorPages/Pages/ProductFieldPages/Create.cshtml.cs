@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using FlowerFarmTaskManagementSystem.BusinessObject.Models;
 using FlowerFarmTaskManagementSystem.DataAccess;
+using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
+using System.Text.Json;
 
 namespace FFTMS.RazorPages.Pages.ProductFieldPages
 {
@@ -28,19 +30,32 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
 
         [BindProperty]
         public ProductField ProductField { get; set; } = default!;
-
+        //public List<ProductFieldResponse>() {get; set} = new();
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            //if (!ModelState.IsValid)
-            //{
-            //    return Page();
-            //}
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
 
-            //_context.ProductFields.Add(ProductField);
-            //await _context.SaveChangesAsync();
+            var apiUrl = "https://localhost:7207/odata/create-productField";
+
+            var response = await _httpClient.PostAsJsonAsync(apiUrl, ProductField);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                ModelState.AddModelError(string.Empty, "Error creating farm tool category.");
+                return Page();
+            }
 
             return RedirectToPage("./Index");
+
+        }
+        public async Task<IActionResult> OnGetAsync()
+        {
+            return Page();
         }
     }
 }
+

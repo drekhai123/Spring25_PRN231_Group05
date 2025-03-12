@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using FlowerFarmTaskManagementSystem.BusinessObject.Models;
 using FlowerFarmTaskManagementSystem.DataAccess;
+using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
+using System.Text.Json;
 
 namespace FFTMS.RazorPages.Pages.ProductFieldPages
 {
@@ -24,21 +26,34 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
-            //if (id == null)
-            //{
-            //    return NotFound();
-            //}
+           if(id != null)
+            {
+                return Page();
+            }
 
-            //var productfield = await _context.ProductFields.FirstOrDefaultAsync(m => m.ProductFieldId == id);
+            try
+            {
+                var apiUrl = "https://localhost:7207/odata/ProductField/get-all-productField";
+                var request = new HttpRequestMessage(HttpMethod.Get, apiUrl);
+                var response = await _httpClient.SendAsync(request);
 
-            //if (productfield == null)
-            //{
-            //    return NotFound();
-            //}
-            //else
-            //{
-            //    ProductField = productfield;
-            //}
+                if (!response.IsSuccessStatusCode)
+                {
+                    return NotFound();
+                }
+
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var parsedResponse = JsonSerializer.Deserialize<List<ProductFieldResponse>>(jsonResponse, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+            }
+            catch (Exception ex)
+            {
+                ViewData["ErrorMessage"] = $"An error occurred: {ex.Message}";
+                return Page();
+            }
+
             return Page();
         }
 
