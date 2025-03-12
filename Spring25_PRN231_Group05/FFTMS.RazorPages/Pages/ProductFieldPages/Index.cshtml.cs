@@ -21,11 +21,11 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
             _httpClient = httpClient;
         }
 
-        public IList<ProductFieldResponse> ProductField { get;set; } = default!;
+        public IList<ProductFieldResponse> ProductField { get;set; } = new List<ProductFieldResponse>();
 
         public async Task OnGetAsync()
         {
-            var apiUrl = "https://localhost:7207/odata/ProductField";
+            var apiUrl = "https://localhost:7207/odata/ProductField/get-all-productField";
             var response = await _httpClient.GetAsync(apiUrl);
             if (response.IsSuccessStatusCode)
             {
@@ -37,5 +37,6 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
                 });
             }
         }
+      
     }
 }

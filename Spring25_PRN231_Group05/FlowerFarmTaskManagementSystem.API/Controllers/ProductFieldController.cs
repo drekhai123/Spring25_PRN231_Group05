@@ -17,7 +17,7 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
             _productFieldService = productFieldService;
         }
 
-        [HttpGet]
+        [HttpGet("get-all-productField")]
         [EnableQuery]
         public async Task<ActionResult<IEnumerable<ProductFieldRequest>>> GetAllProductFields()
         {
@@ -25,7 +25,7 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
             return Ok(productFields);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("get-by-{id}")]
         public async Task<ActionResult<ProductFieldRequest>> GetProductFieldById(Guid id)
         {
             try
@@ -39,7 +39,7 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("delete-by-{id}")]
         public async Task<ActionResult<bool>> DeleteProductFieldAsync(Guid id)
         {
             try
@@ -67,7 +67,7 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
             }
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("update-productfield-by-{id}")]
         public async Task<ActionResult<ProductFieldRequest>> UpdateProductFieldAsync(Guid id, [FromBody] ProductFieldRequest productFieldDto)
         {
             try
