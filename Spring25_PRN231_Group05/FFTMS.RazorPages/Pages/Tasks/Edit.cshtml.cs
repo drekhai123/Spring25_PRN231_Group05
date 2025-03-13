@@ -64,11 +64,11 @@ namespace FFTMS.RazorPages.Pages.Tasks
                         Status = taskResponse.Status,
                         ImageUrl = taskResponse.ImageUrl,
                         ProductFieldId = taskResponse.ProductFieldId,
-                        UserTasks = taskResponse.UserTasks.Select(ut => new UserTaskRequest
+                        UserTasks = taskResponse.UserTasks?.Select(ut => new UserTaskRequest
                         {
                             AssignedTo = ut.UserId.ToString(),
                             UserTaskDescription = ut.UserTaskDescription
-                        }).ToList()
+                        }).ToList() ?? new List<UserTaskRequest>()
                     };
 
                     await LoadUserList();
@@ -117,7 +117,7 @@ namespace FFTMS.RazorPages.Pages.Tasks
         {
             try
             {
-                var response = await _httpClient.GetAsync("https://localhost:7207/odata/ProductField");
+                var response = await _httpClient.GetAsync("https://localhost:7207/odata/ProductField/get-all-product-field");
                 if (response.IsSuccessStatusCode)
                 {
                     var jsonResponse = await response.Content.ReadAsStringAsync();

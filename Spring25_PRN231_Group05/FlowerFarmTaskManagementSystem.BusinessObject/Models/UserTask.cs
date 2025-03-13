@@ -15,8 +15,10 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Models
         public string UserTaskDescription { get; set; }
         public DateTime CreateDate { get; set; }
         public DateTime UpdateDate { get; set; }
-        public int Status { get; set; }
+        public int? Status { get; set; }
         public Guid TaskWorkId { get; set; }
+        public string? ImageUrl { get; set; }
+
         public Guid UserId { get; set; }
 
         [ForeignKey(nameof(TaskWorkId))]
@@ -24,12 +26,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Models
 
         [ForeignKey(nameof(UserId))]
         public virtual User User { get; set; }
-    
-        //public User? User { get; set; }
 
-        public Guid? FarmToolsId { get; set; }
-
-        [ForeignKey(nameof(FarmToolsId))]
-        public FarmTools? FarmTools { get; set; }
+        public virtual ICollection<FarmToolsOfTask> FarmToolsOfTasks { get; set; } = new List<FarmToolsOfTask>();
     }
 }

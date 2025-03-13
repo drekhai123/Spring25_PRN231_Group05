@@ -134,11 +134,24 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<int>("FarmToolOfTaskQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FarmToolOfTaskUnit")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<Guid>("FarmToolsId")
                         .HasColumnType("char(36)");
 
+                    b.Property<bool?>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("UpdateDate")
                         .HasColumnType("datetime(6)");
@@ -259,8 +272,9 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.Migrations
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<bool>("Status")
-                        .HasColumnType("tinyint(1)");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<DateTime>("UpdateDate")
                         .HasColumnType("datetime(6)");
@@ -319,10 +333,6 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.Migrations
                         .HasColumnType("char(36)");
 
                     b.Property<string>("AssignedBy")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("AssignedTo")
                         .IsRequired()
                         .HasColumnType("longtext");
 
@@ -474,11 +484,11 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.Migrations
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<Guid?>("FarmToolsId")
-                        .HasColumnType("char(36)");
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("longtext");
 
-                    b.Property<bool>("Status")
-                        .HasColumnType("tinyint(1)");
+                    b.Property<int?>("Status")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("TaskWorkId")
                         .HasColumnType("char(36)");
@@ -494,8 +504,6 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.Migrations
                         .HasColumnType("longtext");
 
                     b.HasKey("UserTaskId");
-
-                    b.HasIndex("FarmToolsId");
 
                     b.HasIndex("TaskWorkId");
 
@@ -524,7 +532,7 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.Migrations
                         .IsRequired();
 
                     b.HasOne("FlowerFarmTaskManagementSystem.BusinessObject.Models.UserTask", "UserTask")
-                        .WithMany()
+                        .WithMany("FarmToolsOfTasks")
                         .HasForeignKey("UserTaskId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -594,12 +602,8 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.Migrations
 
             modelBuilder.Entity("FlowerFarmTaskManagementSystem.BusinessObject.Models.UserTask", b =>
                 {
-                    b.HasOne("FlowerFarmTaskManagementSystem.BusinessObject.Models.FarmTools", "FarmTools")
-                        .WithMany()
-                        .HasForeignKey("FarmToolsId");
-
                     b.HasOne("FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskWork", "TaskWork")
-                        .WithMany()
+                        .WithMany("UserTasks")
                         .HasForeignKey("TaskWorkId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -610,11 +614,19 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("FarmTools");
-
                     b.Navigation("TaskWork");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskWork", b =>
+                {
+                    b.Navigation("UserTasks");
+                });
+
+            modelBuilder.Entity("FlowerFarmTaskManagementSystem.BusinessObject.Models.UserTask", b =>
+                {
+                    b.Navigation("FarmToolsOfTasks");
                 });
 #pragma warning restore 612, 618
         }

@@ -16,15 +16,13 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Models
 		public DateTime EndDate { get; set; }
 		public DateTime CreateDate { get; set; }
 		public DateTime UpdateDate { get; set; }
-
+		public int FarmToolOfTaskQuantity { get; set; }
+		public string FarmToolOfTaskUnit { get; set; }
+		public int Status { get; set; }
 		public Guid FarmToolsId { get; set; }
 		[ForeignKey(nameof(FarmToolsId))]
 		public FarmTools? FarmTools { get; set; }
-
-        //public Guid TaskWorkId { get; set; }
-        //[ForeignKey(nameof(TaskWorkId))]
-        //public TaskWork? TaskWork { get; set; }
-
+        public bool? IsActive { get; set; }
         public Guid UserTaskId { get; set; }
         [ForeignKey(nameof(UserTaskId))]
         public UserTask? UserTask { get; set; }
