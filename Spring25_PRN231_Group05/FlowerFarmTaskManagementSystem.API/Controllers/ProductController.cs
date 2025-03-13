@@ -40,6 +40,21 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
             }
         }
 
+        // GET: odata/Product/check-product-in-use
+        [HttpGet("check-product-in-use")]
+        public async Task<ActionResult<bool>> CheckProductInUse(Guid id)
+        {
+            try
+            {
+                var isInUse = await _productService.IsProductInUseAsync(id);
+                return Ok(isInUse);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { Message = ex.Message });
+            }
+        }
+
         // POST: odata/Product
         [HttpPost("add-product")]
         public async Task<ActionResult<ProductDTO>> AddProduct(ProductAddDTO productAddDTO)

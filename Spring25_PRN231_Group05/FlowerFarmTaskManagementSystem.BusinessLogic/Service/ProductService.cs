@@ -79,5 +79,17 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 
             return _mapper.Map<IEnumerable<ProductDTO>>(products);
         }
+
+        public async Task<bool> IsProductInUseAsync(Guid productId)
+        {
+            var product = await _unitOfWork.ProductRepository.GetByIdAsync(productId);
+            if (product == null) throw new KeyNotFoundException("Product not found.");
+
+            // Check if the product is used in any ProductField
+            var productFields = await _unitOfWork.ProductFieldRepository
+                .FindAsync(pf => pf.ProductId == productId && pf.Status == true);
+
+            return productFields.Any();
+        }
     }
 }

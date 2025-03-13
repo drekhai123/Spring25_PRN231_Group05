@@ -40,6 +40,7 @@
 								<th>Image</th>
 								<th>Create Date</th>
 								<th>Status</th>
+								<th>Actions</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -49,9 +50,18 @@
 									<td>@product.ProductId</td>
 									<td>@product.ProductName</td>
 									<td>@product.Description</td>
-									<td>@product.ProductImageUrl</td>
+									<td>
+										@if (!string.IsNullOrEmpty(product.ProductImageUrl))
+										{
+											<img src="@product.ProductImageUrl" alt="@product.ProductName" style="max-width: 50px;" class="img-thumbnail" />
+										}
+									</td>
 									<td>@product.CreateDate.ToString("dd-MM-yyyy")</td>
-									<td>@product.Status</td>
+									<td>
+										<span class="badge @(product.Status ? "bg-success" : "bg-danger")">
+											@(product.Status ? "Active" : "Inactive")
+										</span>
+									</td>
 									<td>
 										<div class="dropdown">
 											<a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle" href="#" role="button" data-toggle="dropdown">
@@ -62,9 +72,11 @@
 													<i class="dw dw-eye"></i> View
 												</a>
 												<a class="dropdown-item" asp-page="./UpdateProduct" asp-route-id="@product.ProductId">
-													<i class="dw dw-eye"></i> Edit
+													<i class="dw dw-edit2"></i> Edit
 												</a>
-												<a class="dropdown-item" asp-page="#"><i class="dw dw-delete-3"></i> Delete</a>
+												<a class="dropdown-item" asp-page="./DeleteProduct" asp-route-id="@product.ProductId">
+													<i class="dw dw-delete-3"></i> Delete
+												</a>
 											</div>
 										</div>
 									</td>
@@ -78,3 +90,22 @@
 		</div>
 	</div>
 </div>
+
+@section Scripts {
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <script>
+            $(document).ready(function () {
+                $.notify("@TempData["SuccessMessage"]", "success");
+            });
+        </script>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <script>
+            $(document).ready(function () {
+                $.notify("@TempData["ErrorMessage"]", "error");
+            });
+        </script>
+    }
+}
