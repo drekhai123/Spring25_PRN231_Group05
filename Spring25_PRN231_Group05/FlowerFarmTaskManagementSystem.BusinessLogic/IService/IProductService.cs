@@ -14,6 +14,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.IService
         Task<bool> DeleteProductAsync(Guid productId);
         Task<ProductDTO> GetProductByIdAsync(Guid productId);
         Task<IEnumerable<ProductDTO>> GetAllProductsAsync();
+        Task<bool> IsProductInUseAsync(Guid productId);
     }
 }
 

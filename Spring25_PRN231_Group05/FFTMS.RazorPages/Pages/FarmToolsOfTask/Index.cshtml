@@ -1,0 +1,89 @@
+﻿@page
+@model FFTMS.RazorPages.Pages.FarmToolsOfTask.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "_Layout";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.FarmToolsOfTask[0].StartDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FarmToolsOfTask[0].EndDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FarmToolsOfTask[0].CreateDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FarmToolsOfTask[0].UpdateDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FarmToolsOfTask[0].FarmToolOfTaskQuantity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FarmToolsOfTask[0].FarmToolOfTaskUnit)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FarmToolsOfTask[0].Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FarmToolsOfTask[0].FarmTools)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FarmToolsOfTask[0].UserTask)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.FarmToolsOfTask) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.StartDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EndDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreateDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UpdateDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FarmToolOfTaskQuantity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FarmToolOfTaskUnit)
+            </td>
+            <td>
+                    <span>
+                        @(item.Status == 1 ? "Pending" :
+                            item.Status == 2 ? "Extend" :
+                            item.Status == 3 ? "Finish" : "Unknown")
+                    </span>
+                </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FarmTools.FarmToolsName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserTask.UserTaskDescription)
+            </td>
+            <td>
+                <a asp-page="./Extend" asp-route-id="@item.FarmToolsOfTaskId">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.FarmToolsOfTaskId">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.FarmToolsOfTaskId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -45,11 +45,23 @@
                         </div>
                         <div class="col-sm-12 col-md-6">
                             <div class="d-flex justify-content-md-end align-items-center">
-                                <input type="search" class="form-control form-control-sm me-2" style="width: 200px"
-                                    placeholder="Search...">
-                                <button class="btn btn-success btn-sm" onclick="location.href='@Url.Page("./Create")'">
-                                    Add Task
-                                </button>
+                                <form method="get" class="d-flex me-2">
+                                    <input type="search" name="SearchTerm" value="@Model.SearchTerm"
+                                        class="form-control form-control-sm me-2" style="width: 200px"
+                                        placeholder="Search job title or description...">
+                                    <button type="submit" class="btn btn-primary btn-sm me-2">
+                                        <i class="dw dw-search2"></i>
+                                    </button>
+                                    @if (!string.IsNullOrEmpty(Model.SearchTerm))
+                                    {
+                                        <a asp-page="./Index" class="btn btn-secondary btn-sm">
+                                            <i class="dw dw-refresh2"></i>
+                                        </a>
+                                    }
+                                </form>
+                                <a asp-page="./Create" class="btn btn-success btn-sm">
+                                    <i class="dw dw-add"></i> Add Task
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -153,6 +165,26 @@
         background-color: #ffffff;
         border-radius: 0.25rem;
         box-shadow: 0 0 28px 0 rgb(0 0 0 / 8%);
+    }
+
+    .search-form {
+        display: flex;
+        align-items: center;
+    }
+
+    .search-form input {
+        border-radius: 4px;
+        border: 1px solid #e2e2e2;
+        padding: 5px 10px;
+    }
+
+    .search-form button {
+        padding: 5px 15px;
+        margin-left: 5px;
+    }
+
+    .search-form button i {
+        font-size: 16px;
     }
 </style>
 
