@@ -87,7 +87,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 
             // Check if the product is used in any ProductField
             var productFields = await _unitOfWork.ProductFieldRepository
-                .FindAsync(pf => pf.ProductId == productId && pf.Status == true);
+                .FindAsync(pf => pf.ProductId == productId && pf.Status.Equals(true));
 
             return productFields.Any();
         }
