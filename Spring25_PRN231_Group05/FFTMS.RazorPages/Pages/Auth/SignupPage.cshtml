@@ -1,0 +1,310 @@
+﻿@page
+@model FFTMS.RazorPages.Pages.Auth.SignUpPageModel
+@{
+    ViewData["Title"] = "Flower Farm Task Management - Sign Up";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Reset default margins and padding */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Main container for split-screen layout */
+        .main-container {
+            display: flex;
+            flex-direction: row;
+            height: 100vh;
+            width: 100%;
+            background: linear-gradient(135deg, #e0e7ff 0%, #f4f7fa 100%);
+        }
+
+        /* Left side for the image */
+        .image-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+            .image-container img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+        /* Right side for the signup form */
+        .form-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+
+        /* Signup card styling */
+        .signup-card {
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 400px;
+            transition: transform 0.3s ease;
+        }
+
+            .signup-card:hover {
+                transform: translateY(-5px);
+            }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #2d3748;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #718096;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+            .input-group input,
+            .input-group select {
+                width: 100%;
+                padding: 0.75rem 1rem;
+                border: 1px solid #e2e8f0;
+                border-radius: 0.75rem;
+                font-size: 0.9rem;
+                color: #2d3748;
+                transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            }
+
+                .input-group input:focus,
+                .input-group select:focus {
+                    outline: none;
+                    border-color: #4A6CF7;
+                    box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.1);
+                }
+
+                .input-group input::placeholder {
+                    color: #a0aec0;
+                }
+
+        .error-message {
+            color: #e53e3e;
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(90deg, #4A6CF7 0%, #3A5AE5 100%);
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: none;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+            .submit-button:hover {
+                background: linear-gradient(90deg, #3A5AE5 0%, #2A48D3 100%);
+                transform: scale(1.02);
+            }
+
+        .login-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: #718096;
+        }
+
+            .login-link a {
+                color: #4A6CF7;
+                font-weight: 500;
+                text-decoration: none;
+                transition: color 0.3s ease;
+            }
+
+                .login-link a:hover {
+                    color: #3A5AE5;
+                    text-decoration: underline;
+                }
+
+        /* Background shapes */
+        .background-shapes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            animation: float 15s infinite;
+        }
+
+        .shape-1 {
+            width: 200px;
+            height: 200px;
+            background: #4A6CF7;
+            top: 10%;
+            left: 15%;
+        }
+
+        .shape-2 {
+            width: 150px;
+            height: 150px;
+            background: #3A5AE5;
+            bottom: 20%;
+            right: 10%;
+            animation-delay: 5s;
+        }
+
+        @@keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        /* Responsive design */
+        @@media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+
+            .image-container {
+                flex: 0;
+                height: 40vh;
+            }
+
+            .form-container {
+                flex: 1;
+                padding: 1rem;
+            }
+        }
+
+        @@media (max-width: 480px) {
+            .image-container {
+                height: 30vh;
+            }
+
+            .signup-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+    </div>
+
+    <div class="main-container">
+        <!-- Left side: Image -->
+        <div class="image-container">
+            <img src="\images\NorthenBlossoms_OlenCo.png" alt="Flower Farm Image">
+        </div>
+
+        <!-- Right side: Sign Up Form -->
+        <div class="form-container">
+            <div class="signup-card">
+                <h2 class="logo">Flower Farm TMS</h2>
+                <p class="subtitle">Create an account to manage your farm tasks</p>
+
+                <form method="post" class="space-y-6">
+                    <div asp-validation-summary="ModelOnly" class="error-message text-center"></div>
+
+                    <div class="input-group">
+                        <input asp-for="Input.Username" placeholder="Username" required />
+                        <span asp-validation-for="Input.Username" class="error-message"></span>
+                    </div>
+
+                    <div class="input-group">
+                        <input asp-for="Input.Email" type="email" placeholder="Email" required />
+                        <span asp-validation-for="Input.Email" class="error-message"></span>
+                    </div>
+
+                    <div class="input-group">
+                        <input asp-for="Input.Password" type="password" placeholder="Password" required />
+                        <span asp-validation-for="Input.Password" class="error-message"></span>
+                    </div>
+
+                    <div class="input-group">
+                        <input asp-for="Input.ConfirmPassword" type="password" placeholder="Confirm Password" required />
+                        <span asp-validation-for="Input.ConfirmPassword" class="error-message"></span>
+                    </div>
+
+                    <div class="input-group">
+                        <input asp-for="Input.Phone" placeholder="Phone Number" required />
+                        <span asp-validation-for="Input.Phone" class="error-message"></span>
+                    </div>
+
+                    <div class="input-group">
+                        <input asp-for="Input.Address" placeholder="Address" required />
+                        <span asp-validation-for="Input.Address" class="error-message"></span>
+                    </div>
+
+                    <div class="input-group">
+                        <input asp-for="Input.DateOfBirth" type="date" required />
+                        <span asp-validation-for="Input.DateOfBirth" class="error-message"></span>
+                    </div>
+
+                    <!-- Role is hidden and set to User by default -->
+                    <input asp-for="Input.Role" type="hidden" value="User" />
+
+                    <button type="submit" class="submit-button">Sign Up</button>
+
+                    <div class="login-link">
+                        <p>
+                            Already have an account?
+                            <a asp-page="./LoginPage">Sign in</a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+    }
+</body>
+</html>

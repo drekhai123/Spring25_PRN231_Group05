@@ -1,8 +1,12 @@
+using FlowerFarmTaskManagementSystem.BusinessLogic.Service;
+using Microsoft.AspNetCore.Builder;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddRazorPages();
+builder.Services.AddRazorPages(); // Removed the AddPageRoute configuration
 builder.Services.AddHttpClient();
+builder.Services.AddSignalR();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -20,6 +24,17 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-app.MapRazorPages();
+// Redirect unauthenticated users to /Auth/LoginPage
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path == "/" && !context.Request.Cookies.ContainsKey("AuthToken"))
+    {
+        context.Response.Redirect("/Auth/LoginPage");
+        return;
+    }
+    await next();
+});
 
+app.MapRazorPages();
+app.MapHub<ProductFieldHub>("/productFieldHub");
 app.Run();

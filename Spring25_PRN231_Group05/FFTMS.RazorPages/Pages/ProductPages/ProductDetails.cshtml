@@ -1,0 +1,92 @@
+﻿@page
+@model FFTMS.RazorPages.Pages.ProductPages.ProductDetailsModel
+@{
+    ViewData["Title"] = "Product Details";
+    Layout = "_Layout";
+}
+<div class="main-container">
+    <div class="container mt-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">Product Details</h3>
+            </div>
+            <div class="card-body">
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger">
+                        @TempData["ErrorMessage"]
+                    </div>
+                }
+
+                @if (Model.Product != null)
+                {
+                    <dl class="row">
+                        <dt class="col-sm-3 fw-bold">ID:</dt>
+                        <dd class="col-sm-9">@Model.Product.ProductId</dd>
+
+                        <dt class="col-sm-3 fw-bold">Name:</dt>
+                        <dd class="col-sm-9">@Model.Product.ProductName</dd>
+
+                        <dt class="col-sm-3 fw-bold">Description:</dt>
+                        <dd class="col-sm-9">@Model.Product.Description</dd>
+
+                        @if (!string.IsNullOrEmpty(Model.Product.Note))
+                        {
+                            <dt class="col-sm-3 fw-bold">Note:</dt>
+                            <dd class="col-sm-9">@Model.Product.Note</dd>
+                        }
+
+                        @if (!string.IsNullOrEmpty(Model.Product.ProductImageUrl))
+                        {
+                            <dt class="col-sm-3 fw-bold">Image:</dt>
+                            <dd class="col-sm-9">
+                                <img src="@Model.Product.ProductImageUrl" alt="@Model.Product.ProductName" class="img-fluid" style="max-width: 200px;" />
+                            </dd>
+                        }
+
+                        <dt class="col-sm-3 fw-bold">Category:</dt>
+                        <dd class="col-sm-9">
+                            @if (Model.Product.Category != null)
+                            {
+                                <span class="badge bg-info">@Model.Product.Category.CategoryName</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">No Category</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-3 fw-bold">Status:</dt>
+                        <dd class="col-sm-9">
+                            <span class="badge @(Model.Product.Status ? "bg-success" : "bg-danger")">
+                                @(Model.Product.Status ? "Active" : "Inactive")
+                            </span>
+                        </dd>
+
+                        <dt class="col-sm-3 fw-bold">Created Date:</dt>
+                        <dd class="col-sm-9">@Model.Product.CreateDate.ToString("dd/MM/yyyy HH:mm")</dd>
+
+                        <dt class="col-sm-3 fw-bold">Last Updated:</dt>
+                        <dd class="col-sm-9">@Model.Product.UpdateDate.ToString("dd/MM/yyyy HH:mm")</dd>
+                    </dl>
+
+                    <div class="mt-4">
+                        <a asp-page="./ListProduct" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Back to List
+                        </a>
+                        <a asp-page="./UpdateProduct" asp-route-id="@Model.Product.ProductId" class="btn btn-primary">
+                            <i class="bi bi-pencil"></i> Edit
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-warning">
+                        <p class="mb-0">Product not found.</p>
+                    </div>
+                    <a asp-page="./ListProduct" class="btn btn-secondary">Back to List</a>
+                }
+            </div>
+        </div>
+    </div>
+</div> 

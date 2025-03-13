@@ -1,0 +1,86 @@
+@page "{id}"
+@model FFTMS.RazorPages.Pages.Users.EditModel
+@{
+    ViewData["Title"] = "Edit User";
+    Layout = "_Layout";
+}
+
+<div class="main-container">
+    <div class="pd-ltr-20 xs-pd-20-10">
+        <div class="min-height-200px">
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-md-6 col-sm-12">
+                        <div class="title">
+                            <h4>Edit User</h4>
+                        </div>
+                        <nav aria-label="breadcrumb" role="navigation">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a asp-page="/Index">Home</a></li>
+                                <li class="breadcrumb-item"><a asp-page="/Users/Index">Users</a></li>
+                                <li class="breadcrumb-item active">Edit</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pd-20 card-box mb-30">
+                <form method="post">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <input type="hidden" asp-for="User.UserId" />
+                    <div class="form-group">
+                        <label asp-for="User.UserName" class="control-label">Username</label>
+                        <input asp-for="User.UserName" class="form-control" required />
+                        <span asp-validation-for="User.UserName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="User.Password" class="control-label">Password</label>
+                        <input asp-for="User.Password" type="password" class="form-control" />
+                        <span asp-validation-for="User.Password" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="User.Email" class="control-label">Email</label>
+                        <input asp-for="User.Email" class="form-control" />
+                        <span asp-validation-for="User.Email" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="User.Phone" class="control-label">Phone</label>
+                        <input asp-for="User.Phone" class="form-control" />
+                        <span asp-validation-for="User.Phone" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="User.Address" class="control-label">Address</label>
+                        <input asp-for="User.Address" class="form-control" />
+                        <span asp-validation-for="User.Address" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="User.Role" class="control-label">Role</label>
+                        <select asp-for="User.Role" class="form-control">
+                            <option value="">Select Role</option>
+                            <option value="Admin">Admin</option>
+                            <option value="Manager">Manager</option>
+                            <option value="Staff">Staff</option>
+                        </select>
+                        <span asp-validation-for="User.Role" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="User.DateOfBirth" class="control-label">Date of Birth</label>
+                        <input asp-for="User.DateOfBirth" type="date" class="form-control" />
+                        <span asp-validation-for="User.DateOfBirth" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" value="Save" class="btn btn-primary" />
+                        <a asp-page="Index" class="btn btn-secondary">Back to List</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

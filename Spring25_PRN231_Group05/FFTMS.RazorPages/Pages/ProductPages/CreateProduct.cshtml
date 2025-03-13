@@ -1,0 +1,108 @@
+﻿@page
+@model FFTMS.RazorPages.Pages.ProductPages.CreateProductModel
+@{
+    ViewData["Title"] = "Create Product";
+    Layout = "_Layout";
+}
+
+<div class="main-container">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">Create New Product</h3>
+            <a asp-page="ListProduct" class="btn btn-light">
+                <i class="fas fa-arrow-left"></i> Back to List
+            </a>
+        </div>
+        <div class="card-body">
+            <form method="post" class="needs-validation" novalidate>
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="Product.ProductName" class="form-label">Product Name</label>
+                            <input asp-for="Product.ProductName" class="form-control" placeholder="Enter product name" required />
+                            <span asp-validation-for="Product.ProductName" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="CategoryId" class="form-label">Category</label>
+                            <select class="form-select" asp-for="Product.CategoryId" required>
+                                <option value="">-- Select a Category --</option>
+                                @foreach (var category in Model.CateList)
+                                {
+                                    <option value="@category.CategoryId">@category.CategoryName</option>
+                                }
+                            </select>
+                            <div class="invalid-feedback">Please select a category.</div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Product.Description" class="form-label">Description</label>
+                            <textarea asp-for="Product.Description" class="form-control" rows="3" placeholder="Enter product description"></textarea>
+                            <span asp-validation-for="Product.Description" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="Product.ProductImageUrl" class="form-label">Product Image URL</label>
+                            <input asp-for="Product.ProductImageUrl" class="form-control" placeholder="Enter image URL" />
+                            <span asp-validation-for="Product.ProductImageUrl" class="text-danger"></span>
+                            <div id="imagePreview" class="mt-2" style="display: none;">
+                                <img src="" alt="Product Preview" class="img-thumbnail" style="max-height: 200px;" />
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Product.Note" class="form-label">Additional Notes</label>
+                            <textarea asp-for="Product.Note" class="form-control" rows="3" placeholder="Enter any additional notes"></textarea>
+                            <span asp-validation-for="Product.Note" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <a asp-page="ListProduct" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Create Product
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        // Image preview functionality
+        document.getElementById('Product_ProductImageUrl').addEventListener('input', function(e) {
+            const preview = document.getElementById('imagePreview');
+            const img = preview.querySelector('img');
+            if (e.target.value) {
+                img.src = e.target.value;
+                preview.style.display = 'block';
+            } else {
+                preview.style.display = 'none';
+            }
+        });
+
+        // Form validation
+        (function () {
+            'use strict'
+            var forms = document.querySelectorAll('.needs-validation')
+            Array.prototype.slice.call(forms).forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        })()
+    </script>
+}

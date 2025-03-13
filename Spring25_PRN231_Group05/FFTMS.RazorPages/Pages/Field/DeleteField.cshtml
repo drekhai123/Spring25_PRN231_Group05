@@ -1,0 +1,128 @@
+@page "{id:guid}"
+@model FFTMS.RazorPages.Pages.Field.DeleteFieldModel
+@{
+    ViewData["Title"] = "Delete Field";
+    Layout = "_Layout";
+}
+
+<div class="main-container">
+    <div class="card shadow">
+        <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+            <h3 class="mb-0"><i class="fas fa-trash-alt me-2"></i>Delete Field</h3>
+            <a asp-page="./ListField" class="btn btn-light btn-sm">
+                <i class="fas fa-arrow-left"></i> Back to List
+            </a>
+        </div>
+
+        <div class="card-body">
+            <div class="alert alert-warning">
+                <div class="d-flex">
+                    <div class="me-3">
+                        <i class="fas fa-exclamation-triangle fa-2x text-warning"></i>
+                    </div>
+                    <div>
+                        <h4 class="alert-heading">Warning!</h4>
+                        <p class="mb-0">Are you sure you want to permanently delete this field? This action cannot be undone.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <!-- Field Image Section -->
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <div class="text-center">
+                        @if (!string.IsNullOrEmpty(Model.Field.FieldImageUrl))
+                        {
+                            <img src="@Model.Field.FieldImageUrl" alt="@Model.Field.FieldName"
+                                 class="img-fluid rounded shadow-sm" style="max-height: 250px; object-fit: cover;" />
+                        }
+                        else
+                        {
+                            <div class="bg-light d-flex align-items-center justify-content-center rounded"
+                                 style="height: 250px;">
+                                <i class="fas fa-image fa-4x text-muted"></i>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Field Details Section -->
+                <div class="col-md-8">
+                    <div class="card bg-light mb-4">
+                        <div class="card-header">
+                            <h4 class="mb-0">@Model.Field.FieldName</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <h6 class="text-muted mb-1">Dimensions</h6>
+                                    <p class="mb-0">
+                                        <i class="fas fa-ruler me-1 text-primary"></i> Length: <strong>@Model.Field.Length m</strong><br>
+                                        <i class="fas fa-ruler-horizontal me-1 text-primary"></i> Width: <strong>@Model.Field.Width m</strong><br>
+                                        <i class="fas fa-vector-square me-1 text-primary"></i> Area: <strong>@(Model.Field.Length * Model.Field.Width) m²</strong>
+                                    </p>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <h6 class="text-muted mb-1">Status</h6>
+                                    <p class="mb-0">
+                                        <i class="fas @(Model.Field.Status ? "fa-check-circle text-success" : "fa-times-circle text-danger") me-1"></i>
+                                        <strong>@(Model.Field.Status ? "Active" : "Inactive")</strong>
+                                    </p>
+
+                                    <h6 class="text-muted mb-1 mt-3">Dates</h6>
+                                    <p class="mb-0">
+                                        <i class="fas fa-calendar-plus me-1 text-primary"></i> Created:
+                                        <strong>@Model.Field.CreatedDate.ToString("yyyy-MM-dd HH:mm")</strong>
+
+                                        @if (Model.Field.UpdatedDate.HasValue)
+                                        {
+                                        <br>
+
+                                        <i class="fas fa-calendar-check me-1 text-primary"></i>
+                                        Updated:
+                                            <strong>@Model.Field.UpdatedDate.Value.ToString("yyyy-MM-dd HH:mm")</strong>
+                                        }
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="mt-3">
+                                <h6 class="text-muted mb-1">Description</h6>
+                                <p class="mb-0">
+                                    @if (string.IsNullOrEmpty(Model.Field.Description))
+                                    {
+                                        <span class="text-muted fst-italic">No description provided</span>
+                                    }
+                                    else
+                                    {
+                                        @Model.Field.Description
+                                    }
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer bg-light">
+            <form method="post">
+                <input type="hidden" asp-for="Field.FieldId" />
+                <div class="d-flex justify-content-between">
+                    <a asp-page="./ListField" class="btn btn-secondary">
+                        <i class="fas fa-times me-1"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash-alt me-1"></i> Confirm Delete
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+}

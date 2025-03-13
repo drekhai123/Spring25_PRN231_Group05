@@ -16,8 +16,8 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
             _productService = productService;
         }
 
-        // GET: odata/Product
-        [HttpGet]
+        // GET: odata/Product/get-all-product
+        [HttpGet("get-all-product")]
         [EnableQuery]
         public async Task<ActionResult<IEnumerable<ProductDTO>>> GetAllProducts()
         {
@@ -25,8 +25,8 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
             return Ok(products);
         }
 
-        // GET: odata/Product(1)
-        [HttpGet("{id}")]
+		// GET: odata/Product/by-id
+		[HttpGet("by-id")]
         public async Task<ActionResult<ProductDTO>> GetProductById(Guid id)
         {
             try
@@ -40,16 +40,31 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
             }
         }
 
+        // GET: odata/Product/check-product-in-use
+        [HttpGet("check-product-in-use")]
+        public async Task<ActionResult<bool>> CheckProductInUse(Guid id)
+        {
+            try
+            {
+                var isInUse = await _productService.IsProductInUseAsync(id);
+                return Ok(isInUse);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { Message = ex.Message });
+            }
+        }
+
         // POST: odata/Product
-        [HttpPost]
+        [HttpPost("add-product")]
         public async Task<ActionResult<ProductDTO>> AddProduct(ProductAddDTO productAddDTO)
         {
             var product = await _productService.AddProductAsync(productAddDTO);
             return CreatedAtAction(nameof(GetProductById), new { id = product.ProductId }, product);
         }
 
-        // PUT: odata/Product(1)
-        [HttpPut("{id}")]
+		// PUT: odata/Product/update-product
+		[HttpPut("update-product")]
         public async Task<ActionResult<ProductDTO>> UpdateProduct(Guid id, ProductUpdateDTO productUpdateDTO)
         {
             if (id != productUpdateDTO.ProductId)
@@ -59,7 +74,7 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
 
             try
             {
-                var updatedProduct = await _productService.UpdateProductAsync(productUpdateDTO);
+                var updatedProduct = await _productService.UpdateProductAsync(id, productUpdateDTO);
                 return Ok(updatedProduct);
             }
             catch (KeyNotFoundException ex)
@@ -68,8 +83,8 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
             }
         }
 
-        // DELETE: odata/Product(1)
-        [HttpDelete("{id}")]
+		// DELETE: odata/Product/delete-product
+		[HttpDelete("delete-product")]
         public async Task<ActionResult> DeleteProduct(Guid id)
         {
             try

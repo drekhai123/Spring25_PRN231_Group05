@@ -15,15 +15,18 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Models
         public string UserTaskDescription { get; set; }
         public DateTime CreateDate { get; set; }
         public DateTime UpdateDate { get; set; }
-        public bool Status { get; set; }
+        public int? Status { get; set; }
         public Guid TaskWorkId { get; set; }
-
-        [ForeignKey(nameof(TaskWorkId))]
-        public TaskWork? TaskWork { get; set; }
+        public string? ImageUrl { get; set; }
 
         public Guid UserId { get; set; }
 
+        [ForeignKey(nameof(TaskWorkId))]
+        public virtual TaskWork TaskWork { get; set; }
+
         [ForeignKey(nameof(UserId))]
-        public User? User { get; set; }
+        public virtual User User { get; set; }
+
+        public virtual ICollection<FarmToolsOfTask> FarmToolsOfTasks { get; set; } = new List<FarmToolsOfTask>();
     }
 }

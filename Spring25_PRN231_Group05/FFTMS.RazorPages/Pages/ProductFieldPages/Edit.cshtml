@@ -1,0 +1,79 @@
+﻿@page
+@model FFTMS.RazorPages.Pages.ProductFieldPages.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>ProductField</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="ProductField.ProductFieldId" />
+            <div class="form-group">
+                <label asp-for="ProductField.Productivity" class="control-label"></label>
+                <input asp-for="ProductField.Productivity" class="form-control" />
+                <span asp-validation-for="ProductField.Productivity" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ProductField.ProductivityUnit" class="control-label"></label>
+                <input asp-for="ProductField.ProductivityUnit" class="form-control" />
+                <span asp-validation-for="ProductField.ProductivityUnit" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ProductField.StartDate" class="control-label"></label>
+                <input asp-for="ProductField.StartDate" class="form-control" />
+                <span asp-validation-for="ProductField.StartDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ProductField.EndDate" class="control-label"></label>
+                <input asp-for="ProductField.EndDate" class="form-control" />
+                <span asp-validation-for="ProductField.EndDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ProductField.CreateDate" class="control-label"></label>
+                <input asp-for="ProductField.CreateDate" class="form-control" />
+                <span asp-validation-for="ProductField.CreateDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ProductField.UpdateDate" class="control-label"></label>
+                <input asp-for="ProductField.UpdateDate" class="form-control" />
+                <span asp-validation-for="ProductField.UpdateDate" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="ProductField.Status" /> @Html.DisplayNameFor(model => model.ProductField.Status)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="ProductField.ProductId" class="control-label"></label>
+                <select asp-for="ProductField.ProductId" class="form-control" asp-items="ViewBag.ProductId"></select>
+                <span asp-validation-for="ProductField.ProductId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ProductField.FieldId" class="control-label"></label>
+                <select asp-for="ProductField.FieldId" class="form-control" asp-items="ViewBag.FieldId"></select>
+                <span asp-validation-for="ProductField.FieldId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+<style>
+    .row {
+        margin-left: 250px;
+    }
+</style>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

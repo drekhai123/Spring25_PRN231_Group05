@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace FlowerFarmTaskManagementSystem.DataAccess.IRepositories
 {
@@ -16,9 +17,13 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.IRepositories
         IGenericRepository<TaskWork> TaskWorkRepository { get; }
         IGenericRepository<User> UserRepository { get; }
         IGenericRepository<UserTask> UserTaskRepository { get; }
-		IGenericRepository<FarmToolCategories> FarmToolCategoriesRepository { get; }
-		IGenericRepository<FarmTools> FarmToolsRepository { get; }
+        IGenericRepository<FarmToolCategories> FarmToolCategoriesRepository { get; }
+        IGenericRepository<FarmTools> FarmToolsRepository { get; }
+		IGenericRepository<FarmToolsOfTask> FarmToolsOfTaskRepository { get; }
+
 		Task<int> SaveChangesAsync();
         void Save();
+        IDbContextTransaction BeginTransaction();
+        Task<IDbContextTransaction> BeginTransactionAsync();
     }
 }

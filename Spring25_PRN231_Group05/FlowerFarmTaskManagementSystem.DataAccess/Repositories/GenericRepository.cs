@@ -76,8 +76,11 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.Repositories
         {
             _dbSet.Update(entity);
         }
-
-        public void Delete(T entity)
+		public async Task<T> GetAsync(System.Linq.Expressions.Expression<Func<T, bool>> filter)
+		{
+			return await _dbSet.FirstOrDefaultAsync(filter);
+		}
+		public void Delete(T entity)
         {
             _dbSet.Remove(entity);
         }

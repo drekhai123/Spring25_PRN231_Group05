@@ -1,3 +1,11 @@
 ﻿@{
-    Layout = "_Layout";
+    if (Context.Request.Path.StartsWithSegments("/Auth/LoginPage") ||
+        Context.Request.Path.StartsWithSegments("/Auth/SignupPage"))
+    {
+        Layout = null;
+    }
+    else
+    {
+        Layout = "_Layout";
+    }
 }

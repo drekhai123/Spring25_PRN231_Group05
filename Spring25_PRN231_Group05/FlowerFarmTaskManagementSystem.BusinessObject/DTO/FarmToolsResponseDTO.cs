@@ -18,5 +18,6 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.DTO
 		public DateTime CreateDate { get; set; }
 		public DateTime UpdateDate { get; set; }
 		public String FarmToolCategoriesId { get; set; }
+		public FarmToolCategoriesResponseDTO FarmToolCategories { get; set; }
 	}
 }

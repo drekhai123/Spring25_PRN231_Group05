@@ -13,8 +13,8 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Models
         [Key]
         public Guid FieldId { get; set; }
         public string FieldName { get; set; }
-        public string Length { get; set; }
-        public string Width { get; set; }
+        public double Length { get; set; }
+        public double Width { get; set; }
         public string Description { get; set; }
         public string? FieldImageUrl { get; set; }
         public DateTime CreateDate { get; set; }

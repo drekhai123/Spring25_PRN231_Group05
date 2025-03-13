@@ -1,0 +1,103 @@
+﻿@page
+@model FFTMS.RazorPages.Pages.ProductFieldPages.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+
+<div class="table-container"> 
+    <p class="create-new">
+        <a asp-page="Create">Create New</a>
+    </p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductField[0].Productivity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductField[0].ProductivityUnit)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductField[0].StartDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductField[0].EndDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductField[0].CreateDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductField[0].UpdateDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductField[0].Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductField[0].Product)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductField[0].Field)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.ProductField) {
+        <tr productfiel-id ="@item.ProductFieldId">
+            <td>
+                @Html.DisplayFor(modelItem => item.Productivity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductivityUnit)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StartDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EndDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreateDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UpdateDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Product.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Field.Description)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.ProductFieldId">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.ProductFieldId">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.ProductFieldId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+</div>
+<style >
+    .table-container{
+        margin-left: 250px;
+    }
+
+    .create-new{
+        margin-top:40px;
+        font-size: 20
+    }
+</style>
+
+<script src="~/js/microsoft/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/microsoft/signalr/dist/browser/deleteProductField.js"></script>
+<script src="~/js/microsoft/signalr/dist/browser/createProductField.js"></script>
+<script src="~/js/microsoft/signalr/dist/browser/updateProductField.js"></script>

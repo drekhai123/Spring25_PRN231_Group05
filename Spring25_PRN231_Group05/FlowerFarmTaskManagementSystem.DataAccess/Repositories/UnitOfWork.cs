@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace FlowerFarmTaskManagementSystem.DataAccess.Repositories
 {
@@ -22,8 +23,10 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.Repositories
         private IGenericRepository<TaskWork> _taskWorks;
         private IGenericRepository<User> _users;
         private IGenericRepository<UserTask> _userTasks;
-		private IGenericRepository<FarmToolCategories> _farmToolCategories;
-		private IGenericRepository<FarmTools> _farmTools;
+        private IGenericRepository<FarmToolCategories> _farmToolCategories;
+        private IGenericRepository<FarmTools> _farmTools;
+		private IGenericRepository<FarmToolsOfTask> _farmToolsOfTask;
+
 
 		public IGenericRepository<Category> CategoryRepository => _categories ??= new GenericRepository<Category>(_context);
         public IGenericRepository<Field> FieldRepository => _fields ??= new GenericRepository<Field>(_context);
@@ -32,8 +35,10 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.Repositories
         public IGenericRepository<TaskWork> TaskWorkRepository => _taskWorks ??= new GenericRepository<TaskWork>(_context);
         public IGenericRepository<User> UserRepository => _users ??= new GenericRepository<User>(_context);
         public IGenericRepository<UserTask> UserTaskRepository => _userTasks ??= new GenericRepository<UserTask>(_context);
-		public IGenericRepository<FarmToolCategories> FarmToolCategoriesRepository => _farmToolCategories ??= new GenericRepository<FarmToolCategories>(_context);
-		public IGenericRepository<FarmTools> FarmToolsRepository => _farmTools ??= new GenericRepository<FarmTools>(_context);
+        public IGenericRepository<FarmToolCategories> FarmToolCategoriesRepository => _farmToolCategories ??= new GenericRepository<FarmToolCategories>(_context);
+        public IGenericRepository<FarmTools> FarmToolsRepository => _farmTools ??= new GenericRepository<FarmTools>(_context);
+		public IGenericRepository<FarmToolsOfTask> FarmToolsOfTaskRepository => _farmToolsOfTask ??= new GenericRepository<FarmToolsOfTask>(_context);
+
 		public async Task<int> SaveChangesAsync()
         {
             return await _context.SaveChangesAsync();
@@ -62,6 +67,16 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.Repositories
                 }
             }
             disposed = true;
+        }
+
+        public IDbContextTransaction BeginTransaction()
+        {
+            return _context.Database.BeginTransaction();
+        }
+
+        public async Task<IDbContextTransaction> BeginTransactionAsync()
+        {
+            return await _context.Database.BeginTransactionAsync();
         }
     }
 }

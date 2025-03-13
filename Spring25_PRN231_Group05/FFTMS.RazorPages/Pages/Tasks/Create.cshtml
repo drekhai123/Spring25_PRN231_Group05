@@ -1,0 +1,190 @@
+@page
+@model FFTMS.RazorPages.Pages.Tasks.CreateModel
+@{
+    ViewData["Title"] = "Create Task";
+    Layout = "_Layout";
+}
+
+<div class="main-container">
+    <div class="pd-ltr-20 xs-pd-20-10">
+        <div class="min-height-200px">
+            <div class="page-header">
+                <div class="row">
+                    <div class="col-md-6 col-sm-12">
+                        <div class="title">
+                            <h4>Create New Task</h4>
+                        </div>
+                        <nav aria-label="breadcrumb" role="navigation">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a asp-page="/Index">Home</a></li>
+                                <li class="breadcrumb-item"><a asp-page="/Tasks/Index">Tasks</a></li>
+                                <li class="breadcrumb-item active">Create</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pd-20 card-box mb-30">
+                <form method="post">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+
+                    <div class="form-group">
+                        <label asp-for="Task.JobTitle" class="control-label">Job Title</label>
+                        <input asp-for="Task.JobTitle" class="form-control" />
+                        <span asp-validation-for="Task.JobTitle" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Task.Description" class="control-label">Description</label>
+                        <textarea asp-for="Task.Description" class="form-control"></textarea>
+                        <span asp-validation-for="Task.Description" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Task.ProductFieldId" class="control-label">Product Field</label>
+                        <select asp-for="Task.ProductFieldId" asp-items="@Model.ProductFieldList" class="form-control">
+                            <option value="">Select Product Field</option>
+                        </select>
+                        <span asp-validation-for="Task.ProductFieldId" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Staff Assignments</label>
+                        <div id="staffAssignments">
+                            <div class="staff-assignment">
+                                <select name="Task.UserTasks[0].AssignedTo" class="form-control mb-2 staff-select">
+                                    <option value="">-- Select Staff --</option>
+                                    @foreach (var item in Model.UserList)
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                </select>
+                                <textarea name="Task.UserTasks[0].UserTaskDescription" class="form-control mb-2"
+                                    placeholder="Task description for this staff"></textarea>
+                            </div>
+                        </div>
+                        <button type="button" id="addStaff" class="btn btn-info mt-2">Add More Staff</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Task.StartDate" class="control-label">Start Date</label>
+                        <input asp-for="Task.StartDate" type="date" class="form-control"
+                            value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                        <span asp-validation-for="Task.StartDate" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Task.EndDate" class="control-label">End Date</label>
+                        <input asp-for="Task.EndDate" type="date" class="form-control"
+                            value="@DateTime.Now.AddDays(1).ToString("yyyy-MM-dd")" />
+                        <span asp-validation-for="Task.EndDate" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Create</button>
+                        <a asp-page="Index" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Debug info *@
+<div class="d-none">
+    <p>Debug Info:</p>
+    <p>UserList is null: @(Model.UserList == null)</p>
+    @if (Model.UserList != null)
+    {
+        <p>UserList count: @Model.UserList.Count()</p>
+        foreach (var item in Model.UserList)
+        {
+            <p>Item: @item.Text (@item.Value)</p>
+        }
+    }
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function () {
+            let staffCount = 1;
+            let selectedStaff = new Set();
+
+            // Theo dõi staff đã chọn ban đầu
+            $('.staff-select').each(function () {
+                let value = $(this).val();
+                if (value) selectedStaff.add(value);
+            });
+
+            // Cập nhật danh sách staff available khi có thay đổi
+            function updateAvailableStaff() {
+                $('.staff-select').each(function () {
+                    let currentSelect = $(this);
+                    let currentValue = currentSelect.val();
+
+                    // Lưu các option hiện tại
+                    let options = '<option value="">-- Select Staff --</option>';
+                                @foreach (var item in Model.UserList)
+                        {
+                            @:if (!selectedStaff.has('@item.Value') || '@item.Value' === currentValue) {
+                                @:options += `<option value="@item.Value" ${('@item.Value' === currentValue ? 'selected' : '')}> @item.Text</option>`;
+                                @:}
+                    }
+                        currentSelect.html(options);
+                });
+            }
+
+            // Xử lý khi thay đổi staff selection
+            $(document).on('change', '.staff-select', function () {
+                let previousValue = $(this).data('previous');
+                let currentValue = $(this).val();
+
+                if (previousValue) selectedStaff.delete(previousValue);
+                if (currentValue) selectedStaff.add(currentValue);
+
+                $(this).data('previous', currentValue);
+                updateAvailableStaff();
+            });
+
+            // Thêm staff mới
+            $('#addStaff').click(function () {
+                if (staffCount < 5) {
+                    const newStaff = `
+                                            <div class="staff-assignment">
+                                                <select name="Task.UserTasks[${staffCount}].AssignedTo" 
+                                                    class="form-control mb-2 staff-select">
+                                                    <option value="">-- Select Staff --</option>
+                                                </select>
+                                                <textarea name="Task.UserTasks[${staffCount}].UserTaskDescription" 
+                                                    class="form-control mb-2" 
+                                                    placeholder="Task description for this staff"></textarea>
+                                                <button type="button" class="btn btn-danger mb-3 remove-staff">Remove</button>
+                                            </div>`;
+                    $('#staffAssignments').append(newStaff);
+                    updateAvailableStaff();
+                    staffCount++;
+                }
+                if (staffCount >= 5) {
+                    $('#addStaff').prop('disabled', true);
+                }
+            });
+
+            // Xóa staff
+            $(document).on('click', '.remove-staff', function () {
+                let staffSelect = $(this).closest('.staff-assignment').find('.staff-select');
+                let value = staffSelect.val();
+                if (value) selectedStaff.delete(value);
+
+                $(this).closest('.staff-assignment').remove();
+                staffCount--;
+                $('#addStaff').prop('disabled', false);
+
+                updateAvailableStaff();
+            });
+        });
+    </script>
+}

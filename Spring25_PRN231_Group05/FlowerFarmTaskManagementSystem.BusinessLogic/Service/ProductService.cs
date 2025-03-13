@@ -3,6 +3,7 @@ using FlowerFarmTaskManagementSystem.BusinessLogic.IService;
 using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
 using FlowerFarmTaskManagementSystem.BusinessObject.Models;
 using FlowerFarmTaskManagementSystem.DataAccess;
+using FlowerFarmTaskManagementSystem.DataAccess.IRepositories;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -14,12 +15,13 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 {
     public class ProductService : IProductService
     {
-        private readonly FlowerFarmTaskManagementSystemDbContext _dbContext;
+        private readonly IUnitOfWork _unitOfWork;
+
         private readonly IMapper _mapper;
 
-        public ProductService(FlowerFarmTaskManagementSystemDbContext dbContext, IMapper mapper)
+        public ProductService(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _dbContext = dbContext;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
@@ -31,42 +33,41 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             product.UpdateDate = DateTime.UtcNow;
             product.Status = true;
 
-            await _dbContext.Products.AddAsync(product);
-            await _dbContext.SaveChangesAsync();
+            await _unitOfWork.ProductRepository.AddAsync(product);
+            await _unitOfWork.SaveChangesAsync();
 
             return _mapper.Map<ProductDTO>(product);
         }
 
-        public async Task<ProductDTO> UpdateProductAsync(ProductUpdateDTO productUpdateDTO)
+    
+        public async Task<ProductDTO> UpdateProductAsync(Guid id, ProductUpdateDTO productUpdateDTO)
         {
-            var product = await _dbContext.Products.FindAsync(productUpdateDTO.ProductId);
+            var product = await _unitOfWork.ProductRepository.GetByIdAsync(id);
             if (product == null) throw new KeyNotFoundException("Product not found.");
 
             _mapper.Map(productUpdateDTO, product);
             product.UpdateDate = DateTime.UtcNow;
 
-            _dbContext.Products.Update(product);
-            await _dbContext.SaveChangesAsync();
+            _unitOfWork.ProductRepository.Update(product);
+            await _unitOfWork.SaveChangesAsync();
 
             return _mapper.Map<ProductDTO>(product);
         }
 
         public async Task<bool> DeleteProductAsync(Guid productId)
         {
-            var product = await _dbContext.Products.FindAsync(productId);
+            var product = await _unitOfWork.ProductRepository.GetByIdAsync(productId);
             if (product == null) throw new KeyNotFoundException("Product not found.");
 
-            _dbContext.Products.Remove(product);
-            await _dbContext.SaveChangesAsync();
+            _unitOfWork.ProductRepository.Delete(product);
+            await _unitOfWork.SaveChangesAsync();
 
             return true;
         }
 
         public async Task<ProductDTO> GetProductByIdAsync(Guid productId)
         {
-            var product = await _dbContext.Products
-                .Include(p => p.Category) // Include related Category if needed
-                .FirstOrDefaultAsync(p => p.ProductId == productId);
+            var product = await _unitOfWork.ProductRepository.GetByIdAsync(productId);
 
             if (product == null) throw new KeyNotFoundException("Product not found.");
 
@@ -75,11 +76,21 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 
         public async Task<IEnumerable<ProductDTO>> GetAllProductsAsync()
         {
-            var products = await _dbContext.Products
-                .Include(p => p.Category) // Include related Category if needed
-                .ToListAsync();
+            var products = await _unitOfWork.ProductRepository.GetAllAsync();
 
             return _mapper.Map<IEnumerable<ProductDTO>>(products);
+        }
+
+        public async Task<bool> IsProductInUseAsync(Guid productId)
+        {
+            var product = await _unitOfWork.ProductRepository.GetByIdAsync(productId);
+            if (product == null) throw new KeyNotFoundException("Product not found.");
+
+            // Check if the product is used in any ProductField
+            var productFields = await _unitOfWork.ProductFieldRepository
+                .FindAsync(pf => pf.ProductId == productId && pf.Status.Equals(true));
+
+            return productFields.Any();
         }
     }
 }
