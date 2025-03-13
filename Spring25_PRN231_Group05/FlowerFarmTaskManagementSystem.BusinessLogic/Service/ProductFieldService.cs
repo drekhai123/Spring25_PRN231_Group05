@@ -30,7 +30,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             productField.ProductFieldId = Guid.NewGuid();
             productField.CreateDate = DateTime.UtcNow;
             productField.UpdateDate = DateTime.UtcNow;
-            productField.Status = true;
+            productField.Status = "";
 
             await _unitOfWork.ProductFieldRepository.AddAsync(productField);
             await _unitOfWork.SaveChangesAsync();
