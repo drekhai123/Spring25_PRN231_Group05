@@ -9,41 +9,46 @@ using FlowerFarmTaskManagementSystem.BusinessObject.Models;
 using FlowerFarmTaskManagementSystem.DataAccess;
 using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
 using System.Text.Json;
+using System.Net.Http;
+using Azure;
+using Microsoft.AspNetCore.SignalR;
+using FlowerFarmTaskManagementSystem.BusinessLogic.Service;
 
 namespace FFTMS.RazorPages.Pages.ProductFieldPages
 {
     public class DeleteModel : PageModel
     {
         private readonly HttpClient _httpClient;
-
-        public DeleteModel(HttpClient httpClient)
+        private readonly IHubContext<ProductFieldHub> _hubContext;
+        public DeleteModel(HttpClient httpClient, IHubContext<ProductFieldHub> hubContext)
         {
             _httpClient = httpClient;
+            _hubContext = hubContext;
         }
 
         [BindProperty]
         public ProductField ProductField { get; set; } = default!;
-
+        public string ErrorMessage { get; set; }
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
-           if(id != null)
+            if (id != null)
             {
                 return Page();
             }
 
             try
             {
-                var apiUrl = "https://localhost:7207/odata/ProductField/get-all-productField";
-                var request = new HttpRequestMessage(HttpMethod.Get, apiUrl);
-                var response = await _httpClient.SendAsync(request);
+                var apiUrl = "https://localhost:7207/odata/ProductField/get-by-id";
+                var response = await _httpClient.GetAsync(apiUrl);
 
                 if (!response.IsSuccessStatusCode)
                 {
+                    
                     return NotFound();
                 }
 
                 var jsonResponse = await response.Content.ReadAsStringAsync();
-                var parsedResponse = JsonSerializer.Deserialize<List<ProductFieldResponse>>(jsonResponse, new JsonSerializerOptions
+                var parsedResponse = JsonSerializer.Deserialize<ProductFieldRequest>(jsonResponse, new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
                 });
@@ -71,8 +76,26 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
             //    _context.ProductFields.Remove(ProductField);
             //    await _context.SaveChangesAsync();
             //}
-
-            return RedirectToPage("./Index");
+            try
+            {
+                var api = "https://localhost:7207/odata/delete-by-id";
+                var response = _httpClient.DeleteAsync(api);
+                if (response.IsCompletedSuccessfully)
+                {
+                    await _hubContext.Clients.All.SendAsync("ProductFieldDeleted", api);
+                    return RedirectToPage("/Index");
+                }
+                            
+            ErrorMessage = $"Error deleting productField. Status code: {response.Status}";
+            return Page();
         }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Error deleting task: {ex.Message}";
+                return Page();
     }
 }
+    }
+}
+
+

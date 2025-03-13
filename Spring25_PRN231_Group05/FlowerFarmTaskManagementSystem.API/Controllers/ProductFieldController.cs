@@ -25,7 +25,7 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
             return Ok(productFields);
         }
 
-        [HttpGet("get-by-{id}")]
+        [HttpGet("get-by-id")]
         public async Task<ActionResult<ProductFieldRequest>> GetProductFieldById(Guid id)
         {
             try
@@ -39,7 +39,7 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
             }
         }
 
-        [HttpDelete("delete-by-{id}")]
+        [HttpDelete("delete-by-id")]
         public async Task<ActionResult<bool>> DeleteProductFieldAsync(Guid id)
         {
             try
@@ -52,6 +52,7 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
                 return NotFound(new { Message = ex.Message });
             }
         }
+
         [HttpPost("create-productField")]
         public async Task<ActionResult<ProductFieldResponse>> CreateProductField([FromBody] ProductFieldRequest newproductField)
         {
@@ -67,7 +68,7 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
             }
         }
 
-        [HttpPut("update-productfield-by-{id}")]
+        [HttpPut("update-productfield-by-id")]
         public async Task<ActionResult<ProductFieldRequest>> UpdateProductFieldAsync(Guid id, [FromBody] ProductFieldRequest productFieldDto)
         {
             try

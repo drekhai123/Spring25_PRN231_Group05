@@ -39,7 +39,11 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Mapper
             // ProductField mappings
             CreateMap<ProductField, ProductFieldRequest>()
                 .ForMember(dest => dest.Product, opt => opt.MapFrom(src => src.Product))
-                .ForMember(dest => dest.Field, opt => opt.MapFrom(src => src.Field));
+                .ForMember(dest => dest.Field, opt => opt.MapFrom(src => src.Field))
+                .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
+                .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
+                .ForMember(dest => dest.CreateDate, opt => opt.MapFrom(src => src.CreateDate))
+                .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate));
 
             // Task mappings
             CreateMap<TaskWork, TaskResponseDTO>()

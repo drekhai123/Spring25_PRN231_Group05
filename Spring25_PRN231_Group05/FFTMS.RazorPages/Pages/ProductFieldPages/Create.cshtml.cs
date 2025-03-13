@@ -45,7 +45,7 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
 
             if (!response.IsSuccessStatusCode)
             {
-                ModelState.AddModelError(string.Empty, "Error creating farm tool category.");
+                ModelState.AddModelError(string.Empty, "Error creating product field.");
                 return Page();
             }
 
@@ -54,6 +54,20 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
         }
         public async Task<IActionResult> OnGetAsync()
         {
+            var product = await _httpClient.GetAsync("https://localhost:7207/odata/get-all-product"); 
+            if (product.IsSuccessStatusCode)
+            {
+                var productJson = await product.Content.ReadAsStringAsync();
+                var products = JsonSerializer.Deserialize<List<ProductDTO>>(productJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                ViewData["ProductId"] = new SelectList(products, "ProductId", "ProductName");
+            }
+            //var fieldResponse = await _httpClient.GetAsync("https://localhost:7207/odata/products");
+            //if (fieldResponse.IsSuccessStatusCode)
+            //{
+            //    var fieldJson = await fieldResponse.Content.ReadAsStringAsync();
+            //    var fields = JsonSerializer.Deserialize<List<FieldDTO>>(fieldJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            //    ViewData["FieldId"] = new SelectList(fields, "FieldId", "Description");
+            //}
             return Page();
         }
     }

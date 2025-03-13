@@ -1,9 +1,12 @@
+using FlowerFarmTaskManagementSystem.BusinessLogic.Service;
+using Microsoft.AspNetCore.Builder;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages(); // Removed the AddPageRoute configuration
 builder.Services.AddHttpClient();
-
+builder.Services.AddSignalR();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -33,5 +36,5 @@ app.Use(async (context, next) =>
 });
 
 app.MapRazorPages();
-
+app.MapHub<ProductFieldHub>("/productFieldHub");
 app.Run();

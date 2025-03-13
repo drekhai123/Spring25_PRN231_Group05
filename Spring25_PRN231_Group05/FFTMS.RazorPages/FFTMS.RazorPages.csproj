@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FlowerFarmTaskManagementSystem.BusinessLogic\FlowerFarmTaskManagementSystem.BusinessLogic.csproj" />
     <ProjectReference Include="..\FlowerFarmTaskManagementSystem.BusinessObject\FlowerFarmTaskManagementSystem.BusinessObject.csproj" />
     <ProjectReference Include="..\FlowerFarmTaskManagementSystem.DataAccess\FlowerFarmTaskManagementSystem.DataAccess.csproj" />
   </ItemGroup>

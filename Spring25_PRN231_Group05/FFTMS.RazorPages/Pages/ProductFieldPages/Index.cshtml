@@ -7,11 +7,12 @@
 
 <h1>Index</h1>
 
-<p>
-    <a asp-page="Create">Create New</a>
-</p>
 
 <div class="table-container"> 
+    <p class="create-new">
+        <a asp-page="Create">Create New</a>
+    </p>
+
 <table class="table">
     <thead>
         <tr>
@@ -47,7 +48,7 @@
     </thead>
     <tbody>
 @foreach (var item in Model.ProductField) {
-        <tr>
+        <tr productfiel-id ="@item.ProductFieldId">
             <td>
                 @Html.DisplayFor(modelItem => item.Productivity)
             </td>
@@ -89,4 +90,14 @@
     .table-container{
         margin-left: 250px;
     }
+
+    .create-new{
+        margin-top:40px;
+        font-size: 20
+    }
 </style>
+
+<script src="~/js/microsoft/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/microsoft/signalr/dist/browser/deleteProductField.js"></script>
+<script src="~/js/microsoft/signalr/dist/browser/createProductField.js"></script>
+<script src="~/js/microsoft/signalr/dist/browser/updateProductField.js"></script>

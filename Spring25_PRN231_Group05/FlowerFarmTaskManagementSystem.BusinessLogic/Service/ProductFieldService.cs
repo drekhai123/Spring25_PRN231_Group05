@@ -30,8 +30,8 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 
         public async Task<IEnumerable<ProductFieldRequest>> GetAllProductFieldsAsync()
         {
-            var productFields = await Task.FromResult(_unitOfWork.ProductFieldRepository.Get(
-                includeProperties: "Product.Category,Field"
+            var productFields = await Task.FromResult(_unitOfWork.ProductFieldRepository
+                .Get(includeProperties: "Product.Category,Field"
             ));
             return _mapper.Map<IEnumerable<ProductFieldRequest>>(productFields);
         }
@@ -71,7 +71,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             productField.EndDate = DateTime.UtcNow;
             productField.CreateDate = DateTime.UtcNow;
             productField.UpdateDate = DateTime.UtcNow;
-            productField.Status = true;
+            //productField.Status = true;
             await _unitOfWork.ProductFieldRepository.AddAsync(productField);
             await _unitOfWork.SaveChangesAsync();
             return  _mapper.Map<ProductFieldResponse>(productField);
