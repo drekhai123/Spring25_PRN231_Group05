@@ -38,6 +38,7 @@ namespace FFTMS.RazorPages.Pages.Tasks
                 }
 
                 var response = await _httpClient.GetAsync($"https://localhost:7207/odata/Task/{id}");
+
                 if (response.IsSuccessStatusCode)
                 {
                     var jsonResponse = await response.Content.ReadAsStringAsync();
@@ -47,27 +48,40 @@ namespace FFTMS.RazorPages.Pages.Tasks
                     });
                     return Page();
                 }
-                return NotFound();
+                else
+                {
+                    ErrorMessage = $"Error loading task. Status code: {response.StatusCode}";
+                    return Page();
+                }
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"Error loading task: {ex.Message}";
+                ErrorMessage = $"Error: {ex.Message}";
                 return Page();
             }
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(string id)
         {
             try
             {
                 var response = await _httpClient.DeleteAsync($"https://localhost:7207/odata/Task/{Task.TaskWorkId}");
+                var content = await response.Content.ReadAsStringAsync();
+                var result = JsonSerializer.Deserialize<dynamic>(content, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
                 if (response.IsSuccessStatusCode)
                 {
                     return RedirectToPage("./Index");
                 }
-
-                ErrorMessage = $"Error deleting task. Status code: {response.StatusCode}";
-                return Page();
+                else
+                {
+                    // Lấy message lỗi từ response API
+                    ErrorMessage = result.GetProperty("message").GetString();
+                    return Page();
+                }
             }
             catch (Exception ex)
             {

@@ -79,11 +79,19 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
             try
             {
                 var result = await _taskService.DeleteTaskAsync(id);
-                return Ok(new { Success = result, Message = "Task deleted successfully" });
+                return Ok(new { Success = result, Message = "Task has been deactivated successfully" });
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(ex.Message);
+                return NotFound(new { Success = false, Message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { Success = false, Message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Success = false, Message = "An unexpected error occurred" });
             }
         }
     }

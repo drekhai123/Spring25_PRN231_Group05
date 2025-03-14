@@ -25,15 +25,15 @@ app.UseRouting();
 app.UseAuthorization();
 
 // Redirect unauthenticated users to /Auth/LoginPage
-app.Use(async (context, next) =>
-{
-    if (context.Request.Path == "/" && !context.Request.Cookies.ContainsKey("AuthToken"))
-    {
-        context.Response.Redirect("/Auth/LoginPage");
-        return;
-    }
-    await next();
-});
+//app.Use(async (context, next) =>
+//{
+//    if (context.Request.Path == "/" && !context.Request.Cookies.ContainsKey("AuthToken"))
+//    {
+//        context.Response.Redirect("/Auth/LoginPage");
+//        return;
+//    }
+//    await next();
+//});
 
 app.MapRazorPages();
 app.MapHub<ProductFieldHub>("/productFieldHub");

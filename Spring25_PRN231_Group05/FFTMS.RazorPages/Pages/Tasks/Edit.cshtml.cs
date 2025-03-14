@@ -25,6 +25,7 @@ namespace FFTMS.RazorPages.Pages.Tasks
         public SelectList ProductFieldList { get; set; }
         public string ErrorMessage { get; set; }
         public Guid TaskId { get; set; }
+        public List<ProductFieldRequest> ProductFieldsData { get; set; }
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
@@ -117,7 +118,7 @@ namespace FFTMS.RazorPages.Pages.Tasks
         {
             try
             {
-                var response = await _httpClient.GetAsync("https://localhost:7207/odata/ProductField/get-all-product-field");
+                var response = await _httpClient.GetAsync("http://localhost:5281/odata/ProductFields/get-all-productField");
                 if (response.IsSuccessStatusCode)
                 {
                     var jsonResponse = await response.Content.ReadAsStringAsync();
@@ -125,6 +126,8 @@ namespace FFTMS.RazorPages.Pages.Tasks
                     {
                         PropertyNameCaseInsensitive = true
                     });
+
+                    ProductFieldsData = productFields;
 
                     var productFieldsList = productFields.Select(pf => new SelectListItem
                     {
@@ -162,7 +165,8 @@ namespace FFTMS.RazorPages.Pages.Tasks
                     return RedirectToPage("./Index");
                 }
 
-                ErrorMessage = "Error updating task";
+                var responseContent = await response.Content.ReadAsStringAsync();
+                ErrorMessage = responseContent ?? "Error updating task";
                 await LoadUserList();
                 await LoadProductFieldList();
                 return Page();

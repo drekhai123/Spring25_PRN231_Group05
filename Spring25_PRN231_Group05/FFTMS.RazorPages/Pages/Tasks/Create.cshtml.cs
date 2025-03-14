@@ -22,6 +22,7 @@ namespace FFTMS.RazorPages.Pages.Tasks
         public SelectList UserList { get; set; }
         public SelectList ProductFieldList { get; set; }
         public string ErrorMessage { get; set; }
+        public List<ProductFieldRequest> ProductFieldsData { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -38,6 +39,9 @@ namespace FFTMS.RazorPages.Pages.Tasks
                 {
                     return RedirectToPage("/Index");
                 }
+
+                var userId = JwtHelper.GetUserIdFromToken(token);
+                Task.AssignedBy = userId;
 
                 await LoadUserList();
                 await LoadProductFieldList();
@@ -88,7 +92,7 @@ namespace FFTMS.RazorPages.Pages.Tasks
         {
             try
             {
-                var response = await _httpClient.GetAsync("https://localhost:7207/odata/ProductField/get-all-product-field");
+                var response = await _httpClient.GetAsync("http://localhost:5281/odata/ProductFields/get-all-productField");
                 if (response.IsSuccessStatusCode)
                 {
                     var jsonResponse = await response.Content.ReadAsStringAsync();
@@ -96,6 +100,8 @@ namespace FFTMS.RazorPages.Pages.Tasks
                     {
                         PropertyNameCaseInsensitive = true
                     });
+
+                    ProductFieldsData = productFields;
 
                     var productFieldsList = productFields.Select(pf => new SelectListItem
                     {
@@ -122,26 +128,37 @@ namespace FFTMS.RazorPages.Pages.Tasks
                     return RedirectToPage("/Auth/LoginPage");
                 }
 
-                var userId = JwtHelper.GetUserIdFromToken(token);
-                Task.AssignedBy = userId;
+                if (string.IsNullOrEmpty(Task.AssignedBy))
+                {
+                    Task.AssignedBy = JwtHelper.GetUserIdFromToken(token);
+                }
                 Task.Status = true;
+
+                // Debug: Kiểm tra dữ liệu trước khi gửi
+                Console.WriteLine($"StartDate: {Task.StartDate}");
+                Console.WriteLine($"EndDate: {Task.EndDate}");
+                Console.WriteLine($"ProductFieldId: {Task.ProductFieldId}");
+                Console.WriteLine($"UserTasks count: {Task.UserTasks?.Count ?? 0}");
 
                 var response = await _httpClient.PostAsJsonAsync("https://localhost:7207/odata/Task", Task);
                 var responseContent = await response.Content.ReadAsStringAsync();
+
+                // In ra toàn bộ nội dung response để xem lỗi chi tiết
+                Console.WriteLine($"API Response: {responseContent}");
 
                 if (response.IsSuccessStatusCode)
                 {
                     return RedirectToPage("./Index");
                 }
 
-                ErrorMessage = $"Error creating task: {responseContent}";
+                ErrorMessage = responseContent ?? "Error creating task";
                 await LoadUserList();
                 await LoadProductFieldList();
                 return Page();
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"Error: {ex.Message}";
+                ErrorMessage = ex.Message;
                 await LoadUserList();
                 await LoadProductFieldList();
                 return Page();
