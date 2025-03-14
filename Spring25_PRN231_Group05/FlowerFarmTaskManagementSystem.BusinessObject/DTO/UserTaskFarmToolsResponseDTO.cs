@@ -16,6 +16,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.DTO
         public Guid TaskWorkId { get; set; }
         public Guid UserId { get; set; }
         public string UserName { get; set; }
+        public string? ImageUrl { get; set; }
         public TaskBasicResponseDTO Task { get; set; }
         public IList<FarmToolsOfTaskResponseDTO> FarmToolsOfTask { get; set; }
 
