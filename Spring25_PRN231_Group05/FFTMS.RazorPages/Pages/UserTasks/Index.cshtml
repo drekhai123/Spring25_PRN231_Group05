@@ -230,17 +230,22 @@
                                                         </div>
                                                         <div class="col-md-4">
                                                             <h5 class="mb-3">Farm Tools List</h5>
-                                                            @if (Model.FarmTools != null && Model.FarmTools.Any())
+                                                            @if (Model.UserTasks.Any(t => t.FarmToolsOfTask != null && t.FarmToolsOfTask.Any()))
                                                             {
                                                                 <ul class="list-group">
-                                                                    @foreach (var tool in Model.FarmTools)
-                                                                    {
-                                                                        <li class="list-group-item">
-                                                                            <strong>@tool.FarmToolsName</strong> - Quantity:
-                                                                            @tool.FarmToolsQuantity @tool.FarmToolsUnit
-                                                                            
-                                                                        </li>
-                                                                    }
+                                                                       @if (task.FarmToolsOfTask != null && task.FarmToolsOfTask.Any())
+                                                                        {
+                                                                            foreach (var tool in task.FarmToolsOfTask)
+                                                                            {
+                                                                                <li class="list-group-item">
+                                                                                    <strong>@tool.FarmTools.FarmToolsName</strong> - Quantity: @tool.FarmToolOfTaskQuantity @tool.FarmToolOfTaskUnit
+                                                                                </li>
+                                                                                <a asp-page="/FarmToolsOfTask/Extend"
+                                                                               asp-route-id="@tool.FarmToolsOfTaskId" class="btn btn-sm btn-primary">
+                                                                                    <i class="fa-solid fa-plus"></i> Extend
+                                                                                </a>
+                                                                            }
+                                                                        }
                                                                 </ul>
                                                             }
                                                             else

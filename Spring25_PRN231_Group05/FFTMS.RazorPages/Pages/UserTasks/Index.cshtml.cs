@@ -6,6 +6,7 @@ using FFTMS.RazorPages.Helpers;
 using System.Text.Json.Serialization;
 using System.Text;
 using NuGet.Packaging;
+using FlowerFarmTaskManagementSystem.BusinessObject.Models;
 
 namespace FFTMS.RazorPages.Pages.UserTasks
 {
@@ -16,12 +17,16 @@ namespace FFTMS.RazorPages.Pages.UserTasks
         public IndexModel(HttpClient httpClient)
         {
             _httpClient = httpClient;
-            UserTasks = new List<UserTaskResponseDTO>();
+            UserTasks = new List<UserTaskFarmToolsResponseDTO>();
             FarmTools = new List<FarmToolsResponseDTO>();
+            FarmToolsOfTask = new List<FarmToolsOfTaskResponseDTO>();
+
         }
 
-        public IList<UserTaskResponseDTO> UserTasks { get; set; }
+        public IList<UserTaskFarmToolsResponseDTO> UserTasks { get; set; }
         public IList<FarmToolsResponseDTO> FarmTools { get; set; }
+        public IList<FarmToolsOfTaskResponseDTO> FarmToolsOfTask { get; set; }
+
         public string? ErrorMessage { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
@@ -47,10 +52,10 @@ namespace FFTMS.RazorPages.Pages.UserTasks
                 }
 
                 var jsonUserTasks = await userTaskResponse.Content.ReadAsStringAsync();
-                UserTasks = JsonSerializer.Deserialize<List<UserTaskResponseDTO>>(jsonUserTasks, new JsonSerializerOptions
+                UserTasks = JsonSerializer.Deserialize<List<UserTaskFarmToolsResponseDTO>>(jsonUserTasks, new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
-                }) ?? new List<UserTaskResponseDTO>();
+                }) ?? new List<UserTaskFarmToolsResponseDTO>();
 
                 // 2. Lấy danh sách FarmToolOfTask bằng vòng lặp for
                 var farmToolIds = new HashSet<Guid>(); // Dùng HashSet để tránh trùng lặp
@@ -68,15 +73,22 @@ namespace FFTMS.RazorPages.Pages.UserTasks
                             PropertyNameCaseInsensitive = true
                         }) ?? new List<FarmToolsOfTaskResponseDTO>();
 
-                        foreach (var farmToolOfTask in farmToolOfTaskList)
+                        var farmToolOfTaskDict = farmToolOfTaskList.GroupBy(f => f.UserTaskId)
+                            .ToDictionary(g => g.Key, g => g.ToList());
+
+                        foreach (var task in UserTasks)
                         {
-                            farmToolIds.Add(Guid.Parse(farmToolOfTask.FarmToolsId));
+                            var USTID = task.UserTaskId.ToString();
+                            if (farmToolOfTaskDict.TryGetValue(USTID, out var tools))
+                            {
+                                task.FarmToolsOfTask = tools;
+                            }
                         }
                     }
                 }
 
-                // 3. Lấy danh sách FarmTools dựa vào FarmToolIds đã thu thập được
-                var farmToolIdList = farmToolIds.ToList();
+                    // 3. Lấy danh sách FarmTools dựa vào FarmToolIds đã thu thập được
+                    var farmToolIdList = farmToolIds.ToList();
                 FarmTools = new List<FarmToolsResponseDTO>();
 
                 for (int i = 0; i < farmToolIdList.Count; i++)

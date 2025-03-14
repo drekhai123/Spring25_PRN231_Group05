@@ -68,7 +68,7 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
 		}
 
 		[HttpPut("update-farm-tools-of-task-extend")]
-		public async Task<ActionResult<FarmToolsOfTaskResponseDTO>> UpdateFarmToolsOfTasksExtendAsync([FromBody] FarmToolsOfTaskRequestDTO request)
+		public async Task<ActionResult<FarmToolsOfTaskResponseDTO>> UpdateFarmToolsOfTasksExtendAsync([FromBody] FarmToolsOfTaskExtendRequestDTO request)
 		{
 			if (!ModelState.IsValid)
 			{

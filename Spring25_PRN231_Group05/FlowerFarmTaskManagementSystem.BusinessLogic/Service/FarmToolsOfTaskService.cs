@@ -47,7 +47,13 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
                 {
                     throw new Exception($"Not enough farm tools for ID {farmToolsId}. Available: {farmTools.FarmToolsQuantity}, Requested: {farmTool.Quantity}");
                 }
+                if (farmTools.FarmToolsQuantity > farmTool.Quantity)
+                {
+                    farmTools.FarmToolsQuantity -= farmTool.Quantity;
 
+                    _unitOfWork.FarmToolsRepository.Update(farmTools);
+                    await _unitOfWork.SaveChangesAsync();
+                }
                 var farmToolsOfTask = new FarmToolsOfTask
                 {
                     FarmToolsOfTaskId = Guid.NewGuid(),
@@ -87,8 +93,10 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 
 		public async Task<IEnumerable<FarmToolsOfTaskResponseDTO>> GetAllFarmToolsOfTasksAsync()
 		{
-			var farmToolsOfTasks = await _unitOfWork.FarmToolsOfTaskRepository.GetAllAsync();
-			return _mapper.Map<IEnumerable<FarmToolsOfTaskResponseDTO>>(farmToolsOfTasks);
+            var farmToolsOfTasks = await Task.FromResult(_unitOfWork.FarmToolsOfTaskRepository.Get(
+               includeProperties: "FarmTools"
+           ));
+            return _mapper.Map<IEnumerable<FarmToolsOfTaskResponseDTO>>(farmToolsOfTasks);
 		}
 
 		public async Task<FarmToolsOfTaskResponseDTO> GetFarmToolsOfTasksByIdAsync(string FarmToolsOfTasksId)
@@ -118,20 +126,48 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 			return _mapper.Map<FarmToolsOfTaskResponseDTO>(farmToolsOfTask);
 		}
 
-		public async Task<FarmToolsOfTaskResponseDTO> UpdateFarmToolsOfTasksExtendAsync(FarmToolsOfTaskRequestDTO request)
+		public async Task<FarmToolsOfTaskResponseDTO> UpdateFarmToolsOfTasksExtendAsync(FarmToolsOfTaskExtendRequestDTO request)
 		{
 			var farmToolsOfTaskId = Guid.Parse(request.FarmToolsOfTaskId);
 			var farmToolsOfTask = await _unitOfWork.FarmToolsOfTaskRepository.GetByIdAsync(farmToolsOfTaskId);
 			if (farmToolsOfTask == null) throw new KeyNotFoundException("FarmToolsOfTask not found.");
 
-			_mapper.Map(request, farmToolsOfTask);
 			farmToolsOfTask.UpdateDate = DateTime.UtcNow;
 			farmToolsOfTask.Status = 2;
+			farmToolsOfTask.EndDate = request.EndDate;
+			farmToolsOfTask.FarmToolOfTaskQuantity = request.FarmToolOfTaskQuantity;
+			var farmToolsId = farmToolsOfTask.FarmToolsId;
+            var farmTools = await _unitOfWork.FarmToolsRepository.GetByIdAsync(farmToolsId);
+            if (farmTools == null)
+            {
+                throw new Exception($"Farm tool with ID {farmToolsId} not found.");
+            }
 
-			_unitOfWork.FarmToolsOfTaskRepository.Update(farmToolsOfTask);
+            if (farmTools.FarmToolsQuantity < farmToolsOfTask.FarmToolOfTaskQuantity)
+            {
+                throw new Exception($"Not enough farm tools for ID {farmToolsId}. Available: {farmTools.FarmToolsQuantity}, Requested: {farmToolsOfTask.FarmToolOfTaskQuantity}");
+            }
+
+            if (farmToolsOfTask.FarmToolOfTaskQuantity < request.FarmToolOfTaskQuantity)
+            {
+                farmTools.FarmToolsQuantity -= request.FarmToolOfTaskQuantity;
+
+            _unitOfWork.FarmToolsRepository.Update(farmTools);
 			await _unitOfWork.SaveChangesAsync();
+            }
 
-			return _mapper.Map<FarmToolsOfTaskResponseDTO>(farmToolsOfTask);
+            if (farmToolsOfTask.FarmToolOfTaskQuantity > request.FarmToolOfTaskQuantity)
+            {
+                farmTools.FarmToolsQuantity += (farmToolsOfTask.FarmToolOfTaskQuantity - request.FarmToolOfTaskQuantity);
+
+                _unitOfWork.FarmToolsRepository.Update(farmTools);
+                await _unitOfWork.SaveChangesAsync();
+            }
+
+
+            _unitOfWork.FarmToolsOfTaskRepository.Update(farmToolsOfTask);
+            await _unitOfWork.SaveChangesAsync();
+            return _mapper.Map<FarmToolsOfTaskResponseDTO>(farmToolsOfTask);
 		}
 
 		public async Task<FarmToolsOfTaskResponseDTO> UpdateFarmToolsOfTasksStatusFinishAsync(string FarmToolsOfTasksId)
@@ -142,8 +178,20 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 
 			farmToolsOfTask.UpdateDate = DateTime.UtcNow;
 			farmToolsOfTask.Status = 3;
+            var farmToolsId = farmToolsOfTask.FarmToolsId;
+            var farmTools = await _unitOfWork.FarmToolsRepository.GetByIdAsync(farmToolsId);
+            if (farmTools == null)
+            {
+                throw new Exception($"Farm tool with ID {farmToolsId} not found.");
+            }
+            if (farmToolsOfTask.FarmToolOfTaskQuantity != null)
+            {
+                farmTools.FarmToolsQuantity += farmToolsOfTask.FarmToolOfTaskQuantity;
 
-			_unitOfWork.FarmToolsOfTaskRepository.Update(farmToolsOfTask);
+                _unitOfWork.FarmToolsRepository.Update(farmTools);
+                await _unitOfWork.SaveChangesAsync();
+            }
+            _unitOfWork.FarmToolsOfTaskRepository.Update(farmToolsOfTask);
 			await _unitOfWork.SaveChangesAsync();
 
 			return _mapper.Map<FarmToolsOfTaskResponseDTO>(farmToolsOfTask);
