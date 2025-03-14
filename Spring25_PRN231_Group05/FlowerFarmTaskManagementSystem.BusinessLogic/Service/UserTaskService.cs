@@ -98,12 +98,20 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             if (userTask == null)
                 throw new KeyNotFoundException($"UserTask with ID {id} not found");
 
+            // Cập nhật các trường
             userTask.Status = (int)userTaskRequest.Status;
             userTask.UpdateDate = DateTime.UtcNow;
+
+            // Thêm cập nhật ImageUrl
+            if (!string.IsNullOrEmpty(userTaskRequest.ImageUrl))
+            {
+                userTask.ImageUrl = userTaskRequest.ImageUrl;
+            }
 
             _unitOfWork.UserTaskRepository.Update(userTask);
             await _unitOfWork.SaveChangesAsync();
 
+            // Load lại userTask với đầy đủ thông tin
             var updatedUserTask = await Task.FromResult(_unitOfWork.UserTaskRepository.Get(
                 filter: ut => ut.UserTaskId == id,
                 includeProperties: "User,TaskWork.ProductField.Product.Category,TaskWork.ProductField.Field,FarmToolsOfTasks.FarmTools"

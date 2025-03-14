@@ -26,42 +26,69 @@
             </div>
 
             <div class="pd-20 card-box mb-30">
-                <form method="post">
-                    <div asp-validation-summary="All" class="text-danger"></div>
+                <form method="post" class="needs-validation" novalidate>
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <input type="hidden" asp-for="Task.AssignedBy" />
 
                     <div class="form-group">
                         <label asp-for="Task.JobTitle" class="control-label">Job Title</label>
-                        <input asp-for="Task.JobTitle" class="form-control" />
+                        <input asp-for="Task.JobTitle" class="form-control" required />
                         <span asp-validation-for="Task.JobTitle" class="text-danger"></span>
                     </div>
 
                     <div class="form-group">
                         <label asp-for="Task.Description" class="control-label">Description</label>
-                        <textarea asp-for="Task.Description" class="form-control"></textarea>
+                        <textarea asp-for="Task.Description" class="form-control" required></textarea>
                         <span asp-validation-for="Task.Description" class="text-danger"></span>
                     </div>
 
                     <div class="form-group">
-                        <label asp-for="Task.ProductFieldId" class="control-label">Product Field</label>
-                        <select asp-for="Task.ProductFieldId" asp-items="@Model.ProductFieldList" class="form-control">
-                            <option value="">Select Product Field</option>
+                        <label asp-for="Task.ProductFieldId">Product Field</label>
+                        <select asp-for="Task.ProductFieldId" class="form-control" id="productFieldSelect"
+                            asp-items="Model.ProductFieldList" required>
+                            <option value="">-- Select Product Field --</option>
                         </select>
                         <span asp-validation-for="Task.ProductFieldId" class="text-danger"></span>
                     </div>
 
+                    <div id="productFieldDetails" class="card mt-3 d-none">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">Product Field Details</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Field Name:</strong> <span id="fieldName"></span></p>
+                                    <p><strong>Field Size:</strong> <span id="fieldSize"></span></p>
+                                    <p><strong>Field Status:</strong> <span id="fieldStatus"></span></p>
+                                    <p><strong>Start Date:</strong> <span id="startDate"></span></p>
+                                    <p><strong>End Date:</strong> <span id="endDate"></span></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Product Name:</strong> <span id="productName"></span></p>
+                                    <p><strong>Product Description:</strong> <span id="productDesc"></span></p>
+                                    <p><strong>Category:</strong> <span id="category"></span></p>
+                                    <p><strong>Productivity:</strong> <span id="productivity"></span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="form-group">
-                        <label>Staff Assignments</label>
+                        <label>Staff Assignments <span class="text-danger">*</span></label>
                         <div id="staffAssignments">
                             <div class="staff-assignment">
-                                <select name="Task.UserTasks[0].AssignedTo" class="form-control mb-2 staff-select">
+                                <select name="Task.UserTasks[0].AssignedTo" class="form-control mb-2 staff-select"
+                                    required>
                                     <option value="">-- Select Staff --</option>
                                     @foreach (var item in Model.UserList)
                                     {
                                         <option value="@item.Value">@item.Text</option>
                                     }
                                 </select>
+                                <div class="invalid-feedback">Please select a staff member</div>
                                 <textarea name="Task.UserTasks[0].UserTaskDescription" class="form-control mb-2"
-                                    placeholder="Task description for this staff"></textarea>
+                                    required placeholder="Task description for this staff"></textarea>
+                                <div class="invalid-feedback">Please provide a task description</div>
                             </div>
                         </div>
                         <button type="button" id="addStaff" class="btn btn-info mt-2">Add More Staff</button>
@@ -69,15 +96,18 @@
 
                     <div class="form-group">
                         <label asp-for="Task.StartDate" class="control-label">Start Date</label>
-                        <input asp-for="Task.StartDate" type="date" class="form-control"
-                            value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                        <input asp-for="Task.StartDate" type="date" class="form-control" id="startDate"
+                            value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+                        <div class="invalid-feedback">Please select a start date</div>
                         <span asp-validation-for="Task.StartDate" class="text-danger"></span>
                     </div>
 
                     <div class="form-group">
                         <label asp-for="Task.EndDate" class="control-label">End Date</label>
-                        <input asp-for="Task.EndDate" type="date" class="form-control"
-                            value="@DateTime.Now.AddDays(1).ToString("yyyy-MM-dd")" />
+                        <input asp-for="Task.EndDate" type="date" class="form-control" id="endDate"
+                            value="@DateTime.Now.AddDays(1).ToString("yyyy-MM-dd")" required
+                            min="@DateTime.Now.AddDays(1).ToString("yyyy-MM-dd")" />
+                        <div class="invalid-feedback">End date must be after start date</div>
                         <span asp-validation-for="Task.EndDate" class="text-danger"></span>
                     </div>
 
@@ -105,11 +135,37 @@
     }
 </div>
 
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger" style="white-space: pre-line">
+        @Model.ErrorMessage
+    </div>
+}
+
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
+        // Kích hoạt form validation của Bootstrap
+        (function () {
+            'use strict';
+            window.addEventListener('load', function () {
+                // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                var forms = document.getElementsByClassName('needs-validation');
+                // Loop over them and prevent submission
+                var validation = Array.prototype.filter.call(forms, function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+
         $(document).ready(function () {
             let staffCount = 1;
             let selectedStaff = new Set();
@@ -128,7 +184,7 @@
 
                     // Lưu các option hiện tại
                     let options = '<option value="">-- Select Staff --</option>';
-                                @foreach (var item in Model.UserList)
+                                                                @foreach (var item in Model.UserList)
                         {
                             @:if (!selectedStaff.has('@item.Value') || '@item.Value' === currentValue) {
                                 @:options += `<option value="@item.Value" ${('@item.Value' === currentValue ? 'selected' : '')}> @item.Text</option>`;
@@ -154,16 +210,18 @@
             $('#addStaff').click(function () {
                 if (staffCount < 5) {
                     const newStaff = `
-                                            <div class="staff-assignment">
-                                                <select name="Task.UserTasks[${staffCount}].AssignedTo" 
-                                                    class="form-control mb-2 staff-select">
-                                                    <option value="">-- Select Staff --</option>
-                                                </select>
-                                                <textarea name="Task.UserTasks[${staffCount}].UserTaskDescription" 
-                                                    class="form-control mb-2" 
-                                                    placeholder="Task description for this staff"></textarea>
-                                                <button type="button" class="btn btn-danger mb-3 remove-staff">Remove</button>
-                                            </div>`;
+                                        <div class="staff-assignment">
+                                            <select name="Task.UserTasks[${staffCount}].AssignedTo" 
+                                                class="form-control mb-2 staff-select" required>
+                                                <option value="">-- Select Staff --</option>
+                                            </select>
+                                            <div class="invalid-feedback">Please select a staff member</div>
+                                            <textarea name="Task.UserTasks[${staffCount}].UserTaskDescription" 
+                                                class="form-control mb-2" required
+                                                placeholder="Task description for this staff"></textarea>
+                                            <div class="invalid-feedback">Please provide a task description</div>
+                                            <button type="button" class="btn btn-danger mb-3 remove-staff">Remove</button>
+                                        </div>`;
                     $('#staffAssignments').append(newStaff);
                     updateAvailableStaff();
                     staffCount++;
@@ -185,6 +243,56 @@
 
                 updateAvailableStaff();
             });
+
+            // Kích hoạt ngay khi trang load
+            $(document).ready(function () {
+                // Kích hoạt validation ngày tháng khi trang load
+                $('#startDate').trigger('change');
+            });
+        });
+
+        const productFields = @Json.Serialize(Model.ProductFieldsData);
+
+        $('#productFieldSelect').change(function () {
+            const selectedId = $(this).val();
+            const details = $('#productFieldDetails');
+
+            if (!selectedId) {
+                details.addClass('d-none');
+                return;
+            }
+
+            const productField = productFields.find(pf => pf.productFieldId === selectedId);
+            if (productField) {
+                $('#fieldName').text(productField.field.fieldName);
+                $('#fieldSize').text(`${productField.field.length}m x ${productField.field.width}m`);
+                $('#fieldStatus').text(productField.field.status ? 'Active' : 'Inactive');
+                $('#startDate').text(new Date(productField.startDate).toLocaleDateString());
+                $('#endDate').text(new Date(productField.endDate).toLocaleDateString());
+                $('#productName').text(productField.product.productName);
+                $('#productDesc').text(productField.product.description);
+                $('#category').text(productField.product.category.categoryName);
+                $('#productivity').text(`${productField.productivity} ${productField.productivityUnit}`);
+
+                details.removeClass('d-none');
+            }
+        });
+
+        // Validation cho ngày tháng
+        $('#startDate').change(function () {
+            const startDate = new Date($(this).val());
+            const endDateInput = $('#endDate');
+
+            // Set min date cho end date
+            const minEndDate = new Date(startDate);
+            minEndDate.setDate(startDate.getDate() + 1);
+            endDateInput.attr('min', minEndDate.toISOString().split('T')[0]);
+
+            // Nếu end date nhỏ hơn start date + 1, tự động cập nhật
+            const endDate = new Date(endDateInput.val());
+            if (endDate <= startDate) {
+                endDateInput.val(minEndDate.toISOString().split('T')[0]);
+            }
         });
     </script>
 }
