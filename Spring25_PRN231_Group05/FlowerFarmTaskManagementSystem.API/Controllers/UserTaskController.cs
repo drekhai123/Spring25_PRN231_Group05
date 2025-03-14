@@ -7,6 +7,7 @@ using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
 using FlowerFarmTaskManagementSystem.BusinessLogic.IService;
 using FlowerFarmTaskManagementSystem.BusinessLogic.Service;
 using AutoMapper;
+using FlowerFarmTaskManagementSystem.BusinessObject.Enums;
 
 namespace FlowerFarmTaskManagementSystem.API.Controllers
 {
@@ -95,25 +96,27 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
         }
 
         [HttpPut("update-status/{id}")]
-        public async Task<IActionResult> UpdateStatus(Guid id, [FromBody] UpdateStatusDTO request)
+        public async Task<IActionResult> UpdateStatus(Guid id, [FromBody] UserTaskStatusUpdateRequest request)
         {
             try
             {
+                if (id == Guid.Empty)
+                    return BadRequest("Invalid ID");
+
+                // Create UserTaskRequestDTO from request
                 var userTaskRequest = new UserTaskRequestDTO
                 {
-                    Status = (FlowerFarmTaskManagementSystem.BusinessObject.Enums.UserTaskStatus)request.Status
+                    Status = (UserTaskStatus)request.Status,
+                    ImageUrl = request.ImageUrl
                 };
 
-                var result = await _userTaskService.UpdateUserTaskAsync(id, userTaskRequest);
-                return Ok(result);
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(ex.Message);
+                var updatedUserTask = await _userTaskService.UpdateUserTaskAsync(id, userTaskRequest);
+
+                return Ok(new { Message = "Task status updated successfully", UserTask = updatedUserTask });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, new { Message = $"Error updating task status: {ex.Message}" });
             }
         }
     }

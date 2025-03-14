@@ -127,14 +127,25 @@
                                         <h6 class="mb-0">@userTask.UserName</h6>
                                         <span
                                             class="badge text-white @(Convert.ToInt32(userTask.Status) == 0 ? "bg-danger" : 
-                                                                                           Convert.ToInt32(userTask.Status) == 1 ? "bg-warning" : "bg-success")">
+                                                                                                   Convert.ToInt32(userTask.Status) == 1 ? "bg-warning" : "bg-success")">
                                     @(Convert.ToInt32(userTask.Status) == 0 ? "Inactive" :
                                     Convert.ToInt32(userTask.Status) == 1 ? "Processing" : "Completed")
                                 </span>
                             </div>
                             <p class="mb-0 text-muted">@userTask.UserTaskDescription</p>
-                        </div>
-                                                }
+
+                            @if (Convert.ToInt32(userTask.Status) == 2 && !string.IsNullOrEmpty(userTask.ImageUrl))
+                                    {
+                                        <div class="mt-3">
+                                            <p class="mb-2 fw-bold text-success">
+                                                <i class="fas fa-check-circle me-1"></i> Completion Evidence
+                                            </p>
+                                            <img src="@userTask.ImageUrl" alt="Task completion image"
+                                                class="img-fluid rounded shadow-sm" style="max-height: 200px;" />
+                                        </div>
+                                    }
+                                </div>
+                            }
                         }
                         else
                         {
