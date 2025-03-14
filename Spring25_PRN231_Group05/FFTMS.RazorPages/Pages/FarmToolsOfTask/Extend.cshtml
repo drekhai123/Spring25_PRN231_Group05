@@ -4,47 +4,53 @@
 @{
     ViewData["Title"] = "Extend";
 }
+<div class="main-container">
+    <div class="pd-ltr-20 xs-pd-20-10">
+        <div class="min-height-200px">
+            <div class="page-header">
+                <div class="text-center">
+                    <h2>Extend Farm Tools Task</h2>
+                </div>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-<h1>Extend</h1>
+                    <input type="hidden" asp-for="FarmToolsOfTaskRequest.FarmToolsOfTaskId" />
 
-<h4>FarmToolsOfTask</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="FarmToolsOfTaskRequest.FarmToolsOfTaskId" />
-            <div class="form-group">
-                <label asp-for="FarmToolsOfTaskRequest.EndDate" class="control-label"></label>
-                <input asp-for="FarmToolsOfTaskRequest.EndDate" class="form-control" />
-                <span asp-validation-for="FarmToolsOfTaskRequest.EndDate" class="text-danger"></span>
+                    <div class="mb-3">
+                        <label asp-for="FarmToolsOfTaskRequest.EndDate" class="form-label fw-bold">End Date</label>
+                        <input asp-for="FarmToolsOfTaskRequest.EndDate" class="form-control border-primary" type="date" />
+                        <span asp-validation-for="FarmToolsOfTaskRequest.EndDate" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="FarmToolsOfTaskRequest.FarmToolOfTaskQuantity" class="form-label fw-bold">Quantity</label>
+                        <input asp-for="FarmToolsOfTaskRequest.FarmToolOfTaskQuantity" class="form-control border-primary" type="number" min="1" />
+                        <span asp-validation-for="FarmToolsOfTaskRequest.FarmToolOfTaskQuantity" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="FarmToolsOfTaskRequest.FarmToolOfTaskUnit" class="form-label fw-bold">Unit</label>
+                        <input asp-for="FarmToolsOfTaskRequest.FarmToolOfTaskUnit" class="form-control bg-light" readonly />
+                        <span asp-validation-for="FarmToolsOfTaskRequest.FarmToolOfTaskUnit" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-page="./UserTasks/Index" class="btn btn-secondary">
+                            <i class="fa fa-arrow-left"></i> Back to List
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fa fa-save"></i> Save
+                        </button>
+                    </div>
+                </form>
             </div>
-            <div class="form-group">
-                <label asp-for="FarmToolsOfTaskRequest.FarmToolOfTaskQuantity" class="control-label"></label>
-                <input asp-for="FarmToolsOfTaskRequest.FarmToolOfTaskQuantity" class="form-control" />
-                <span asp-validation-for="FarmToolsOfTaskRequest.FarmToolOfTaskQuantity" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FarmToolsOfTaskRequest.FarmToolOfTaskUnit" class="control-label"></label>
-                <input asp-for="FarmToolsOfTaskRequest.FarmToolOfTaskUnit" class="form-control" />
-                <span asp-validation-for="FarmToolsOfTaskRequest.FarmToolOfTaskUnit" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FarmToolsOfTaskRequest.FarmToolsId" class="control-label"></label>
-                <select asp-for="FarmToolsOfTaskRequest.FarmToolsId" class="form-control" asp-items="ViewBag.FarmToolsId"></select>
-                <span asp-validation-for="FarmToolsOfTaskRequest.FarmToolsId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
-
-<div>
-    <a asp-page="./Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
