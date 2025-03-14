@@ -26,8 +26,6 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             return true;
         }
 
-       
-
         public async Task<IEnumerable<ProductFieldRequest>> GetAllProductFieldsAsync()
         {
             var productFields = await Task.FromResult(_unitOfWork.ProductFieldRepository
