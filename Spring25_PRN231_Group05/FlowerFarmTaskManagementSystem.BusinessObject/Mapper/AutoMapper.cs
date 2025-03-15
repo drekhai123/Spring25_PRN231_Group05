@@ -87,6 +87,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Mapper
                 .ForMember(dest => dest.TaskWorkId, opt => opt.MapFrom(src => src.TaskWorkId))
                 .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName))
+                .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.ImageUrl))
                 .ForMember(dest => dest.Task, opt => opt.MapFrom(src => src.TaskWork));
 
             CreateMap<UserTaskRequestDTO, UserTask>()

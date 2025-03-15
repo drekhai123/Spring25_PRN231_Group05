@@ -1,6 +1,12 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
 namespace FlowerFarmTaskManagementSystem.BusinessObject.DTO
 {
-    public class UserTaskResponseDTO
+    public class UserTaskFarmToolsResponseDTO
     {
         public Guid UserTaskId { get; set; }
         public string UserTaskDescription { get; set; }
@@ -12,5 +18,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.DTO
         public string UserName { get; set; }
         public string? ImageUrl { get; set; }
         public TaskBasicResponseDTO Task { get; set; }
+        public IList<FarmToolsOfTaskResponseDTO> FarmToolsOfTask { get; set; }
+
     }
 }

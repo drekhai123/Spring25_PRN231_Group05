@@ -172,13 +172,11 @@
                                                     }
                                                     @if (task.Status == 1)
                                                     {
-                                                        <form method="post" class="d-inline">
-                                                            <input type="hidden" name="id" value="@task.UserTaskId" />
-                                                            <button type="submit" asp-page-handler="Complete"
-                                                                class="btn btn-sm btn-success">
-                                                                <i class="fa-solid fa-check"></i> Complete
-                                                            </button>
-                                                        </form>
+                                                        <button type="button" class="btn btn-sm btn-primary upload-image-btn"
+                                                            data-bs-toggle="modal" data-bs-target="#uploadImageModal"
+                                                            data-task-id="@task.UserTaskId">
+                                                            <i class="fa-solid fa-image"></i> Tải ảnh & Hoàn thành
+                                                        </button>
                                                     }
                                                 </div>
                                             </td>
@@ -230,17 +228,25 @@
                                                         </div>
                                                         <div class="col-md-4">
                                                             <h5 class="mb-3">Farm Tools List</h5>
-                                                            @if (Model.FarmTools != null && Model.FarmTools.Any())
+                                                            @if (Model.UserTasks.Any(t => t.FarmToolsOfTask != null && t.FarmToolsOfTask.Any()))
                                                             {
                                                                 <ul class="list-group">
-                                                                    @foreach (var tool in Model.FarmTools)
-                                                                    {
-                                                                        <li class="list-group-item">
-                                                                            <strong>@tool.FarmToolsName</strong> - Quantity:
-                                                                            @tool.FarmToolsQuantity @tool.FarmToolsUnit
-                                                                            
-                                                                        </li>
-                                                                    }
+
+                                                                       @if (task.FarmToolsOfTask != null && task.FarmToolsOfTask.Any())
+                                                                        {
+                                                                            foreach (var tool in task.FarmToolsOfTask)
+                                                                            {
+                                                                                <li class="list-group-item">
+                                                                                    <strong>@tool.FarmTools.FarmToolsName</strong> - Quantity: @tool.FarmToolOfTaskQuantity @tool.FarmToolOfTaskUnit
+                                                                                </li>
+                                                                                <a asp-page="/FarmToolsOfTask/Extend"
+                                                                               asp-route-id="@tool.FarmToolsOfTaskId" class="btn btn-sm btn-primary">
+                                                                                    <i class="fa-solid fa-plus"></i> Extend
+                                                                                </a>
+                                                                            }
+                                                                        }
+
+
                                                                 </ul>
                                                             }
                                                             else
@@ -248,6 +254,18 @@
                                                                 <div>No farm tools available</div>
                                                             }
                                                         </div>
+
+                                                        @if (task.Status == 2 && !string.IsNullOrEmpty(task.ImageUrl))
+                                                        {
+                                                            <div class="col-md-12 mt-4">
+                                                                <h5 class="mb-3">Task Completion Image</h5>
+                                                                <div class="text-center">
+                                                                    <img src="@task.ImageUrl" alt="Task completion image"
+                                                                        class="img-fluid rounded shadow-sm"
+                                                                        style="max-height: 300px;" />
+                                                                </div>
+                                                            </div>
+                                                        }
                                                     </div>
                                                 </div>
                                             </td>
@@ -258,6 +276,64 @@
                         </table>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Upload Image -->
+<div class="modal fade" id="uploadImageModal" tabindex="-1" aria-labelledby="uploadImageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadImageModalLabel">Upload Task Completion Image</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="completeTaskForm" method="post">
+                    <input type="hidden" id="taskIdInput" name="id" value="" />
+                    <input type="hidden" id="imageUrlInput" name="imageUrl" value="" />
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Task Image</label>
+
+                        <!-- Image Upload with Drag & Drop -->
+                        <div id="dropArea" class="border rounded p-3 text-center mb-3"
+                            style="border-style: dashed !important; cursor: pointer;">
+                            <i class="fas fa-cloud-upload-alt fa-2x mb-2 text-muted"></i>
+                            <p class="mb-0">Drag and drop image here or click to browse</p>
+                            <input type="file" id="imageUpload" class="d-none" accept="image/*" />
+                        </div>
+
+                        <!-- Image Preview -->
+                        <div id="imagePreviewContainer" class="mb-3 text-center d-none">
+                            <div class="position-relative d-inline-block">
+                                <img id="imagePreview" src="" alt="Task Image Preview"
+                                    class="img-fluid rounded shadow-sm mb-2" style="max-height: 250px;" />
+                                <button type="button" id="removeImageBtn"
+                                    class="btn btn-sm btn-danger position-absolute"
+                                    style="top: 5px; right: 5px; border-radius: 50%; width: 30px; height: 30px; padding: 0;">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Upload Progress -->
+                        <div class="mt-2">
+                            <div class="progress d-none" id="uploadProgress" style="height: 10px;">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-success"
+                                    role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" id="completeTaskBtn" class="btn btn-success btn-lg" disabled
+                            asp-page-handler="Complete">
+                            <i class="fas fa-check me-2"></i> Upload Image
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -308,5 +384,207 @@
                 }
             });
         });
+    </script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-storage.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBrhzHppn0MSFRv8Y70pL--IjAqE_dqYP8",
+            authDomain: "farm-task-management-1b5e2.firebaseapp.com",
+            projectId: "farm-task-management-1b5e2",
+            storageBucket: "farm-task-management-1b5e2.firebasestorage.app",
+            messagingSenderId: "523429271962",
+            appId: "1:523429271962:web:a5025d2fb87bdb7b75c223"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const storage = getStorage(app);
+
+        // DOM Elements
+        const dropArea = document.getElementById('dropArea');
+        const fileInput = document.getElementById('imageUpload');
+        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+        const imagePreview = document.getElementById('imagePreview');
+        const removeImageBtn = document.getElementById('removeImageBtn');
+        const imageUrlInput = document.getElementById('imageUrlInput');
+        const progressBar = document.querySelector('#uploadProgress .progress-bar');
+        const progressContainer = document.getElementById('uploadProgress');
+        const completeTaskBtn = document.getElementById('completeTaskBtn');
+
+        // Set task ID when opening modal
+        $('.upload-image-btn').click(function () {
+            const taskId = $(this).data('task-id');
+            $('#taskIdInput').val(taskId);
+        });
+
+        // Drag and drop functionality
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight() {
+            dropArea.classList.add('bg-light');
+        }
+
+        function unhighlight() {
+            dropArea.classList.remove('bg-light');
+        }
+
+        // Handle file drop
+        dropArea.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const file = dt.files[0];
+
+            if (file && file.type.startsWith('image/')) {
+                fileInput.files = dt.files;
+                uploadFile(file);
+            } else {
+                showToast('Please select a valid image file', 'error');
+            }
+        }
+
+        // Click to select file
+        dropArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // Handle file selection
+        fileInput.addEventListener('change', function () {
+            if (this.files && this.files[0]) {
+                uploadFile(this.files[0]);
+            }
+        });
+
+        // Remove image preview
+        removeImageBtn.addEventListener('click', function () {
+            imageUrlInput.value = '';
+            imagePreviewContainer.classList.add('d-none');
+            completeTaskBtn.disabled = true;
+            showToast('Image removed', 'success');
+        });
+
+        // Upload file function
+        async function uploadFile(file) {
+            if (!file) return;
+
+            try {
+                // Show progress bar
+                progressContainer.classList.remove('d-none');
+                progressBar.style.width = '0%';
+                progressBar.textContent = '0%';
+
+                // Generate unique filename to avoid conflicts
+                const timestamp = new Date().getTime();
+                const fileName = `task_${timestamp}_${file.name}`;
+                const filePath = `task_images/${fileName}`;
+                const storageRef = ref(storage, filePath);
+
+                // Start upload
+                const uploadTask = uploadBytesResumable(storageRef, file);
+
+                // Monitor upload progress
+                uploadTask.on('state_changed',
+                    (snapshot) => {
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        progressBar.style.width = progress + '%';
+                        progressBar.textContent = Math.round(progress) + '%';
+                    },
+                    (error) => {
+                        // Handle errors
+                        console.error('Upload failed:', error);
+                        showToast('Upload failed: ' + error.message, 'error');
+                        progressContainer.classList.add('d-none');
+                        completeTaskBtn.disabled = true;
+                    },
+                    async () => {
+                        // Upload completed successfully
+                        try {
+                            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+
+                            // Update UI
+                            imageUrlInput.value = downloadURL;
+                            imagePreview.src = downloadURL;
+                            imagePreviewContainer.classList.remove('d-none');
+                            progressContainer.classList.add('d-none');
+                            completeTaskBtn.disabled = false;
+
+                            showToast('Image uploaded successfully', 'success');
+                        } catch (error) {
+                            console.error('Error getting download URL:', error);
+                            showToast('Error getting download URL', 'error');
+                            completeTaskBtn.disabled = true;
+                        }
+                    }
+                );
+            } catch (error) {
+                console.error('Error during upload setup:', error);
+                showToast('Error during upload setup', 'error');
+                completeTaskBtn.disabled = true;
+            }
+        }
+
+        // Toast notification function
+        function showToast(message, type = 'info') {
+            // Create toast container if it doesn't exist
+            let toastContainer = document.getElementById('toast-container');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.id = 'toast-container';
+                toastContainer.className = 'position-fixed bottom-0 end-0 p-3';
+                document.body.appendChild(toastContainer);
+            }
+
+            // Create toast element
+            const toastId = 'toast-' + Date.now();
+            const bgClass = type === 'error' ? 'bg-danger' :
+                type === 'success' ? 'bg-success' : 'bg-info';
+
+            const toastHtml = `
+                                    <div id="${toastId}" class="toast align-items-center ${bgClass} text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                                        <div class="d-flex">
+                                            <div class="toast-body">
+                                                ${message}
+                                            </div>
+                                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                                        </div>
+                                    </div>
+                                `;
+
+            toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+
+            // Initialize and show toast
+            const toastElement = document.getElementById(toastId);
+            const toast = new bootstrap.Toast(toastElement, { delay: 3000 });
+            toast.show();
+
+            // Remove toast after it's hidden
+            toastElement.addEventListener('hidden.bs.toast', function () {
+                toastElement.remove();
+            });
+        }
     </script>
 }

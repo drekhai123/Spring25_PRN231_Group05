@@ -169,7 +169,6 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 
         public async Task<bool> DeleteTaskAsync(Guid id)
         {
-            // Kiểm tra task có tồn tại không
             var task = await Task.FromResult(_unitOfWork.TaskWorkRepository.Get(
                 filter: t => t.TaskWorkId == id,
                 includeProperties: "UserTasks,ProductField.Product.Category"
@@ -178,35 +177,15 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             if (task == null)
                 throw new KeyNotFoundException($"Task with ID {id} not found");
 
-            // Validate trước khi xóa
+            // Validate trước khi vô hiệu hóa
             await ValidateTaskDeletion(task);
 
-            using (var transaction = await _unitOfWork.BeginTransactionAsync())
-            {
-                try
-                {
-                    // Xóa tất cả UserTask liên quan
-                    foreach (var userTask in task.UserTasks)
-                    {
-                        _unitOfWork.UserTaskRepository.Delete(userTask);
-                    }
+            // Thay đổi status thành false thay vì xóa
+            task.Status = false;
+            _unitOfWork.TaskWorkRepository.Update(task);
+            await _unitOfWork.SaveChangesAsync();
 
-                    // Xóa Task
-                    _unitOfWork.TaskWorkRepository.Delete(task);
-                    await _unitOfWork.SaveChangesAsync();
-
-                    await transaction.CommitAsync();
-                    return true;
-                }
-                catch (Exception)
-                {
-                    if (transaction.GetDbTransaction().Connection != null)
-                    {
-                        await transaction.RollbackAsync();
-                    }
-                    throw;
-                }
-            }
+            return true;
         }
 
         private async Task ValidateTaskData(TaskRequestDTO taskRequest)
@@ -267,34 +246,28 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
         {
             // Kiểm tra trạng thái của task
             if (!task.Status)
-                throw new InvalidOperationException($"Task with ID {task.TaskWorkId} is already inactive");
-
-            // Kiểm tra quyền xóa (ví dụ: chỉ Manager mới được xóa)
-            // Có thể thêm logic kiểm tra quyền ở đây
+                throw new InvalidOperationException("Cannot delete an inactive task");
 
             // Kiểm tra trạng thái của các UserTask
-            foreach (var userTask in task.UserTasks)
-            {
-                if (userTask.Status == (int)UserTaskStatus.Processing)
-                    throw new InvalidOperationException($"Cannot delete task because UserTask {userTask.UserTaskId} is in processing state");
-                if (userTask.Status == (int)UserTaskStatus.Completed)
-                    throw new InvalidOperationException($"Cannot delete task because UserTask {userTask.UserTaskId} is already completed");
-            }
+            // foreach (var userTask in task.UserTasks)
+            // {
+            //     if (userTask.Status == (int)UserTaskStatus.Processing)
+            //         throw new InvalidOperationException("Cannot delete task because it has tasks in progress");
+            //     if (userTask.Status == (int)UserTaskStatus.Completed)
+            //         throw new InvalidOperationException("Cannot delete task because it has completed tasks");
+            // }
 
             // Kiểm tra ProductField
             if (task.ProductField != null)
             {
                 // Kiểm tra Product
                 if (task.ProductField.Product != null && !task.ProductField.Product.Status)
-                    throw new InvalidOperationException($"Cannot delete task because associated Product is inactive");
+                    throw new InvalidOperationException("Cannot delete task because associated product is inactive");
 
                 // Kiểm tra Category
                 if (task.ProductField.Product?.Category != null && !task.ProductField.Product.Category.Status)
-                    throw new InvalidOperationException($"Cannot delete task because associated Category is inactive");
+                    throw new InvalidOperationException("Cannot delete task because associated category is inactive");
             }
-
-            // Có thể thêm các validation khác tùy theo yêu cầu nghiệp vụ
-            // Ví dụ: kiểm tra thời gian, kiểm tra dependencies, etc.
         }
     }
 }
