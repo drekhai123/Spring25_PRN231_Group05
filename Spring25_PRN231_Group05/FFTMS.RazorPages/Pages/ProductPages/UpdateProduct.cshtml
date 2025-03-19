@@ -1,73 +1,184 @@
-﻿@page
+﻿@page "{id:guid}"
 @model FFTMS.RazorPages.Pages.ProductPages.UpdateProductModel
 @{
-    ViewData["Title"] = "Product Update";
+    ViewData["Title"] = "Update Product";
     Layout = "_Layout";
 }
+
 <div class="main-container">
-    <div class="container mt-4">
-        <div class="card shadow-sm">
-            <div class="card-header bg-warning text-white">
-                <h3 class="mb-0">Edit Product</h3>
-            </div>
-            <div class="card-body">
-                <form method="post">
-                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
-                    <input type="hidden" asp-for="Product.ProductId" />
-
-                    <div class="mb-3">
-                        <label asp-for="Product.ProductName" class="form-label fw-bold"></label>
-                        <input asp-for="Product.ProductName" class="form-control" placeholder="Enter Product Name..." />
-                        <span asp-validation-for="Product.ProductName" class="text-danger"></span>
-                    </div>
-
-                    <div class="mb-3">
-                        <label asp-for="Product.Description" class="form-label fw-bold"></label>
-                        <textarea asp-for="Product.Description" class="form-control" placeholder="Enter Description..." rows="3"></textarea>
-                        <span asp-validation-for="Product.Description" class="text-danger"></span>
-                    </div>
-
-                    <div class="mb-3">
-                        <label asp-for="Product.ProductImageUrl" class="form-label fw-bold"></label>
-                        <input asp-for="Product.ProductImageUrl" class="form-control" placeholder="Enter Product Image..." />
-                        <span asp-validation-for="Product.ProductImageUrl" class="text-danger"></span>
-                    </div>
-
-                    <div class="mb-3">
-                        <label asp-for="Product.Note" class="form-label fw-bold"></label>
-                        <input asp-for="Product.Note" class="form-control" placeholder="Enter Note..." />
-                        <span asp-validation-for="Product.Note" class="text-danger"></span>
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="Product.CategoryId" class="form-label fw-bold"></label>
-                        <select asp-for="Product.CategoryId" class="form-select" asp-items="@(ViewData["CategoryId"] as SelectList)">
-                            <option value="">-- Select Category --</option>
-                        </select>
-                        <span asp-validation-for="Product.CategoryId" class="text-danger"></span>
-                    </div>
-
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" asp-for="Product.Status">
-                        <label class="form-check-label fw-bold">@Html.DisplayNameFor(model => model.Product.Status)</label>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <a asp-page="ListProduct" class="btn btn-secondary">
-                            <i class="bi bi-arrow-left"></i> Back to List
-                        </a>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-save"></i> Save Changes
-                        </button>
-                    </div>
-                </form>
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">Update Product</h3>
+            <div>
+                <a asp-page="ProductDetails" asp-route-id="@Model.Product?.ProductId" class="btn btn-light me-2">
+                    <i class="fas fa-arrow-left"></i> Back to Details
+                </a>
+                <a asp-page="ListProduct" class="btn btn-light">
+                    <i class="fas fa-list"></i> Back to List
+                </a>
             </div>
         </div>
+        <div class="card-body">
+            @if (Model.SuccessMessage != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @Model.SuccessMessage
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (Model.ErrorMessage != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @Model.ErrorMessage
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <form method="post" class="needs-validation" novalidate>
+                <input type="hidden" asp-for="Product.ProductId" />
+                <input type="hidden" asp-for="Product.CreateDate" />
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title border-bottom pb-2">Basic Information</h5>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="Product.ProductName" class="form-label">Product Name</label>
+                                    <input asp-for="Product.ProductName" class="form-control" required />
+                                    <span asp-validation-for="Product.ProductName" class="text-danger"></span>
+                                    <div class="invalid-feedback">Please enter a product name.</div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="Product.CategoryId" class="form-label">Category</label>
+                                    <select class="form-select" asp-for="Product.CategoryId" required>
+                                        <option value="">-- Select a Category --</option>
+                                        @foreach (var category in Model.CateList)
+                                        {
+                                            <option value="@category.CategoryId">@category.CategoryName</option>
+                                        }
+                                    </select>
+                                    <span asp-validation-for="Product.CategoryId" class="text-danger"></span>
+                                    <div class="invalid-feedback">Please select a category.</div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="Product.Status" class="form-label">Status</label>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" asp-for="Product.Status">
+                                        <label class="form-check-label" for="Product_Status">
+                                            <span class="badge @(Model.Product?.Status == true ? "bg-success" : "bg-danger")">
+                                                @(Model.Product?.Status == true ? "Active" : "Inactive")
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title border-bottom pb-2">Additional Information</h5>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="Product.Description" class="form-label">Description</label>
+                                    <textarea asp-for="Product.Description" class="form-control" rows="3"></textarea>
+                                    <span asp-validation-for="Product.Description" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="Product.Note" class="form-label">Additional Notes</label>
+                                    <textarea asp-for="Product.Note" class="form-control" rows="3"></textarea>
+                                    <span asp-validation-for="Product.Note" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title border-bottom pb-2">Product Image</h5>
+
+                                <div class="form-group">
+                                    <label asp-for="Product.ProductImageUrl" class="form-label">Image URL</label>
+                                    <input asp-for="Product.ProductImageUrl" class="form-control" id="imageUrl" />
+                                    <span asp-validation-for="Product.ProductImageUrl" class="text-danger"></span>
+                                </div>
+
+                                <div id="imagePreview" class="mt-3 text-center @(string.IsNullOrEmpty(Model.Product?.ProductImageUrl) ? "d-none" : "")">
+                                    <img src="@Model.Product?.ProductImageUrl" alt="Product Preview" class="img-fluid rounded" style="max-height: 200px;" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <a asp-page="ProductDetails" asp-route-id="@Model.Product?.ProductId" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-
-    @section Scripts {
-        @{
-            await Html.RenderPartialAsync("_ValidationScriptsPartial");
-        }
-    }
-
 </div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        // Image preview functionality
+        document.getElementById('imageUrl').addEventListener('input', function(e) {
+            const preview = document.getElementById('imagePreview');
+            const img = preview.querySelector('img');
+            if (e.target.value) {
+                img.src = e.target.value;
+                preview.classList.remove('d-none');
+            } else {
+                preview.classList.add('d-none');
+            }
+        });
+
+        // Status badge update
+        document.querySelector('input[name="Product.Status"]').addEventListener('change', function(e) {
+            const badge = this.parentElement.querySelector('.badge');
+            if (this.checked) {
+                badge.classList.remove('bg-danger');
+                badge.classList.add('bg-success');
+                badge.textContent = 'Active';
+            } else {
+                badge.classList.remove('bg-success');
+                badge.classList.add('bg-danger');
+                badge.textContent = 'Inactive';
+            }
+        });
+
+        // Form validation
+        (function () {
+            'use strict'
+            var forms = document.querySelectorAll('.needs-validation')
+            Array.prototype.slice.call(forms).forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        })()
+
+        // Auto-dismiss alerts after 5 seconds
+        setTimeout(function () {
+            $('.alert').alert('close');
+        }, 5000);
+    </script>
+}
