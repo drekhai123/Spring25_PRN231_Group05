@@ -243,6 +243,17 @@ namespace FFTMS.RazorPages.Pages.UserTasks
                     {
                         TempData["ErrorMessage"] = $"Failed to complete task: {response.StatusCode}";
                     }
+
+                    var updateFarmToolsUrl = $"https://localhost:7207/api/FarmToolsOfTasks/update-farm-tools-of-task-status-completed-by-user-task-id?userTaskId={id}";
+                    var farmToolsResponse = await httpClient.PutAsync(updateFarmToolsUrl, null);
+
+                    if (!farmToolsResponse.IsSuccessStatusCode)
+                    {
+                        TempData["ErrorMessage"] = $"Failed to update farm tools status: {farmToolsResponse.StatusCode}";
+                        return RedirectToPage();
+                    }
+
+                    TempData["SuccessMessage"] = "Task and farm tools have been marked as completed";
                 }
 
                 return RedirectToPage();
