@@ -26,6 +26,13 @@
             </div>
 
             <div class="pd-20 card-box mb-30">
+                @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                {
+                    <div class="alert alert-danger" style="white-space: pre-line">
+                        @Model.ErrorMessage
+                    </div>
+                }
+
                 <form method="post" class="needs-validation" novalidate>
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
@@ -135,13 +142,6 @@
     }
 </div>
 
-@if (!string.IsNullOrEmpty(Model.ErrorMessage))
-{
-    <div class="alert alert-danger" style="white-space: pre-line">
-        @Model.ErrorMessage
-    </div>
-}
-
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
@@ -184,7 +184,7 @@
 
                     // Lưu các option hiện tại
                     let options = '<option value="">-- Select Staff --</option>';
-                                                                @foreach (var item in Model.UserList)
+                                                                        @foreach (var item in Model.UserList)
                         {
                             @:if (!selectedStaff.has('@item.Value') || '@item.Value' === currentValue) {
                                 @:options += `<option value="@item.Value" ${('@item.Value' === currentValue ? 'selected' : '')}> @item.Text</option>`;
@@ -210,18 +210,18 @@
             $('#addStaff').click(function () {
                 if (staffCount < 5) {
                     const newStaff = `
-                                        <div class="staff-assignment">
-                                            <select name="Task.UserTasks[${staffCount}].AssignedTo" 
-                                                class="form-control mb-2 staff-select" required>
-                                                <option value="">-- Select Staff --</option>
-                                            </select>
-                                            <div class="invalid-feedback">Please select a staff member</div>
-                                            <textarea name="Task.UserTasks[${staffCount}].UserTaskDescription" 
-                                                class="form-control mb-2" required
-                                                placeholder="Task description for this staff"></textarea>
-                                            <div class="invalid-feedback">Please provide a task description</div>
-                                            <button type="button" class="btn btn-danger mb-3 remove-staff">Remove</button>
-                                        </div>`;
+                                                <div class="staff-assignment">
+                                                    <select name="Task.UserTasks[${staffCount}].AssignedTo" 
+                                                        class="form-control mb-2 staff-select" required>
+                                                        <option value="">-- Select Staff --</option>
+                                                    </select>
+                                                    <div class="invalid-feedback">Please select a staff member</div>
+                                                    <textarea name="Task.UserTasks[${staffCount}].UserTaskDescription" 
+                                                        class="form-control mb-2" required
+                                                        placeholder="Task description for this staff"></textarea>
+                                                    <div class="invalid-feedback">Please provide a task description</div>
+                                                    <button type="button" class="btn btn-danger mb-3 remove-staff">Remove</button>
+                                                </div>`;
                     $('#staffAssignments').append(newStaff);
                     updateAvailableStaff();
                     staffCount++;
