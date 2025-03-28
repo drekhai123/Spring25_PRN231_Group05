@@ -4,108 +4,145 @@
     ViewData["Title"] = "List Product";
     Layout = "_Layout";
 }
+
 <div class="main-container">
-	<div class="pd-ltr-20 xs-pd-20-10">
-		<div class="min-height-200px">
-			<div class="page-header">
-				<div class="row">
-					<div class="col-md-6 col-sm-12">
-						<div class="title">
-							<h4>List Product</h4>
-						</div>
-						<nav aria-label="breadcrumb" role="navigation">
-							<ol class="breadcrumb">
-								<li class="breadcrumb-item">Product</li>
-								<li class="breadcrumb-item active" aria-current="page">List Product</li>
-							</ol>
-						</nav>
-					</div>
-				</div>
-			</div>
-			<div class="d-flex justify-content-between align-items-center mb-3">
-				<a asp-page="CreateProduct" class="btn btn-success">+ Add Product</a>
-			</div>
-			<!-- Table -->
-			<div class="card-box mb-30">
-				<div class="pd-20">
-					<h4 class="text-blue h4">List Of Product</h4>
-				</div>
-				<div class="pb-20">
-					<table class="data-table table stripe hover nowrap">
-						<thead>
-							<tr>
-								<th>ID</th>
-								<th>Name</th>
-								<th>Description</th>
-								<th>Image</th>
-								<th>Create Date</th>
-								<th>Status</th>
-								<th>Actions</th>
-							</tr>
-						</thead>
-						<tbody>
-							@foreach (var product in Model.ListProduct)
-							{
-								<tr>
-									<td>@product.ProductId</td>
-									<td>@product.ProductName</td>
-									<td>@product.Description</td>
-									<td>
-										@if (!string.IsNullOrEmpty(product.ProductImageUrl))
-										{
-											<img src="@product.ProductImageUrl" alt="@product.ProductName" style="max-width: 50px;" class="img-thumbnail" />
-										}
-									</td>
-									<td>@product.CreateDate.ToString("dd-MM-yyyy")</td>
-									<td>
-										<span class="badge @(product.Status ? "bg-success" : "bg-danger")">
-											@(product.Status ? "Active" : "Inactive")
-										</span>
-									</td>
-									<td>
-										<div class="dropdown">
-											<a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle" href="#" role="button" data-toggle="dropdown">
-												<i class="dw dw-more"></i>
-											</a>
-											<div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
-												<a class="dropdown-item" asp-page="./ProductDetails" asp-route-id="@product.ProductId">
-													<i class="dw dw-eye"></i> View
-												</a>
-												<a class="dropdown-item" asp-page="./UpdateProduct" asp-route-id="@product.ProductId">
-													<i class="dw dw-edit2"></i> Edit
-												</a>
-												<a class="dropdown-item" asp-page="./DeleteProduct" asp-route-id="@product.ProductId">
-													<i class="dw dw-delete-3"></i> Delete
-												</a>
-											</div>
-										</div>
-									</td>
-								</tr>
-							}
-						</tbody>
-					</table>
-				</div>
-			</div>
-			<!-- Table End -->
-		</div>
-	</div>
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">Products</h3>
+            <a asp-page="CreateProduct" class="btn btn-light">
+                <i class="fas fa-plus"></i> Add Product
+            </a>
+        </div>
+        <div class="card-body">
+            @if (Model.SuccessMessage != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @Model.SuccessMessage
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (Model.ErrorMessage != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @Model.ErrorMessage
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <div class="table-responsive">
+                <table class="table table-hover" id="productsTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Image</th>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var product in Model.ListProduct)
+                        {
+                            <tr>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(product.ProductImageUrl))
+                                    {
+                                        <img src="@product.ProductImageUrl" alt="@product.ProductName" class="img-thumbnail" style="max-width: 50px; max-height: 50px;" />
+                                    }
+                                    else
+                                    {
+                                        <div class="text-center text-muted">
+                                            <i class="fas fa-image"></i>
+                                        </div>
+                                    }
+                                </td>
+                                <td>@product.ProductName</td>
+                                <td>@product.Category?.CategoryName</td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(product.Description))
+                                    {
+                                        @if (product.Description.Length > 50)
+                                        {
+                                            <span title="@product.Description">@(product.Description.Substring(0, 47))...</span>
+                                        }
+                                        else
+                                        {
+                                            @product.Description
+                                        }
+                                    }
+                                </td>
+                                <td>
+                                    <span class="badge @(product.Status ? "bg-success" : "bg-danger")">
+                                        @(product.Status ? "Active" : "Inactive")
+                                    </span>
+                                </td>
+                                <td>@product.CreateDate.ToString("dd MMM yyyy")</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a asp-page="./ProductDetails" asp-route-id="@product.ProductId" class="btn btn-sm btn-info" title="View">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a asp-page="./UpdateProduct" asp-route-id="@product.ProductId" class="btn btn-sm btn-warning" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-danger" title="Delete"
+                                                onclick="confirmDelete('@product.ProductId', '@product.ProductName')" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete <strong id="productToDelete"></strong>?
+                <p class="text-danger mt-2 mb-0"><small>This action cannot be undone.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" style="display: inline;">
+                    <input type="hidden" id="productIdToDelete" name="id" />
+                    <button type="submit" class="btn btn-danger" asp-page-handler="Delete">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <script>
-            $(document).ready(function () {
-                $.notify("@TempData["SuccessMessage"]", "success");
+    <script>
+        $(document).ready(function () {
+            $('#productsTable').DataTable({
+                "order": [[1, "asc"]], // Sort by name by default
+                "pageLength": 10,
+                "responsive": true
             });
-        </script>
-    }
-    @if (TempData["ErrorMessage"] != null)
-    {
-        <script>
-            $(document).ready(function () {
-                $.notify("@TempData["ErrorMessage"]", "error");
-            });
-        </script>
-    }
+
+            // Auto-dismiss alerts after 5 seconds
+            setTimeout(function () {
+                $('.alert').alert('close');
+            }, 5000);
+        });
+
+        function confirmDelete(id, name) {
+            document.getElementById('productIdToDelete').value = id;
+            document.getElementById('productToDelete').textContent = name;
+        }
+    </script>
 }

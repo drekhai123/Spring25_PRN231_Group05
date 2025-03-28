@@ -1,92 +1,177 @@
-﻿@page
+﻿@page "{id:guid}"
 @model FFTMS.RazorPages.Pages.ProductPages.ProductDetailsModel
 @{
     ViewData["Title"] = "Product Details";
     Layout = "_Layout";
 }
+
 <div class="main-container">
-    <div class="container mt-4">
-        <div class="card shadow-sm">
-            <div class="card-header bg-primary text-white">
-                <h3 class="mb-0">Product Details</h3>
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">Product Details</h3>
+            <div>
+                <a asp-page="ListProduct" class="btn btn-light me-2">
+                    <i class="fas fa-arrow-left"></i> Back to List
+                </a>
+                <a asp-page="UpdateProduct" asp-route-id="@Model.Product?.ProductId" class="btn btn-warning">
+                    <i class="fas fa-edit"></i> Edit
+                </a>
             </div>
-            <div class="card-body">
-                @if (TempData["ErrorMessage"] != null)
-                {
-                    <div class="alert alert-danger">
-                        @TempData["ErrorMessage"]
-                    </div>
-                }
+        </div>
+        <div class="card-body">
+            @if (Model.SuccessMessage != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @Model.SuccessMessage
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (Model.ErrorMessage != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @Model.ErrorMessage
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
 
-                @if (Model.Product != null)
-                {
-                    <dl class="row">
-                        <dt class="col-sm-3 fw-bold">ID:</dt>
-                        <dd class="col-sm-9">@Model.Product.ProductId</dd>
+            @if (Model.Product != null)
+            {
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title border-bottom pb-2">Basic Information</h5>
+                                <dl class="row mb-0">
+                                    <dt class="col-sm-3">ID</dt>
+                                    <dd class="col-sm-9">@Model.Product.ProductId</dd>
 
-                        <dt class="col-sm-3 fw-bold">Name:</dt>
-                        <dd class="col-sm-9">@Model.Product.ProductName</dd>
+                                    <dt class="col-sm-3">Name</dt>
+                                    <dd class="col-sm-9">@Model.Product.ProductName</dd>
 
-                        <dt class="col-sm-3 fw-bold">Description:</dt>
-                        <dd class="col-sm-9">@Model.Product.Description</dd>
+                                    <dt class="col-sm-3">Category</dt>
+                                    <dd class="col-sm-9">
+                                        @if (Model.Product.Category != null)
+                                        {
+                                            <span class="badge bg-info">@Model.Product.Category.CategoryName</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">No Category</span>
+                                        }
+                                    </dd>
+
+                                    <dt class="col-sm-3">Status</dt>
+                                    <dd class="col-sm-9">
+                                        <span class="badge @(Model.Product.Status ? "bg-success" : "bg-danger")">
+                                            @(Model.Product.Status ? "Active" : "Inactive")
+                                        </span>
+                                    </dd>
+
+                                    <dt class="col-sm-3">Created</dt>
+                                    <dd class="col-sm-9">@Model.Product.CreateDate.ToString("dd MMM yyyy HH:mm")</dd>
+
+                                    <dt class="col-sm-3">Last Updated</dt>
+                                    <dd class="col-sm-9">@Model.Product.UpdateDate.ToString("dd MMM yyyy HH:mm")</dd>
+                                </dl>
+                            </div>
+                        </div>
+
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title border-bottom pb-2">Description</h5>
+                                <p class="card-text">@(string.IsNullOrEmpty(Model.Product.Description) ? "No description available" : Model.Product.Description)</p>
+                            </div>
+                        </div>
 
                         @if (!string.IsNullOrEmpty(Model.Product.Note))
                         {
-                            <dt class="col-sm-3 fw-bold">Note:</dt>
-                            <dd class="col-sm-9">@Model.Product.Note</dd>
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title border-bottom pb-2">Additional Notes</h5>
+                                    <p class="card-text">@Model.Product.Note</p>
+                                </div>
+                            </div>
                         }
-
-                        @if (!string.IsNullOrEmpty(Model.Product.ProductImageUrl))
-                        {
-                            <dt class="col-sm-3 fw-bold">Image:</dt>
-                            <dd class="col-sm-9">
-                                <img src="@Model.Product.ProductImageUrl" alt="@Model.Product.ProductName" class="img-fluid" style="max-width: 200px;" />
-                            </dd>
-                        }
-
-                        <dt class="col-sm-3 fw-bold">Category:</dt>
-                        <dd class="col-sm-9">
-                            @if (Model.Product.Category != null)
-                            {
-                                <span class="badge bg-info">@Model.Product.Category.CategoryName</span>
-                            }
-                            else
-                            {
-                                <span class="text-muted">No Category</span>
-                            }
-                        </dd>
-
-                        <dt class="col-sm-3 fw-bold">Status:</dt>
-                        <dd class="col-sm-9">
-                            <span class="badge @(Model.Product.Status ? "bg-success" : "bg-danger")">
-                                @(Model.Product.Status ? "Active" : "Inactive")
-                            </span>
-                        </dd>
-
-                        <dt class="col-sm-3 fw-bold">Created Date:</dt>
-                        <dd class="col-sm-9">@Model.Product.CreateDate.ToString("dd/MM/yyyy HH:mm")</dd>
-
-                        <dt class="col-sm-3 fw-bold">Last Updated:</dt>
-                        <dd class="col-sm-9">@Model.Product.UpdateDate.ToString("dd/MM/yyyy HH:mm")</dd>
-                    </dl>
-
-                    <div class="mt-4">
-                        <a asp-page="./ListProduct" class="btn btn-secondary">
-                            <i class="bi bi-arrow-left"></i> Back to List
-                        </a>
-                        <a asp-page="./UpdateProduct" asp-route-id="@Model.Product.ProductId" class="btn btn-primary">
-                            <i class="bi bi-pencil"></i> Edit
-                        </a>
                     </div>
-                }
-                else
-                {
-                    <div class="alert alert-warning">
-                        <p class="mb-0">Product not found.</p>
+
+                    <div class="col-md-4">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title border-bottom pb-2">Product Image</h5>
+                                @if (!string.IsNullOrEmpty(Model.Product.ProductImageUrl))
+                                {
+                                    <img src="@Model.Product.ProductImageUrl" alt="@Model.Product.ProductName" class="img-fluid rounded" />
+                                }
+                                else
+                                {
+                                    <div class="text-center text-muted py-5">
+                                        <i class="fas fa-image fa-4x mb-3"></i>
+                                        <p>No image available</p>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title border-bottom pb-2">Actions</h5>
+                                <div class="d-grid gap-2">
+                                    @if (Model.IsInUse)
+                                    {
+                                        <button class="btn btn-danger" disabled title="Cannot delete - Product is in use">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                        <small class="text-danger">This product cannot be deleted because it is being used in one or more product fields.</small>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <a asp-page="./ListProduct" class="btn btn-secondary">Back to List</a>
-                }
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-warning">
+                    <p class="mb-0">Product not found.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this product?</p>
+                <p class="text-danger mb-0"><small>This action cannot be undone.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" asp-page-handler="Delete" asp-route-id="@Model.Product?.ProductId">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
             </div>
         </div>
     </div>
-</div> 
+</div>
+
+@section Scripts {
+    <script>
+        // Auto-dismiss alerts after 5 seconds
+        setTimeout(function () {
+            $('.alert').alert('close');
+        }, 5000);
+    </script>
+} 

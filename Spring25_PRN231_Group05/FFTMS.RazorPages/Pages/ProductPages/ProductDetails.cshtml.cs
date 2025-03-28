@@ -1,8 +1,8 @@
 using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
-using FlowerFarmTaskManagementSystem.BusinessObject.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Text.Json;
+using System.Net.Http.Json;
 
 namespace FFTMS.RazorPages.Pages.ProductPages
 {
@@ -20,7 +20,11 @@ namespace FFTMS.RazorPages.Pages.ProductPages
 
         [BindProperty]
         public ProductDTO Product { get; set; }
-        public CategoryResponseDTO Category { get; set; }
+        public bool IsInUse { get; set; }
+        [TempData]
+        public string? SuccessMessage { get; set; }
+        [TempData]
+        public string? ErrorMessage { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid id)
         {
@@ -28,7 +32,7 @@ namespace FFTMS.RazorPages.Pages.ProductPages
             {
                 if (id == Guid.Empty)
                 {
-                    TempData["ErrorMessage"] = "Invalid product ID.";
+                    ErrorMessage = "Invalid product ID.";
                     return RedirectToPage("./ListProduct");
                 }
 
@@ -36,7 +40,7 @@ namespace FFTMS.RazorPages.Pages.ProductPages
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    TempData["ErrorMessage"] = "Failed to retrieve the product.";
+                    ErrorMessage = "Failed to retrieve the product.";
                     return RedirectToPage("./ListProduct");
                 }
 
@@ -48,30 +52,69 @@ namespace FFTMS.RazorPages.Pages.ProductPages
 
                 if (Product == null)
                 {
-                    TempData["ErrorMessage"] = "Product not found.";
+                    ErrorMessage = "Product not found.";
                     return RedirectToPage("./ListProduct");
                 }
 
-                if (Product.CategoryId != Guid.Empty)
+                // Check if product is in use
+                var checkResponse = await _httpClient.GetAsync($"odata/Product/check-product-in-use?id={id}");
+                if (checkResponse.IsSuccessStatusCode)
                 {
-                    var categoryApiUrl = $"https://localhost:7207/odata/Category/by-id?id={Product.CategoryId}";
-                    var categoryResponse = await _httpClient.GetAsync(categoryApiUrl);
-                    if (categoryResponse.IsSuccessStatusCode)
-                    {
-                        var categoryJson = await categoryResponse.Content.ReadAsStringAsync();
-                        Category = JsonSerializer.Deserialize<CategoryResponseDTO>(categoryJson, new JsonSerializerOptions
-                        {
-                            PropertyNameCaseInsensitive = true
-                        });
-                    }
+                    IsInUse = await checkResponse.Content.ReadFromJsonAsync<bool>();
                 }
 
                 return Page();
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = $"An error occurred: {ex.Message}";
+                ErrorMessage = $"An error occurred: {ex.Message}";
                 return RedirectToPage("./ListProduct");
+            }
+        }
+
+        public async Task<IActionResult> OnPostDeleteAsync(Guid id)
+        {
+            try
+            {
+                if (await CheckProductInUse(id))
+                {
+                    ErrorMessage = "This product cannot be deleted because it is being used in one or more product fields.";
+                    return RedirectToPage(new { id });
+                }
+
+                var response = await _httpClient.DeleteAsync($"odata/Product/delete-product?id={id}");
+                if (response.IsSuccessStatusCode)
+                {
+                    SuccessMessage = "Product deleted successfully.";
+                    return RedirectToPage("./ListProduct");
+                }
+                else
+                {
+                    ErrorMessage = "Failed to delete the product.";
+                    return RedirectToPage(new { id });
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"An error occurred while deleting: {ex.Message}";
+                return RedirectToPage(new { id });
+            }
+        }
+
+        private async Task<bool> CheckProductInUse(Guid id)
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync($"odata/Product/check-product-in-use?id={id}");
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadFromJsonAsync<bool>();
+                }
+                return false;
+            }
+            catch
+            {
+                return false;
             }
         }
     }
