@@ -101,7 +101,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 
         public async Task<TaskResponseDTO> UpdateTaskAsync(Guid id, TaskRequestDTO taskRequest)
         {
-            await ValidateTaskData(taskRequest);
+            await ValidateTaskData(taskRequest, id);
 
             var task = await _unitOfWork.TaskWorkRepository.GetByIdAsync(id);
             if (task == null)
@@ -188,7 +188,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             return true;
         }
 
-        private async Task ValidateTaskData(TaskRequestDTO taskRequest)
+        private async Task ValidateTaskData(TaskRequestDTO taskRequest, Guid? taskId = null)
         {
             if (string.IsNullOrWhiteSpace(taskRequest.JobTitle))
                 throw new ArgumentException("Job title is required");
@@ -229,7 +229,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             if (taskRequest.UserTasks.Count > 5)
                 throw new ArgumentException("Maximum 5 staff assignments allowed");
 
-            // Kiểm tra tất cả user được assign
+            // Kiểm tra tất cả user được assign và kiểm tra trùng lặp thời gian
             foreach (var userTask in taskRequest.UserTasks)
             {
                 var user = await _unitOfWork.UserRepository.GetByIdAsync(Guid.Parse(userTask.AssignedTo));
@@ -239,6 +239,53 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
                     throw new ArgumentException($"User with ID {userTask.AssignedTo} is inactive");
                 if (string.IsNullOrWhiteSpace(userTask.UserTaskDescription))
                     throw new ArgumentException($"Task description for user {userTask.AssignedTo} is required");
+
+                // Kiểm tra trùng lặp thời gian
+                await CheckTimeOverlapForUser(Guid.Parse(userTask.AssignedTo), taskRequest.StartDate, taskRequest.EndDate, taskId);
+            }
+        }
+
+        private async Task CheckTimeOverlapForUser(Guid userId, DateTime startDate, DateTime endDate, Guid? currentTaskId = null)
+        {
+            // Lấy thông tin người dùng
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(userId);
+            if (user == null)
+                throw new ArgumentException($"User with ID {userId} not found");
+
+            // Lấy tất cả task mà user tham gia (chỉ lấy các task có status = true và user task status = 0 hoặc 1)
+            var userTasks = await Task.FromResult(_unitOfWork.UserTaskRepository.Get(
+                filter: ut => ut.UserId == userId && 
+                              (ut.Status == (int)UserTaskStatus.Waiting || ut.Status == (int)UserTaskStatus.Processing) &&
+                              ut.TaskWork.Status == true,
+                includeProperties: "TaskWork"
+            ));
+
+            // Nếu đang cập nhật task hiện tại, loại bỏ chính nó khỏi danh sách kiểm tra
+            if (currentTaskId.HasValue)
+            {
+                userTasks = userTasks.Where(ut => ut.TaskWorkId != currentTaskId.Value).ToList();
+            }
+
+            foreach (var userTask in userTasks)
+            {
+                var taskWork = userTask.TaskWork;
+                
+                // Kiểm tra xem có trùng lặp thời gian không
+                // Trùng lặp xảy ra khi một trong các điều kiện sau đúng:
+                // 1. startDate nằm trong khoảng thời gian của task hiện có
+                // 2. endDate nằm trong khoảng thời gian của task hiện có
+                // 3. Task mới bao trùm toàn bộ khoảng thời gian của task hiện có
+                if ((startDate >= taskWork.StartDate && startDate < taskWork.EndDate) ||
+                    (endDate > taskWork.StartDate && endDate <= taskWork.EndDate) ||
+                    (startDate <= taskWork.StartDate && endDate >= taskWork.EndDate))
+                {
+                    throw new ArgumentException(
+                        $"User '{user.UserName}' already has a task assigned during this time period.\n" +
+                        $"Conflicting Task: {taskWork.JobTitle}\n" +
+                        $"Time Period: {taskWork.StartDate.ToString("dd/MM/yyyy HH:mm")} - {taskWork.EndDate.ToString("dd/MM/yyyy HH:mm")}\n" +
+                        "Please select a different time period or assign the task to another user."
+                    );
+                }
             }
         }
 

@@ -228,23 +228,26 @@
                                                         </div>
                                                         <div class="col-md-4">
                                                             <h5 class="mb-3">Farm Tools List</h5>
-                                                            @if (Model.UserTasks.Any(t => t.FarmToolsOfTask != null && t.FarmToolsOfTask.Any()))
+                                                            @if (Model.UserTasks.Any(t => t.FarmToolsOfTask != null &&
+                                                                                                                t.FarmToolsOfTask.Any()))
                                                             {
                                                                 <ul class="list-group">
 
-                                                                       @if (task.FarmToolsOfTask != null && task.FarmToolsOfTask.Any())
+                                                                    @if (task.FarmToolsOfTask != null && task.FarmToolsOfTask.Any())
+                                                                    {
+                                                                        foreach (var tool in task.FarmToolsOfTask)
                                                                         {
-                                                                            foreach (var tool in task.FarmToolsOfTask)
-                                                                            {
-                                                                                <li class="list-group-item">
-                                                                                    <strong>@tool.FarmTools.FarmToolsName</strong> - Quantity: @tool.FarmToolOfTaskQuantity @tool.FarmToolOfTaskUnit
-                                                                                </li>
-                                                                                <a asp-page="/FarmToolsOfTask/Extend"
-                                                                               asp-route-id="@tool.FarmToolsOfTaskId" class="btn btn-sm btn-primary">
-                                                                                    <i class="fa-solid fa-plus"></i> Extend
-                                                                                </a>
-                                                                            }
+                                                                            <li class="list-group-item">
+                                                                                <strong>@tool.FarmTools.FarmToolsName</strong> - Quantity:
+                                                                                @tool.FarmToolOfTaskQuantity @tool.FarmToolOfTaskUnit
+                                                                            </li>
+                                                                            <a asp-page="/FarmToolsOfTask/Extend"
+                                                                                asp-route-id="@tool.FarmToolsOfTaskId"
+                                                                                class="btn btn-sm btn-primary">
+                                                                                <i class="fa-solid fa-plus"></i> Extend
+                                                                            </a>
                                                                         }
+                                                                    }
 
 
                                                                 </ul>
@@ -564,15 +567,15 @@
                 type === 'success' ? 'bg-success' : 'bg-info';
 
             const toastHtml = `
-                                    <div id="${toastId}" class="toast align-items-center ${bgClass} text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
-                                        <div class="d-flex">
-                                            <div class="toast-body">
-                                                ${message}
+                                        <div id="${toastId}" class="toast align-items-center ${bgClass} text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                                            <div class="d-flex">
+                                                <div class="toast-body">
+                                                    ${message}
+                                                </div>
+                                                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                                             </div>
-                                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                                         </div>
-                                    </div>
-                                `;
+                                    `;
 
             toastContainer.insertAdjacentHTML('beforeend', toastHtml);
 

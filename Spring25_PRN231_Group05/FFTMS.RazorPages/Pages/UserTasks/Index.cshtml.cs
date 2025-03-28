@@ -57,6 +57,9 @@ namespace FFTMS.RazorPages.Pages.UserTasks
                     PropertyNameCaseInsensitive = true
                 }) ?? new List<UserTaskFarmToolsResponseDTO>();
 
+                // Filter out UserTasks associated with inactive TaskWorks
+                UserTasks = UserTasks.Where(task => task.Task != null && task.Task.Status).ToList();
+
                 // Sau khi lấy UserTasks, in thông tin để debug
                 foreach (var task in UserTasks)
                 {
