@@ -1,23 +1,35 @@
 using FlowerFarmTaskManagementSystem.BusinessLogic.IService;
 using FlowerFarmTaskManagementSystem.BusinessLogic.Service;
+using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
 using FlowerFarmTaskManagementSystem.BusinessObject.Mapper;
+using FlowerFarmTaskManagementSystem.DataAccess;
 using FlowerFarmTaskManagementSystem.DataAccess.IRepositories;
 using FlowerFarmTaskManagementSystem.DataAccess.Repositories;
-using FlowerFarmTaskManagementSystem.DataAccess;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.OData;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OData.Edm;
+using Microsoft.OData.ModelBuilder;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+
 builder.Services.AddControllers()
-    .AddOData(options => options.Select().Expand().Filter().OrderBy().Count().SetMaxTop(100));
+    .AddOData(options => options
+        .Select()
+        .Filter()
+        .OrderBy()
+        .Expand()
+        .Count()
+        .SetMaxTop(100)
+        .AddRouteComponents("odata", GetEdmModel()));
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -72,14 +84,14 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 // Add CORS
-//builder.Services.AddCors(options =>
-//{
-//    options.AddPolicy("AllowAll",
-//        builder => builder
-//            .AllowAnyOrigin()
-//            .AllowAnyMethod()
-//            .AllowAnyHeader());
-//});
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        builder => builder
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
 
 var app = builder.Build();
 
@@ -90,8 +102,29 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseHttpsRedirection();
+app.UseCors("AllowAll");
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
+
+IEdmModel GetEdmModel()
+{
+    var builder = new ODataConventionModelBuilder();
+    
+    // Configure Product entity
+    builder.EntitySet<ProductDTO>("Products");
+    builder.EntityType<ProductDTO>().HasKey(p => p.ProductId);
+    
+    // Add functions and actions
+    var checkProductInUse = builder.Function("CheckProductInUse");
+    checkProductInUse.Parameter<Guid>("id");
+    checkProductInUse.Returns<bool>();
+
+    var getProductById = builder.Function("GetProductById");
+    getProductById.Parameter<Guid>("id");
+    getProductById.Returns<ProductDTO>();
+
+    return builder.GetEdmModel();
+}

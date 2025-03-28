@@ -1,106 +1,132 @@
 using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Text.Json;
+using System.Net.Http.Json;
 
 namespace FFTMS.RazorPages.Pages.ProductPages
 {
     public class UpdateProductModel : PageModel
     {
         private readonly HttpClient _httpClient;
+        private readonly IConfiguration _configuration;
 
-        public UpdateProductModel(HttpClient httpClient)
+        public UpdateProductModel(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
+            _configuration = configuration;
+            _httpClient.BaseAddress = new Uri(_configuration["ApiSettings:BaseUrl"]);
         }
+
         [BindProperty]
-        public ProductUpdateDTO Product { get; set; } = default!;
-		public List<CategoryResponseDTO> Categories { get; set; } = new();
-		public async Task<IActionResult> OnGetAsync(Guid? id)
+        public ProductDTO Product { get; set; }
+        public List<CategoryResponseDTO> CateList { get; set; } = new();
+        [TempData]
+        public string? SuccessMessage { get; set; }
+        [TempData]
+        public string? ErrorMessage { get; set; }
+
+        public async Task<IActionResult> OnGetAsync(Guid id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
             try
             {
-				var apiUrl = $"https://localhost:7207/odata/Product/by-id?id={id}";
-				var response = await _httpClient.GetAsync(apiUrl);
+                if (id == Guid.Empty)
+                {
+                    ErrorMessage = "Invalid product ID.";
+                    return RedirectToPage("./ListProduct");
+                }
 
-				if (!response.IsSuccessStatusCode)
-				{
-					return NotFound(new { Message = $"Product with ID {id} not found." });
-				}
+                // Get product details
+                var response = await _httpClient.GetAsync($"odata/Product/by-id?id={id}");
 
-				var jsonResponse = await response.Content.ReadAsStringAsync();
-				Product = JsonSerializer.Deserialize<ProductUpdateDTO>(jsonResponse, new JsonSerializerOptions
-				{
-					PropertyNameCaseInsensitive = true
-				});
+                if (!response.IsSuccessStatusCode)
+                {
+                    ErrorMessage = "Failed to retrieve the product.";
+                    return RedirectToPage("./ListProduct");
+                }
 
-				if (Product == null)
-				{
-					return NotFound();
-				}
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                Product = JsonSerializer.Deserialize<ProductDTO>(jsonResponse, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
 
-				// Fetch categories
-				var categoryApiUrl = "https://localhost:7207/odata/Category/get-all-category";
-				var categoryResponse = await _httpClient.GetAsync(categoryApiUrl);
+                if (Product == null)
+                {
+                    ErrorMessage = "Product not found.";
+                    return RedirectToPage("./ListProduct");
+                }
 
-				if (categoryResponse.IsSuccessStatusCode)
-				{
-					var categoryJson = await categoryResponse.Content.ReadAsStringAsync();
-					Categories = JsonSerializer.Deserialize<List<CategoryResponseDTO>>(categoryJson, new JsonSerializerOptions
-					{
-						PropertyNameCaseInsensitive = true
-					}) ?? new List<CategoryResponseDTO>();
-				}
+                // Get categories
+                var categoryResponse = await _httpClient.GetAsync("odata/Category/get-all-category");
+                if (categoryResponse.IsSuccessStatusCode)
+                {
+                    var categoryJson = await categoryResponse.Content.ReadAsStringAsync();
+                    CateList = JsonSerializer.Deserialize<List<CategoryResponseDTO>>(categoryJson, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    }) ?? new List<CategoryResponseDTO>();
+                }
 
-				ViewData["CategoryId"] = new SelectList(Categories, "CategoryId", "CategoryName", Product.CategoryId);
-			}
-			catch (Exception ex)
-			{
-				ViewData["ErrorMessage"] = $"An error occurred while fetching data: {ex.Message}";
-				return Page();
-			}
+                return Page();
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"An error occurred: {ex.Message}";
+                return RedirectToPage("./ListProduct");
+            }
+        }
 
-			return Page();
-		}
-		public async Task<IActionResult> OnPostAsync()
-		{
-			if (!ModelState.IsValid)
-			{
-				return Page();
-			}
-			try
-			{
-				var apiUrl = $"https://localhost:7207/odata/Product/update-product?id={Product.ProductId}";
+        public async Task<IActionResult> OnPostAsync()
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    await LoadCategories();
+                    return Page();
+                }
 
-				var request = new HttpRequestMessage(HttpMethod.Put, apiUrl)
-				{
-					Content = new StringContent(JsonSerializer.Serialize(Product), System.Text.Encoding.UTF8, "application/json")
-				};
+                var response = await _httpClient.PutAsJsonAsync($"odata/Product/update-product?id={Product.ProductId}", Product);
 
-				var response = await _httpClient.SendAsync(request);
+                if (response.IsSuccessStatusCode)
+                {
+                    SuccessMessage = "Product updated successfully.";
+                    return RedirectToPage("./ProductDetails", new { id = Product.ProductId });
+                }
+                else
+                {
+                    ErrorMessage = "Failed to update the product.";
+                    await LoadCategories();
+                    return Page();
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"An error occurred: {ex.Message}";
+                await LoadCategories();
+                return Page();
+            }
+        }
 
-				if (!response.IsSuccessStatusCode)
-				{
-					ModelState.AddModelError(string.Empty, "Error updating Product.");
-					return Page();
-				}
-			}
-			catch (Exception ex)
-			{
-				ModelState.AddModelError(string.Empty, $"An error occurred: {ex.Message}");
-				return Page();
-			}
-
-			return RedirectToPage("./ListProduct");
-		}
-		private class ODataResponse<T>
-		{
-			public List<T>? Value { get; set; }
-		}
-	}
+        private async Task LoadCategories()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync("odata/Category/get-all-category");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    CateList = JsonSerializer.Deserialize<List<CategoryResponseDTO>>(json, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    }) ?? new List<CategoryResponseDTO>();
+                }
+            }
+            catch
+            {
+                CateList = new List<CategoryResponseDTO>();
+            }
+        }
+    }
 }
