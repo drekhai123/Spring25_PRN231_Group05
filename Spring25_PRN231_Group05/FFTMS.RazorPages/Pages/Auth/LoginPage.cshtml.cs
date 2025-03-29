@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Http;
 
 namespace FFTMS.RazorPages.Pages.Auth
 {
@@ -94,6 +95,16 @@ namespace FFTMS.RazorPages.Pages.Auth
                                 DateTimeOffset.Now.AddHours(1)   // Short-lived cookie otherwise
                         });
 
+                        // Store user role and username in session only if they are not null
+                        if (!string.IsNullOrEmpty(loginResponse.Role))
+                        {
+                            HttpContext.Session.SetString("UserRole", loginResponse.Role);
+                        }
+                        if (!string.IsNullOrEmpty(loginResponse.UserName))
+                        {
+                            HttpContext.Session.SetString("UserName", loginResponse.UserName);
+                        }
+
                         _logger.LogInformation("User logged in successfully.");
                         // Redirect to the root URL (/) after successful login
                         return LocalRedirect("/");
@@ -127,6 +138,8 @@ namespace FFTMS.RazorPages.Pages.Auth
     public class LoginResponse
     {
         public string Token { get; set; }
+        public string Role { get; set; }
+        public string UserName { get; set; }
     }
 
     // Class to deserialize API error responses

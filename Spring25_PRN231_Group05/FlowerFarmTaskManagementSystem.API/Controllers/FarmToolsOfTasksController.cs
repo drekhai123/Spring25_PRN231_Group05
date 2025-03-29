@@ -4,6 +4,7 @@ using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
+using System.Collections;
 
 namespace FlowerFarmTaskManagementSystem.API.Controllers
 {
@@ -101,8 +102,24 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
 				return NotFound(ex.Message);
 			}
 		}
-		
-		[HttpDelete("delete-farm-tools-of-task-by-id")]
+        [HttpPut("update-farm-tools-of-task-status-completed-by-user-task-id")]
+        public async Task<ActionResult<IEnumerable<FarmToolsOfTaskResponseDTO>>> UpdateFarmToolsOfTasksStatusCompletedByUserTaskIdAsync(string userTaskId)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            try
+            {
+                var farmToolsOT = await _farmToolsOfTaskService.UpdateFarmToolsOfTasksStatusCompletedByUserTaskIdAsync(userTaskId);
+                return Ok(farmToolsOT);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+        [HttpDelete("delete-farm-tools-of-task-by-id")]
 		public async Task<ActionResult<bool>> DeleteFarmToolsOfTasksAsync(String FarmToolsOfTaskId)
 		{
 			try

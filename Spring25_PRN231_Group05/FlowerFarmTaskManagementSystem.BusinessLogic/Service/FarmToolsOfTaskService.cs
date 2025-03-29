@@ -63,7 +63,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
                     UpdateDate = DateTime.UtcNow,
                     Status = 1,
                     FarmToolOfTaskQuantity = farmTool.Quantity,
-                    FarmToolOfTaskUnit = request.FarmToolOfTaskUnit,
+                    FarmToolOfTaskUnit = farmTools.FarmToolsUnit,
                     FarmToolsId = farmToolsId,
                     UserTaskId = Guid.Parse(request.UserTaskId)
                 };
@@ -197,7 +197,50 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 			return _mapper.Map<FarmToolsOfTaskResponseDTO>(farmToolsOfTask);
 		}
 
-		public async Task<FarmToolsOfTaskResponseDTO> UpdateFarmToolsOfTasksStatusPendingAsync(string FarmToolsOfTasksId)
+        public async Task<IEnumerable<FarmToolsOfTaskResponseDTO>> UpdateFarmToolsOfTasksStatusCompletedByUserTaskIdAsync(string userTaskId)
+        {
+            var userTaskGuid = Guid.Parse(userTaskId);
+            var userTask = await _unitOfWork.UserTaskRepository.GetByIdAsync(userTaskGuid);
+            if (userTask == null) throw new KeyNotFoundException("UserTask not found.");
+
+            var farmToolsOfTasks = _unitOfWork.FarmToolsOfTaskRepository.Get(f => f.UserTaskId == userTaskGuid);
+            if (farmToolsOfTasks == null)
+            {
+                throw new KeyNotFoundException("No FarmToolsOfTask found for this UserTask.");
+            }
+
+            foreach (var farmToolsOfTask in farmToolsOfTasks)
+            {
+                farmToolsOfTask.UpdateDate = DateTime.UtcNow;
+                farmToolsOfTask.Status = 3;
+
+                var farmTools = await _unitOfWork.FarmToolsRepository.GetByIdAsync(farmToolsOfTask.FarmToolsId);
+                if (farmTools == null) throw new Exception($"Farm tool with ID {farmToolsOfTask.FarmToolsId} not found.");
+
+                if (farmToolsOfTask.FarmToolOfTaskQuantity != null)
+                {
+                    farmTools.FarmToolsQuantity += farmToolsOfTask.FarmToolOfTaskQuantity;
+                    _unitOfWork.FarmToolsRepository.Update(farmTools);
+                }
+
+                _unitOfWork.FarmToolsOfTaskRepository.Update(farmToolsOfTask);
+            }
+
+            await _unitOfWork.SaveChangesAsync();
+
+
+            return farmToolsOfTasks.Select(f => new FarmToolsOfTaskResponseDTO
+            {
+                FarmToolsOfTaskId = f.FarmToolsOfTaskId.ToString(),
+                Status = f.Status,
+                UpdateDate = f.UpdateDate,
+                FarmToolsId = f.FarmToolsId.ToString(),
+                UserTaskId = f.UserTaskId.ToString()
+            });
+        }
+
+
+        public async Task<FarmToolsOfTaskResponseDTO> UpdateFarmToolsOfTasksStatusPendingAsync(string FarmToolsOfTasksId)
 		{
 			var farmToolsOfTaskId = Guid.Parse(FarmToolsOfTasksId);
 			var farmToolsOfTask = await _unitOfWork.FarmToolsOfTaskRepository.GetByIdAsync(farmToolsOfTaskId);

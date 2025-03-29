@@ -241,15 +241,16 @@
                                                                                 <strong>@tool.FarmTools.FarmToolsName</strong> - Quantity:
                                                                                 @tool.FarmToolOfTaskQuantity @tool.FarmToolOfTaskUnit
                                                                             </li>
-                                                                            <a asp-page="/FarmToolsOfTask/Extend"
-                                                                                asp-route-id="@tool.FarmToolsOfTaskId"
-                                                                                class="btn btn-sm btn-primary">
-                                                                                <i class="fa-solid fa-plus"></i> Extend
-                                                                            </a>
+                                                                            @if (tool.Status != 3)
+                                                                            {
+                                                                                <a asp-page="/FarmToolsOfTask/Extend"
+                                                                                   asp-route-id="@tool.FarmToolsOfTaskId"
+                                                                                   class="btn btn-sm btn-primary">
+                                                                                    <i class="fa-solid fa-plus"></i> Extend
+                                                                                </a>
+                                                                            }
                                                                         }
                                                                     }
-
-
                                                                 </ul>
                                                             }
                                                             else
