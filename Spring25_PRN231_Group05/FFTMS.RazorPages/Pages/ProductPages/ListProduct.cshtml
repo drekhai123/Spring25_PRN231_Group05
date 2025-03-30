@@ -3,15 +3,20 @@
 @{
     ViewData["Title"] = "List Product";
     Layout = "_Layout";
+    var userRole = HttpContext.Session.GetString("UserRole");
+    var isManagerOrStaff = userRole == "Staff";
 }
 
 <div class="main-container">
     <div class="card shadow-sm">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h3 class="mb-0">Products</h3>
-            <a asp-page="CreateProduct" class="btn btn-light">
-                <i class="fas fa-plus"></i> Add Product
-            </a>
+            @if (!isManagerOrStaff)
+            {
+                <a asp-page="CreateProduct" class="btn btn-light">
+                    <i class="fas fa-plus"></i> Add Product
+                </a>
+            }
         </div>
         <div class="card-body">
             @if (Model.SuccessMessage != null)
@@ -84,13 +89,16 @@
                                         <a asp-page="./ProductDetails" asp-route-id="@product.ProductId" class="btn btn-sm btn-info" title="View">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        <a asp-page="./UpdateProduct" asp-route-id="@product.ProductId" class="btn btn-sm btn-warning" title="Edit">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <button type="button" class="btn btn-sm btn-danger" title="Delete"
-                                                onclick="confirmDelete('@product.ProductId', '@product.ProductName')" data-bs-toggle="modal" data-bs-target="#deleteModal">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
+                                        @if (!isManagerOrStaff)
+                                        {
+                                            <a asp-page="./UpdateProduct" asp-route-id="@product.ProductId" class="btn btn-sm btn-warning" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-sm btn-danger" title="Delete"
+                                                    onclick="confirmDelete('@product.ProductId', '@product.ProductName')" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        }
                                     </div>
                                 </td>
                             </tr>

@@ -86,7 +86,7 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
 			}
 		}
 		[HttpPut("update-farm-tools-of-task-status-finish")]
-		public async Task<ActionResult<FarmToolsOfTaskResponseDTO>> UpdateFarmToolsOfTasksStatusFinishAsync(String FarmToolsOfTaskId)
+		public async Task<ActionResult<FarmToolsOfTaskResponseDTO>> UpdateFarmToolsOfTasksStatusFinishAsync(string FarmToolsOfTaskId, string NoteInf)
 		{
 			if (!ModelState.IsValid)
 			{
@@ -94,7 +94,7 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
 			}
 			try
 			{
-				var farmToolsOT = await _farmToolsOfTaskService.UpdateFarmToolsOfTasksStatusFinishAsync(FarmToolsOfTaskId);
+				var farmToolsOT = await _farmToolsOfTaskService.UpdateFarmToolsOfTasksStatusFinishAsync(FarmToolsOfTaskId, NoteInf);
 				return Ok(farmToolsOT);
 			}
 			catch (KeyNotFoundException ex)

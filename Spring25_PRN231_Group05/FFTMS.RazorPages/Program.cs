@@ -7,6 +7,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages(); // Removed the AddPageRoute configuration
 builder.Services.AddHttpClient();
 builder.Services.AddSignalR();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Set session timeout
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -21,7 +28,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseSession(); // Add this line to enable session middleware
 app.UseAuthorization();
 
 // Redirect unauthenticated users to /Auth/LoginPage

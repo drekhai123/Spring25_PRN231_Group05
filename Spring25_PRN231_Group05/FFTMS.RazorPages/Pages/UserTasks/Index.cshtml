@@ -241,7 +241,7 @@
                                                                                 <strong>@tool.FarmTools.FarmToolsName</strong> - Quantity:
                                                                                 @tool.FarmToolOfTaskQuantity @tool.FarmToolOfTaskUnit
                                                                             </li>
-                                                                            @if (tool.Status != 3)
+                                                                            @if (tool.Status == 1 || tool.Status == 2)
                                                                             {
                                                                                 <a asp-page="/FarmToolsOfTask/Extend"
                                                                                    asp-route-id="@tool.FarmToolsOfTaskId"

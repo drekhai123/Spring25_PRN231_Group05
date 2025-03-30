@@ -47,7 +47,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
                 {
                     throw new Exception($"Not enough farm tools for ID {farmToolsId}. Available: {farmTools.FarmToolsQuantity}, Requested: {farmTool.Quantity}");
                 }
-                if (farmTools.FarmToolsQuantity > farmTool.Quantity)
+                if (farmTools.FarmToolsQuantity >= farmTool.Quantity)
                 {
                     farmTools.FarmToolsQuantity -= farmTool.Quantity;
 
@@ -148,7 +148,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
                 throw new Exception($"Not enough farm tools for ID {farmToolsId}. Available: {farmTools.FarmToolsQuantity}, Requested: {farmToolsOfTask.FarmToolOfTaskQuantity}");
             }
 
-            if (farmToolsOfTask.FarmToolOfTaskQuantity < request.FarmToolOfTaskQuantity)
+            if (farmToolsOfTask.FarmToolOfTaskQuantity <= request.FarmToolOfTaskQuantity)
             {
                 farmTools.FarmToolsQuantity -= request.FarmToolOfTaskQuantity;
 
@@ -170,14 +170,18 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             return _mapper.Map<FarmToolsOfTaskResponseDTO>(farmToolsOfTask);
 		}
 
-		public async Task<FarmToolsOfTaskResponseDTO> UpdateFarmToolsOfTasksStatusFinishAsync(string FarmToolsOfTasksId)
+		public async Task<FarmToolsOfTaskResponseDTO> UpdateFarmToolsOfTasksStatusFinishAsync(string FarmToolsOfTasksId, string note)
 		{
 			var farmToolsOfTaskId = Guid.Parse(FarmToolsOfTasksId);
 			var farmToolsOfTask = await _unitOfWork.FarmToolsOfTaskRepository.GetByIdAsync(farmToolsOfTaskId);
 			if (farmToolsOfTask == null) throw new KeyNotFoundException("FarmToolsOfTask not found.");
 
 			farmToolsOfTask.UpdateDate = DateTime.UtcNow;
-			farmToolsOfTask.Status = 3;
+			farmToolsOfTask.Status = 4;
+            if (note != null)
+            {
+                farmToolsOfTask.Note = note;
+            }
             var farmToolsId = farmToolsOfTask.FarmToolsId;
             var farmTools = await _unitOfWork.FarmToolsRepository.GetByIdAsync(farmToolsId);
             if (farmTools == null)
