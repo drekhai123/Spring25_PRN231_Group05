@@ -18,7 +18,8 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Models
 		public DateTime UpdateDate { get; set; }
 		public int FarmToolOfTaskQuantity { get; set; }
 		public string FarmToolOfTaskUnit { get; set; }
-		public int Status { get; set; }
+        public string? Note { get; set; }
+        public int Status { get; set; }
 		public Guid FarmToolsId { get; set; }
 		[ForeignKey(nameof(FarmToolsId))]
 		public FarmTools? FarmTools { get; set; }
