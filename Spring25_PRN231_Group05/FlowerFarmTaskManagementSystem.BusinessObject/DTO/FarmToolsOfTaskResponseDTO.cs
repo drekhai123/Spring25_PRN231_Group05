@@ -18,7 +18,8 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.DTO
         public int FarmToolOfTaskQuantity { get; set; }
         public string FarmToolOfTaskUnit { get; set; }
         public String FarmToolsId { get; set; }
-		public int Status {  get; set; }
+        public String? Note { get; set; }
+        public int Status {  get; set; }
         public String UserTaskId { get; set; }
 		public FarmTools? FarmTools { get; set; }
 		public UserTask? UserTask { get; set; }

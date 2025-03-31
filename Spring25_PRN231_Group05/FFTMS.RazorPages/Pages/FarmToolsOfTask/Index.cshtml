@@ -5,85 +5,129 @@
     ViewData["Title"] = "Index";
     Layout = "_Layout";
 }
+<div class="main-container">
+    <h1>Index</h1>
 
-<h1>Index</h1>
+    <p>
+        <a asp-page="Create">Create New</a>
+    </p>
+    <table class="table" id="farmToolsTable">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.FarmToolsOfTask[0].StartDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.FarmToolsOfTask[0].EndDate)
+                </th>
+                <th>
+                    Quantity
+                </th>
+                <th>
+                    Unit
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.FarmToolsOfTask[0].Status)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.FarmToolsOfTask[0].FarmTools)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.FarmToolsOfTask[0].UserTask)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.FarmToolsOfTask)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.StartDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.EndDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FarmToolOfTaskQuantity)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FarmToolOfTaskUnit)
+                    </td>
+                    <td>
+                        <span>
+                            @(item.Status == 1 ? "Pending" :
+                                item.Status == 2 ? "Extend" :
+                                item.Status == 3 ? "Pending Return" :
+                                item.Status == 4 ? "Finish" :
+                                item.Status == 5 ? "Damaged" : "Unknown")
+                        </span>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FarmTools.FarmToolsName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.UserTask.UserTaskDescription)
+                    </td>
+                    <td>
+                        
+                            @if (item.Status != 3)
+                            {
+                                <a class="dropdown-item" asp-page="./Details" asp-route-id="@item.FarmToolsOfTaskId">
+                                    <i class="dw dw-eye"></i> View
+                                </a>
+                            }
+                            @if (item.Status == 3)
+                            {
+                            <div class="dropdown">
+                                <a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle" href="#" role="button" data-toggle="dropdown">
+                                    <i class="dw dw-more"></i>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
 
-<p>
-    <a asp-page="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.FarmToolsOfTask[0].StartDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FarmToolsOfTask[0].EndDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FarmToolsOfTask[0].CreateDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FarmToolsOfTask[0].UpdateDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FarmToolsOfTask[0].FarmToolOfTaskQuantity)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FarmToolsOfTask[0].FarmToolOfTaskUnit)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FarmToolsOfTask[0].Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FarmToolsOfTask[0].FarmTools)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FarmToolsOfTask[0].UserTask)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model.FarmToolsOfTask) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.StartDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EndDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreateDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UpdateDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FarmToolOfTaskQuantity)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FarmToolOfTaskUnit)
-            </td>
-            <td>
-                    <span>
-                        @(item.Status == 1 ? "Pending" :
-                            item.Status == 2 ? "Extend" :
-                            item.Status == 3 ? "Finish" : "Unknown")
-                    </span>
-                </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FarmTools.FarmToolsName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UserTask.UserTaskDescription)
-            </td>
-            <td>
-                <a asp-page="./Extend" asp-route-id="@item.FarmToolsOfTaskId">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.FarmToolsOfTaskId">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.FarmToolsOfTaskId">Delete</a>
-            </td>
-        </tr>
+
+                                    <a class="dropdown-item" asp-page="./Details" asp-route-id="@item.FarmToolsOfTaskId">
+                                        <i class="dw dw-eye"></i> View
+                                    </a>
+                                    <a class="dropdown-item" asp-page="./ReturnPage" asp-route-id="@item.FarmToolsOfTaskId"><i class="dw dw-edit2"></i> Return</a>
+                                    <a class="dropdown-item" asp-page="./FarmToolDetails" asp-route-id="@item.FarmToolsOfTaskId"><i class="dw dw-delete-3"></i> Delete</a>
+                                </div>
+                            </div>
+                            }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            if ($.fn.DataTable.isDataTable("#farmToolsTable")) {
+                $("#farmToolsTable").DataTable().destroy();
+            }
+
+            $("#farmToolsTable").DataTable({
+                "paging": true,
+                "ordering": true,
+                "info": true,
+                "searching": true,
+                "lengthMenu": [5, 10, 25, 50, 100],
+                "order": [[0, "asc"]],
+                "language": {
+                    "lengthMenu": "Hiển thị _MENU_ dòng mỗi trang",
+                    "zeroRecords": "Không tìm thấy dữ liệu",
+                    "info": "Trang _PAGE_ / _PAGES_",
+                    "infoEmpty": "Không có dữ liệu",
+                    "search": "Tìm kiếm:",
+                    "paginate": {
+                        "first": "Đầu",
+                        "last": "Cuối",
+                        "next": "Tiếp",
+                        "previous": "Trước"
+                    }
+                }
+            });
+        });
+    </script>
 }
-    </tbody>
-</table>

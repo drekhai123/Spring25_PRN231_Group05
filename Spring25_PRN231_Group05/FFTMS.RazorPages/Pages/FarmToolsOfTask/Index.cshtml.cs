@@ -25,7 +25,7 @@ namespace FFTMS.RazorPages.Pages.FarmToolsOfTask
 
         public async Task OnGetAsync()
         {
-            var apiUrl = "https://localhost:7207/odata/FarmToolsOfTasks/get-all-farm-tools-of-task?$orderby=Status desc";
+            var apiUrl = "https://localhost:7207/api/FarmToolsOfTasks/get-all-farm-tools-of-task?$orderby=Status desc";
 
             var response = await _httpClient.GetAsync(apiUrl);
 
