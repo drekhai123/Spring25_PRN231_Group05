@@ -6,11 +6,25 @@
     Layout = "_Layout";
 }
 <div class="main-container">
-    <h1>Index</h1>
+    <h1>History Of Tools</h1>
 
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
     <p>
         <a asp-page="Create">Create New</a>
     </p>
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
     <table class="table" id="farmToolsTable">
         <thead>
             <tr>
@@ -98,6 +112,9 @@
     </table>
 </div>
 @section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
     <script>
         $(document).ready(function () {
             if ($.fn.DataTable.isDataTable("#farmToolsTable")) {

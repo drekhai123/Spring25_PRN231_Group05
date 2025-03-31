@@ -18,6 +18,8 @@ namespace FFTMS.RazorPages.Pages.FarmToolsOfTask
         public FarmToolsOfTaskResponseDTO FarmToolsOfTaskRequest { get; set; } = default!;
         [BindProperty]
         public string NoteInf { get; set; } = string.Empty;
+        [BindProperty]
+        public int Quantity { get; set; } = 0;
         public async Task<IActionResult> OnGetAsync(String? id)
         {
             if (id == null)
@@ -58,15 +60,15 @@ namespace FFTMS.RazorPages.Pages.FarmToolsOfTask
                     return Page();
                 }
 
-                var apiUrl = $"https://localhost:7207/api/FarmToolsOfTasks/update-farm-tools-of-task-status-finish?FarmToolsOfTaskId={FarmToolsOfTaskRequest.FarmToolsOfTaskId}&NoteInf={NoteInf}";
+                var apiUrl = $"https://localhost:7207/api/FarmToolsOfTasks/update-farm-tools-of-task-status-finish?FarmToolsOfTaskId={FarmToolsOfTaskRequest.FarmToolsOfTaskId}&NoteInf={NoteInf}&Quantity={Quantity}";
 
                 var response = await _httpClient.PutAsync(apiUrl, null);
 
                 if (!response.IsSuccessStatusCode)
                 {
                     var errorMessage = await response.Content.ReadAsStringAsync();
-                    ModelState.AddModelError(string.Empty, $"Error updating data: {errorMessage}");
-                    return Page();
+                    TempData["ErrorMessage"] = errorMessage;
+                    return RedirectToPage("/FarmToolsOfTask/Index");
                 }
 
                 TempData["SuccessMessage"] = "Farm tool task marked as finished successfully.";
@@ -74,8 +76,8 @@ namespace FFTMS.RazorPages.Pages.FarmToolsOfTask
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(string.Empty, $"An error occurred: {ex.Message}");
-                return Page();
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToPage("/FarmToolsOfTask/Index");
             }
         }
 
