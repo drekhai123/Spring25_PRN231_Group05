@@ -70,7 +70,7 @@ namespace FFTMS.RazorPages.Pages.FarmToolsOfTask
                 }
 
                 TempData["SuccessMessage"] = "Farm tool task marked as finished successfully.";
-                return RedirectToPage("/UserTasks/Index");
+                return RedirectToPage("/FarmToolsOfTask/Index");
             }
             catch (Exception ex)
             {
