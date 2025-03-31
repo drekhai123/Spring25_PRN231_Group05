@@ -4,7 +4,6 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.DTO
 {
     public class UserRequestDTO
     {
-        public Guid UserId { get; set; }
 
         [Required(ErrorMessage = "Username is required")]
         public string UserName { get; set; }
@@ -22,5 +21,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.DTO
         public string Role { get; set; }
 
         public DateTime? DateOfBirth { get; set; }
+        public string? WorkPosition { get; set; }
+        public string? Experience { get; set; }
     }
 }
