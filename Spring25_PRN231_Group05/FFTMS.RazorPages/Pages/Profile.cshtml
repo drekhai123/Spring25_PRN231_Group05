@@ -1,0 +1,366 @@
+﻿@page
+@model FFTMS.RazorPages.Pages.ProfileModel
+
+@{
+    ViewData["Title"] = "User Profile";
+}
+
+<style>
+    /* Custom CSS for Profile Page */
+    .profile-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 30px 15px;
+    }
+
+    .profile-header {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #333;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .profile-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        background: #fff;
+        transition: transform 0.3s ease;
+    }
+
+    .profile-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .profile-card-header {
+        background: linear-gradient(90deg, #007bff, #00c4ff);
+        color: #fff;
+        padding: 20px;
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+        text-align: center;
+        font-size: 1.5rem;
+        font-weight: 600;
+        text-transform: capitalize;
+    }
+
+    .profile-card-body {
+        padding: 30px;
+        background: #f9f9f9;
+    }
+
+    .profile-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .profile-col {
+        flex: 1;
+        min-width: 300px;
+    }
+
+    .profile-col p {
+        margin-bottom: 15px;
+        font-size: 1rem;
+        color: #555;
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 5px;
+    }
+
+    .profile-col p strong {
+        color: #333;
+        font-weight: 600;
+        width: 40%;
+    }
+
+    .profile-col p span {
+        width: 60%;
+        text-align: right;
+    }
+
+    .profile-card-footer {
+        padding: 15px;
+        text-align: center;
+        background: #f1f1f1;
+        border-bottom-left-radius: 15px;
+        border-bottom-right-radius: 15px;
+    }
+
+    .btn-back, .btn-update {
+        border: none;
+        padding: 10px 30px;
+        font-size: 1rem;
+        font-weight: 500;
+        border-radius: 25px;
+        transition: background 0.3s ease;
+        margin: 0 10px;
+    }
+
+    .btn-back {
+        background: #007bff;
+    }
+
+    .btn-back:hover {
+        background: #0056b3;
+    }
+
+    .btn-update {
+        background: #28a745;
+    }
+
+    .btn-update:hover {
+        background: #218838;
+    }
+
+    .alert {
+        max-width: 600px;
+        margin: 0 auto 20px;
+        border-radius: 10px;
+        font-size: 1rem;
+        padding: 15px;
+        text-align: center;
+    }
+
+    /* Modal CSS */
+    .modal-content {
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-header {
+        background: linear-gradient(90deg, #007bff, #00c4ff);
+        color: #fff;
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+    }
+
+    .modal-title {
+        font-weight: 600;
+    }
+
+    .modal-body {
+        padding: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .form-group input, .form-group select {
+        border-radius: 5px;
+        border: 1px solid #ced4da;
+        padding: 8px;
+        width: 100%;
+    }
+
+    .form-group input:focus, .form-group select:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+        outline: none;
+    }
+
+    .modal-footer .btn {
+        border-radius: 25px;
+        padding: 8px 20px;
+    }
+</style>
+
+<div class="profile-container">
+    <h2 class="profile-header">User Profile</h2>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success" role="alert">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger" role="alert">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    @if (Model.UserProfile != null)
+    {
+        <div class="profile-card">
+            <div class="profile-card-header">
+                <h4>@Model.UserProfile.UserName</h4>
+            </div>
+            <div class="profile-card-body">
+                <div class="profile-row">
+                    <div class="profile-col">
+                        <p><strong>User ID:</strong> <span>@Model.UserProfile.UserId</span></p>
+                        <p><strong>Email:</strong> <span>@Model.UserProfile.Email</span></p>
+                        <p><strong>Phone:</strong> <span>@Model.UserProfile.Phone</span></p>
+                        <p><strong>Address:</strong> <span>@Model.UserProfile.Address</span></p>
+                        <p><strong>Role:</strong> <span>@Model.UserProfile.Role</span></p>
+                    </div>
+                    <div class="profile-col">
+                        <p>
+                            <strong>Date of Birth:</strong>
+                            <span>
+                                @(Model.UserProfile.DateOfBirth != null && DateTime.TryParse(Model.UserProfile.DateOfBirth, out var dob)
+                                    ? dob.ToString("dd/MM/yyyy")
+                                    : "N/A")
+                            </span>
+                        </p>
+                        <p>
+                            <strong>Created Date:</strong>
+                            <span>
+                                @(Model.UserProfile.CreateDate != null && DateTime.TryParse(Model.UserProfile.CreateDate, out var createDate) && createDate != DateTime.MinValue
+                                    ? createDate.ToString("dd/MM/yyyy")
+                                    : "N/A")
+                            </span>
+                        </p>
+                        <p><strong>Active:</strong> <span>@(Model.UserProfile.IsActive ? "Yes" : "No")</span></p>
+                        <p><strong>Work Position:</strong> <span>@(Model.UserProfile.WorkPosition ?? "N/A")</span></p>
+                        <p><strong>Experience:</strong> <span>@(Model.UserProfile.Experience ?? "N/A")</span></p>
+                    </div>
+                </div>
+            </div>
+            <div class="profile-card-footer">
+                <button type="button" class="btn btn-success btn-update" data-bs-toggle="modal" data-bs-target="#updateUserModal">Update User</button>
+                <a asp-page="/Index" class="btn btn-primary btn-back">Back to Home</a>
+            </div>
+        </div>
+
+        <!-- Modal for Updating User -->
+        <div class="modal fade" id="updateUserModal" tabindex="-1" aria-labelledby="updateUserModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="updateUserModalLabel">Update User Information</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form asp-page-handler="UpdateUser" method="post">
+                        <div class="modal-body">
+                            <input type="hidden" name="UserId" value="@Model.UserProfile.UserId" />
+                            <input type="hidden" name="Role" value="@Model.UserProfile.Role" /> <!-- Hidden field for Role -->
+                            <div class="form-group">
+                                <label for="UserName">Username</label>
+                                <input type="text" class="form-control" id="UserName" name="UserName" value="@Model.UserProfile.UserName" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="Email">Email</label>
+                                <input type="email" class="form-control" id="Email" name="Email" value="@Model.UserProfile.Email" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="Phone">Phone</label>
+                                <input type="text" class="form-control" id="Phone" name="Phone" value="@Model.UserProfile.Phone" />
+                            </div>
+                            <div class="form-group">
+                                <label for="Address">Address</label>
+                                <input type="text" class="form-control" id="Address" name="Address" value="@Model.UserProfile.Address" />
+                            </div>
+                            <div class="form-group">
+                                <label for="DateOfBirth">Date of Birth</label>
+                                <input type="date" class="form-control" id="DateOfBirth" name="DateOfBirth"
+                                       value="@(Model.UserProfile.DateOfBirth != null && DateTime.TryParse(Model.UserProfile.DateOfBirth, out var DateOfBirth) ? DateOfBirth.ToString("yyyy-MM-dd") : "")" />
+                            </div>
+                            <div class="form-group">
+                                <label for="WorkPosition">Work Position</label>
+                                <input type="text" class="form-control" id="WorkPosition" name="WorkPosition" value="@Model.UserProfile.WorkPosition" />
+                            </div>
+                            <div class="form-group">
+                                <label for="Experience">Experience</label>
+                                <input type="text" class="form-control" id="Experience" name="Experience" value="@Model.UserProfile.Experience" />
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-danger" role="alert">
+            Unable to load user profile. Please try again later.
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+    $('#updateUserModal').on('shown.bs.modal', function () {
+        $('#UserName').focus();
+    });
+
+    $('form').on('submit', function (e) {
+        let isValid = true;
+        let messages = [];
+
+        // Validate Username
+        const userName = $('#UserName').val().trim();
+        if (userName.length < 3) {
+            isValid = false;
+            messages.push('Username must be at least 3 characters long.');
+        }
+
+        // Validate Phone Number (Optional, but must be numeric if filled)
+        const phone = $('#Phone').val().trim();
+        const phoneRegex = /^\d{10,15}$/;
+        if (phone && !phoneRegex.test(phone)) {
+            isValid = false;
+            messages.push('Phone number must be 10-15 digits long.');
+        }
+
+        // Validate Address
+        const address = $('#Address').val().trim();
+        if (address.length < 5) {
+            isValid = false;
+            messages.push('Address must be at least 5 characters long.');
+        }
+
+        // Validate Date of Birth (Must be in the past)
+        const dateOfBirth = $('#DateOfBirth').val();
+        if (dateOfBirth) {
+            const dob = new Date(dateOfBirth);
+            const today = new Date();
+            if (dob >= today) {
+                isValid = false;
+                messages.push('Date of Birth must be a past date.');
+            }
+        }
+
+        // Validate Work Position (Optional, but at least 2 characters if filled)
+        const workPosition = $('#WorkPosition').val().trim();
+        if (workPosition && workPosition.length < 2) {
+            isValid = false;
+            messages.push('Work Position must be at least 2 characters long.');
+        }
+
+        // Validate Experience (Optional, but must be numeric if filled)
+        const experience = $('#Experience').val().trim();
+        if (experience && isNaN(experience)) {
+            isValid = false;
+            messages.push('Experience must be a number.');
+        }
+
+        // Show alerts if validation fails
+        if (!isValid) {
+            alert(messages.join('\n'));
+            e.preventDefault();
+            return false;
+        }
+    });
+});
+
+    </script>
+}

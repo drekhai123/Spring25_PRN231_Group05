@@ -20,12 +20,18 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Mapper
             CreateMap<CategoryRequestDTO, Category>();
 
             // User mappings
-            CreateMap<User, UserResponseDTO>();
+            CreateMap<User, UserResponseDTO>()
+                .ForMember(x => x.WorkPosition, y => y.MapFrom(src => src.WorkPosition))
+                .ForMember(x => x.Experience, y => y.MapFrom(src => src.Experience));
             CreateMap<UserRequestDTO, User>()
                 .ForMember(dest => dest.UserId, opt => opt.Ignore())
                 .ForMember(dest => dest.CreateDate, opt => opt.Ignore())
                 .ForMember(dest => dest.IsActive, opt => opt.Ignore());
-
+            CreateMap<UpdateUserRequestDTO, User>()
+                .ForMember(dest => dest.UserId, opt => opt.Ignore())
+                .ForMember(dest => dest.CreateDate, opt => opt.Ignore())
+                .ForMember(dest => dest.IsActive, opt => opt.Ignore())
+                .ForMember(dest => dest.Password, opt => opt.Ignore()); 
             // Product mappings
             CreateMap<Product, ProductDTO>()
                 .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category));
