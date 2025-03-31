@@ -33,7 +33,7 @@
 					<i class="dw dw-add"></i> Add Farm Tool
 				</a>
 				<div class="pb-20">
-					<table class="data-table table stripe hover nowrap">
+					<table class="data-table table stripe hover nowrap" id="farmToolsTable">
 						<thead>
 							<tr>
 								<th class="table-plus datatable-nosort">ID</th>
@@ -41,7 +41,6 @@
 								<th>Quantity</th>
 								<th>Unit</th>
 								<th>Status</th>
-								<th>IsActive</th>
 								<th>Create Date</th>
 								<th>Update Date</th>
 								<th class="datatable-nosort">Action</th>
@@ -61,7 +60,6 @@
 									<td>@tool.FarmToolsQuantity</td>
 									<td>@tool.FarmToolsUnit</td>
 									<td>@(tool.Status ? "Active" : "Inactive")</td>
-									<td>@(tool.IsActive ? "Yes" : "No")</td>
 									<td>@tool.CreateDate.ToString("dd-MM-yyyy")</td>
 									<td>@tool.UpdateDate.ToString("dd-MM-yyyy")</td>
 									<td>
@@ -88,7 +86,37 @@
 		</div>
 	</div>
 </div>
+@section Scripts {
+	<script>
+		$(document).ready(function () {
+			if ($.fn.DataTable.isDataTable("#farmToolsTable")) {
+				$("#farmToolsTable").DataTable().destroy();
+			}
 
+			$("#farmToolsTable").DataTable({
+				"paging": true,
+				"ordering": true,
+				"info": true,
+				"searching": true,
+				"lengthMenu": [5, 10, 25, 50, 100],
+				"order": [[0, "asc"]],
+				"language": {
+					"lengthMenu": "Hiển thị _MENU_ dòng mỗi trang",
+					"zeroRecords": "Not found",
+					"info": "Trang _PAGE_ / _PAGES_",
+					"infoEmpty": "No data",
+					"search": "Find:",
+					"paginate": {
+						"first": "First",
+						"last": "Last",
+						"next": "Next",
+						"previous": "Previous"
+					}
+				}
+			});
+		});
+	</script>
+}
 	@* <!-- js -->
 	<script src="~/vendors/scripts/core.js"></script>
 	<script src="~/vendors/scripts/script.min.js"></script>

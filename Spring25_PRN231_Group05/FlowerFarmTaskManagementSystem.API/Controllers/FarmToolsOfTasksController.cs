@@ -85,8 +85,9 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
 				return NotFound(ex.Message);
 			}
 		}
+
 		[HttpPut("update-farm-tools-of-task-status-finish")]
-		public async Task<ActionResult<FarmToolsOfTaskResponseDTO>> UpdateFarmToolsOfTasksStatusFinishAsync(String FarmToolsOfTaskId)
+		public async Task<ActionResult<FarmToolsOfTaskResponseDTO>> UpdateFarmToolsOfTasksStatusFinishAsync(string FarmToolsOfTaskId, string? NoteInf, int? Quantity)
 		{
 			if (!ModelState.IsValid)
 			{
@@ -94,7 +95,7 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
 			}
 			try
 			{
-				var farmToolsOT = await _farmToolsOfTaskService.UpdateFarmToolsOfTasksStatusFinishAsync(FarmToolsOfTaskId);
+				var farmToolsOT = await _farmToolsOfTaskService.UpdateFarmToolsOfTasksStatusFinishAsync(FarmToolsOfTaskId, NoteInf, Quantity);
 				return Ok(farmToolsOT);
 			}
 			catch (KeyNotFoundException ex)
@@ -102,6 +103,25 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
 				return NotFound(ex.Message);
 			}
 		}
+
+        [HttpPut("update-farm-tools-of-task-status-completed")]
+        public async Task<ActionResult<FarmToolsOfTaskResponseDTO>> UpdateFarmToolsOfTasksStatusCompletedAsync(string FarmToolsOfTaskId)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            try
+            {
+                var farmToolsOT = await _farmToolsOfTaskService.UpdateFarmToolsOfTasksStatusCompletedAsync(FarmToolsOfTaskId);
+                return Ok(farmToolsOT);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
         [HttpPut("update-farm-tools-of-task-status-completed-by-user-task-id")]
         public async Task<ActionResult<IEnumerable<FarmToolsOfTaskResponseDTO>>> UpdateFarmToolsOfTasksStatusCompletedByUserTaskIdAsync(string userTaskId)
         {

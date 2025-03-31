@@ -12,8 +12,8 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Models
     {
         [Key]
         public Guid ProductFieldId { get; set; }
-        public double Productivity { get; set; }
-        public string ProductivityUnit { get; set; }
+        public double? Productivity { get; set; }
+        public string? ProductivityUnit { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public DateTime CreateDate { get; set; }
