@@ -61,6 +61,9 @@
         document.addEventListener("DOMContentLoaded", function () {
             const toggleButton = document.getElementById("toggleNoteButton");
             const noteContainer = document.getElementById("noteContainer");
+            const noteInput = document.getElementById("NoteInf");
+            const quantityInput = document.getElementById("Quantity");
+            const form = document.querySelector("form");
 
             toggleButton.addEventListener("click", function () {
                 if (noteContainer.style.display === "none") {
@@ -69,8 +72,23 @@
                 } else {
                     noteContainer.style.display = "none";
                     toggleButton.textContent = "Add Note";
+                    noteInput.value = "";
+                    quantityInput.value = "";
+                }
+            });
+
+            form.addEventListener("submit", function (event) {
+                const noteValue = noteInput.value.trim();
+                const quantityValue = quantityInput.value.trim();
+                const quantityNumber = parseInt(quantityValue, 10);
+
+                if (noteValue !== "" && (isNaN(quantityNumber) || quantityNumber <= 0)) {
+                    event.preventDefault();
+                    alert("Please enter a valid quantity (> 0) if you have provided a note.");
+                    quantityInput.focus();
                 }
             });
         });
     </script>
+
 }

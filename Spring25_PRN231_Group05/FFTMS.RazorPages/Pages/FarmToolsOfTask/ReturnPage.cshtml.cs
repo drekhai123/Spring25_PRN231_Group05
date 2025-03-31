@@ -59,6 +59,16 @@ namespace FFTMS.RazorPages.Pages.FarmToolsOfTask
                     ModelState.AddModelError(string.Empty, "Invalid request data.");
                     return Page();
                 }
+                if (!string.IsNullOrWhiteSpace(NoteInf) && (Quantity == null || Quantity <= 0))
+                {
+                    TempData["ErrorMessage"] = "Quantity must be greater than 0 when Note is provided.";
+                    return RedirectToPage("/FarmToolsOfTask/Index");
+                }
+                if (Quantity > 0 && string.IsNullOrWhiteSpace(NoteInf))
+                {
+                    TempData["ErrorMessage"] = "Note is required when Quantity is provided.";
+                    return RedirectToPage("/FarmToolsOfTask/Index");
+                }
 
                 var apiUrl = $"https://localhost:7207/api/FarmToolsOfTasks/update-farm-tools-of-task-status-finish?FarmToolsOfTaskId={FarmToolsOfTaskRequest.FarmToolsOfTaskId}&NoteInf={NoteInf}&Quantity={Quantity}";
 
