@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.Json.Serialization;
 
 namespace FlowerFarmTaskManagementSystem.BusinessObject.Models
 {
@@ -20,12 +21,15 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Models
 		public string FarmToolOfTaskUnit { get; set; }
         public string? Note { get; set; }
         public int Status { get; set; }
+		//// 1 pending 2 extend 3 return 4 returned 5 fix
 		public Guid FarmToolsId { get; set; }
 		[ForeignKey(nameof(FarmToolsId))]
-		public FarmTools? FarmTools { get; set; }
+        [JsonIgnore]
+        public FarmTools? FarmTools { get; set; }
         public bool? IsActive { get; set; }
         public Guid UserTaskId { get; set; }
         [ForeignKey(nameof(UserTaskId))]
+        [JsonIgnore]
         public UserTask? UserTask { get; set; }
     }
 }
