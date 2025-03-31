@@ -54,6 +54,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 			var token = CreateToken(user);
 			return new AuthResponseDTO
 			{
+				Username = user.UserName,
 				Token = token,
 				Email = user.Email, // Use the user's email instead of request.Email
 			};
@@ -68,7 +69,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 				//new Claim(ClaimTypes.Role, user.Role),
 				//new Claim( "Email" , user.Email ?? string.Empty),
 				//new Claim(ClaimTypes.Email, user.Email),
-				//new Claim("Username", user.UserName ?? string.Empty),
+				new Claim("Username", user.UserName ?? string.Empty),
 				//new Claim(ClaimTypes.Name, user.UserName),
 			};
 

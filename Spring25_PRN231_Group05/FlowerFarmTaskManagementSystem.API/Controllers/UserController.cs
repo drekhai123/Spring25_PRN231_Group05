@@ -64,7 +64,7 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<UserResponseDTO>> UpdateUser(Guid id, [FromBody] UserRequestDTO userRequest)
+        public async Task<ActionResult<UserResponseDTO>> UpdateUser(Guid id, [FromBody] UpdateUserRequestDTO userRequest)
         {
             if (!ModelState.IsValid)
             {
