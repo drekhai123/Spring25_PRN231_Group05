@@ -25,7 +25,7 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
 
         public async Task OnGetAsync()
         {
-            var apiUrl = "https://localhost:7207/odata/ProductField/get-all-productField";
+            var apiUrl = "http://localhost:5281/odata/ProductFields/get-all-productField";
             var response = await _httpClient.GetAsync(apiUrl);
             if (response.IsSuccessStatusCode)
             {

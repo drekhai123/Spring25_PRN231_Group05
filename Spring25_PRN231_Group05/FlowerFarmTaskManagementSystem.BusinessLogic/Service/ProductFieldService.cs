@@ -4,6 +4,7 @@ using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
 using FlowerFarmTaskManagementSystem.BusinessObject.Models;
 using FlowerFarmTaskManagementSystem.DataAccess.IRepositories;
 using FlowerFarmTaskManagementSystem.DataAccess.Repositories;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 {
@@ -34,17 +35,11 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             return _mapper.Map<IEnumerable<ProductFieldRequest>>(productFields);
         }
 
-        public async Task<ProductFieldRequest> GetProductFieldByIdAsync(Guid id)
+        public async Task<ProductField> GetProductFieldByIdAsync(Guid id)
         {
-            var productField = await Task.FromResult(_unitOfWork.ProductFieldRepository.Get(
-                filter: pf => pf.ProductFieldId == id,
-                includeProperties: "Product.Category,Field"
-            ).FirstOrDefault());
-
-            if (productField == null)
-                throw new KeyNotFoundException($"ProductField with ID {id} not found");
-
-            return _mapper.Map<ProductFieldRequest>(productField);
+            var productField = await _unitOfWork.ProductFieldRepository.GetByIdAsync(id, query => query.Product, query => query.Field);
+            if (productField == null) new KeyNotFoundException("Product field not found");
+            return productField;
         }
 
         public async Task<ProductFieldResponse> UpdateProductFieldsAsync(Guid id, ProductFieldRequest productFieldRequest)
@@ -61,19 +56,16 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             return _mapper.Map<ProductFieldResponse>(productField);
         }
 
-        public async  Task<ProductFieldResponse> CreateProductFieldsAsync(ProductFieldRequest newPorductField)
+        public async  Task<ProductFieldResponse> CreateProductFieldsAsync(ProductFieldCreateDTO newPorductField)
         {
             var productField = _mapper.Map<ProductField>(newPorductField);
             productField.ProductFieldId = Guid.NewGuid();
             productField.StartDate = DateTime.UtcNow;
             productField.EndDate = DateTime.UtcNow;
             productField.CreateDate = DateTime.UtcNow;
-            productField.UpdateDate = DateTime.UtcNow;
-            //productField.Status = true;
             await _unitOfWork.ProductFieldRepository.AddAsync(productField);
             await _unitOfWork.SaveChangesAsync();
-            return  _mapper.Map<ProductFieldResponse>(productField);
-            
+            return  _mapper.Map<ProductFieldResponse>(productField);            
         }
 
         public async  Task<IEnumerable<ProductFieldResponse>> SearchProductFieldsAsync(string Productivity, string ProductivityUnit)

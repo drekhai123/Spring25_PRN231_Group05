@@ -121,7 +121,7 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
         }
 
         [HttpPost("create-productField")]
-        public async Task<ActionResult<ProductFieldResponse>> CreateProductField([FromBody] ProductFieldRequest newproductField)
+        public async Task<ActionResult<ProductFieldResponse>> CreateProductField([FromBody] ProductFieldCreateDTO newproductField)
         {
             try
             {

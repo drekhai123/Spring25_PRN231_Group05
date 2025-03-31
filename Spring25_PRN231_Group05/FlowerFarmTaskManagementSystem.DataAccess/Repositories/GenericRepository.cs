@@ -56,16 +56,30 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.Repositories
 
             return query.ToList();
         }
+        public async Task<T> GetByIdAsync(Guid id, params Expression<Func<T, object>>[] includes)
+        {
+            IQueryable<T> query = _dbSet;
+
+            // Áp dụng tất cả các Include được truyền vào
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+
+            // Tìm thực thể theo ID
+            return await query.FirstOrDefaultAsync(e => EF.Property<Guid>(e, "Id") == id);
+        }
+
 
         public async Task<IEnumerable<T>> GetAllAsync()
         {
             return await _dbSet.ToListAsync();
         }
 
-        public async Task<T> GetByIdAsync(Guid id)
-        {
-            return await _dbSet.FindAsync(id);
-        }
+            public async Task<T> GetByIdAsync(Guid id)
+            {
+                return await _dbSet.FindAsync(id);
+            }
 
         public async Task AddAsync(T entity)
         {

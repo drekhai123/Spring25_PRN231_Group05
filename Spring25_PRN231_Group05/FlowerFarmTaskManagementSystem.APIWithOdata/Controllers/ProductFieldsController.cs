@@ -24,7 +24,7 @@ namespace FlowerFarmTaskManagementSystem.APIWithOdata.Controllers
             return Ok(productFields);
         }
 
-        [HttpGet("get-by-id")]
+        [HttpGet("get-by-{id}")]
         public async Task<ActionResult<ProductFieldRequest>> GetProductFieldById(Guid id)
         {
             try

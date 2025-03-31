@@ -21,12 +21,5 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.DTO
         public ProductDTO Product { get; set; }
         public FieldDTO Field { get; set; }
     }
-    //public enum ProductFieldStatus
-    //{
-    //    Planned,
-    //    InProgress,
-    //    Completed,
-    //    Cancelled,
-    //    Overdue
-    //}
+    
 }

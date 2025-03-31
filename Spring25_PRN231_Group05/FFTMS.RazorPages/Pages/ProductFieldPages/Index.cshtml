@@ -2,102 +2,193 @@
 @model FFTMS.RazorPages.Pages.ProductFieldPages.IndexModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Product Field Index";
+    Layout = "_Layout";
 }
 
-<h1>Index</h1>
+<div class="main-container">
+    <h1>Product Field History</h1>
 
-
-<div class="table-container"> 
-    <p class="create-new">
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+    <p>
         <a asp-page="Create">Create New</a>
     </p>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.ProductField[0].Productivity)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ProductField[0].ProductivityUnit)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ProductField[0].StartDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ProductField[0].EndDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ProductField[0].CreateDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ProductField[0].UpdateDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ProductField[0].Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ProductField[0].Product)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ProductField[0].Field)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model.ProductField) {
-        <tr productfiel-id ="@item.ProductFieldId">
-            <td>
-                @Html.DisplayFor(modelItem => item.Productivity)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ProductivityUnit)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StartDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EndDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreateDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UpdateDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Product.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Field.Description)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.ProductFieldId">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.ProductFieldId">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.ProductFieldId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+    <table class="table" id="productFieldTable">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.ProductField[0].Productivity)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ProductField[0].ProductivityUnit)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ProductField[0].StartDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ProductField[0].EndDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ProductField[0].CreateDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ProductField[0].UpdateDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ProductField[0].Status)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ProductField[0].Product)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ProductField[0].Field)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ProductField)
+            {
+                <tr productfield-id="@item.ProductFieldId">
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Productivity)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ProductivityUnit)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.StartDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.EndDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CreateDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.UpdateDate)
+                    </td>
+                    <td>
+                        <span class="badge
+            @(item.Status == "Pending" ? "badge-warning" :
+             item.Status == "Extend" ? "badge-info" :
+             item.Status == "Pending Return" ? "badge-primary" :
+             item.Status == "Returned" ? "badge-success" :
+             item.Status == "Damaged" ? "badge-danger" : "badge-secondary")">
+                            @(item.Status == "Pending" ? "Pending" :
+                                item.Status == "Extend" ? "Extend" :
+                                item.Status == "Pending Return" ? "Pending Return" :
+                                item.Status == "Returned" ? "Returned" :
+                                item.Status == "Damaged" ? "Damaged" : "Unknown")
+                        </span>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Product.Description)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Field.Description)
+                    </td>
+                    <td>
+                        <div class="dropdown">
+                            <a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle" href="#" role="button" data-toggle="dropdown">
+                                <i class="dw dw-more"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
+                                <a class="dropdown-item" asp-page="./Details" asp-route-id="@item.ProductFieldId">
+                                    <i class="dw dw-eye"></i> View
+                                </a>
+                                <a class="dropdown-item" asp-page="./Edit" asp-route-id="@item.ProductFieldId">
+                                    <i class="dw dw-edit2"></i> Edit
+                                </a>
+                                <a class="dropdown-item" asp-page="./Delete" asp-route-id="@item.ProductFieldId">
+                                    <i class="dw dw-delete-3"></i> Delete
+                                </a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>
-<style >
-    .table-container{
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function () {
+            if ($.fn.DataTable.isDataTable("#productFieldTable")) {
+                $("#productFieldTable").DataTable().destroy();
+            }
+
+            $("#productFieldTable").DataTable({
+                "paging": true,
+                "ordering": true,
+                "info": true,
+                "searching": true,
+                "lengthMenu": [5, 10, 25, 50, 100],
+                "order": [[0, "asc"]],
+                "language": {
+                    "lengthMenu": "Hiển thị _MENU_ dòng mỗi trang",
+                    "zeroRecords": "Không tìm thấy",
+                    "info": "Trang _PAGE_ / _PAGES_",
+                    "infoEmpty": "Không có dữ liệu",
+                    "search": "Tìm kiếm:",
+                    "paginate": {
+                        "first": "Đầu tiên",
+                        "last": "Cuối cùng",
+                        "next": "Tiếp theo",
+                        "previous": "Trước đó"
+                    }
+                }
+            });
+        });
+    </script>
+}
+
+<style>
+    .main-container {
+        margin-left: 0px;
+    }
+
+    .create-new {
+        margin-top: 40px;
+        font-size: 20px;
+    }
+
+    .table-container {
         margin-left: 250px;
     }
 
-    .create-new{
-        margin-top:40px;
-        font-size: 20
+        .table-container p {
+            font-size: 18px;
+        }
+
+    .dropdown-menu-right {
+        right: 0;
+    }
+
+    .dropdown-item {
+        cursor: pointer;
+    }
+
+    .badge {
+        padding: 0.5rem;
+        font-size: 12px;
     }
 </style>
-
-<script src="~/js/microsoft/signalr/dist/browser/signalr.js"></script>
-<script src="~/js/microsoft/signalr/dist/browser/deleteProductField.js"></script>
-<script src="~/js/microsoft/signalr/dist/browser/createProductField.js"></script>
-<script src="~/js/microsoft/signalr/dist/browser/updateProductField.js"></script>

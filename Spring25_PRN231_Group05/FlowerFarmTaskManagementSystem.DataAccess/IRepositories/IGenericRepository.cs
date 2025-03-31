@@ -21,6 +21,7 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.IRepositories
         void Update(T entity);
         void Delete(T entity);
         Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate);
+        Task<T> GetByIdAsync(Guid id, params Expression<Func<T, object>>[] includes);
         void Insert(T entity);
         T GetByID(object id);
 		Task<T> GetAsync(Expression<Func<T, bool>> filter);

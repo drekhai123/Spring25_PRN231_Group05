@@ -6,11 +6,7 @@ using System.Threading.Tasks;
 
 namespace FlowerFarmTaskManagementSystem.BusinessObject.DTO
 {
-    public class ProductFieldAdd
+    public class ProducrFieldAdd
     {
-        public double Productivity { get; set; }
-        public string ProductivityUnit { get; set; }
-
-        public bool Status { get; set; }
     }
 }
