@@ -84,8 +84,8 @@
                                     <tr>
                                         <td>@item.JobTitle</td>
                                         <td>@item.Description</td>
-                                        <td>@item.StartDate.ToString("dd/MM/yyyy")</td>
-                                        <td>@item.EndDate.ToString("dd/MM/yyyy")</td>
+                                        <td>@item.StartDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td>@item.EndDate.ToString("dd/MM/yyyy HH:mm")</td>
                                         <td>
                                             <span class="badge @(item.Status ? "bg-success" : "bg-danger")">
                                                 @(item.Status ? "Active" : "Inactive")
