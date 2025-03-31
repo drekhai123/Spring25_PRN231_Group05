@@ -47,8 +47,8 @@ namespace FFTMS.RazorPages.Pages.Tasks
                 await LoadProductFieldList();
 
                 // Set default dates
-                Task.StartDate = DateTime.Today;
-                Task.EndDate = DateTime.Today.AddDays(1);
+                Task.StartDate = DateTime.Now;
+                Task.EndDate = DateTime.Now.AddHours(2);
 
                 return Page();
             }
