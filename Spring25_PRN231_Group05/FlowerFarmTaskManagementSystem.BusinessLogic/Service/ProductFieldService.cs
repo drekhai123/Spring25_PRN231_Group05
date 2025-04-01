@@ -37,7 +37,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 
         public async Task<ProductField> GetProductFieldByIdAsync(Guid id)
         {
-            var productField = await _unitOfWork.ProductFieldRepository.GetByIdAsync(id, query => query.Product, query => query.Field);
+            var productField = await _unitOfWork.ProductFieldRepository.GetByIdAsync(id);
             if (productField == null) new KeyNotFoundException("Product field not found");
             return productField;
         }

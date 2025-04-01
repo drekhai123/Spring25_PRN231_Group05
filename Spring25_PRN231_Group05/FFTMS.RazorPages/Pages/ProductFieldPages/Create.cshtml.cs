@@ -61,13 +61,13 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
                 var products = JsonSerializer.Deserialize<List<ProductDTO>>(productJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 ViewData["ProductId"] = new SelectList(products, "ProductId", "ProductName");
             }
-            //var fieldResponse = await _httpClient.GetAsync("https://localhost:7207/odata/products");
-            //if (fieldResponse.IsSuccessStatusCode)
-            //{
-            //    var fieldJson = await fieldResponse.Content.ReadAsStringAsync();
-            //    var fields = JsonSerializer.Deserialize<List<FieldDTO>>(fieldJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            //    ViewData["FieldId"] = new SelectList(fields, "FieldId", "Description");
-            //}
+            var fieldResponse = await _httpClient.GetAsync("https://localhost:7207/odata/field");
+            if (fieldResponse.IsSuccessStatusCode)
+            {
+                var fieldJson = await fieldResponse.Content.ReadAsStringAsync();
+                var fields = JsonSerializer.Deserialize<List<FieldDTO>>(fieldJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                ViewData["FieldId"] = new SelectList(fields, "FieldId", "Description");
+            }
             return Page();
         }
     }

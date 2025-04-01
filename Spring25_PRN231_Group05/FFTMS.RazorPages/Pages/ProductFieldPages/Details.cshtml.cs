@@ -25,25 +25,13 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
-            //if (id == null)
-            //{
-            //    return NotFound();
-            //}
-
-            //var productfield = await _context.ProductFields.FirstOrDefaultAsync(m => m.ProductFieldId == id);
-            //if (productfield == null)
-            //{
-            //    return NotFound();
-            //}
-            //else
-            //{
-            //    ProductField = productfield;
-            //}
+         
             if (id == null)
             {
+
                 return NotFound();
             }
-            var apiUrl = "https://localhost:7207/odata/get-all-productField";
+            var apiUrl = $"http://localhost:5281/odata/ProductFields/get-by-{id}";
 
             var response = await _httpClient.GetAsync(apiUrl);
             if (!response.IsSuccessStatusCode)
@@ -52,35 +40,16 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
             }
 
             var jsonResponse = await response.Content.ReadAsStringAsync();
-            var parsedResponse = JsonSerializer.Deserialize<List<ProductField>>(jsonResponse, new JsonSerializerOptions
+            var parsedResponse = JsonSerializer.Deserialize<ProductField>(jsonResponse, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             });
 
-            ProductField = parsedResponse?.FirstOrDefault();
+            //ProductField = parsedResponse.;
+            
 
             return Page();
         }
-
-        //public async Task<IActionResult> OnPostAsync()
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return Page();
-        //    }
-
-        //    var apiUrl = "https://localhost:7207/odata/get-all-productField";
-
-        //    var response = await _httpClient.PutAsJsonAsync(apiUrl, ProductField);
-
-        //    if (!response.IsSuccessStatusCode)
-        //    {
-        //        ModelState.AddModelError(string.Empty, "Error  productField.");
-        //        return Page();
-        //    }
-
-        //    return RedirectToPage("./Index");
-        //}
     }
 }
 
