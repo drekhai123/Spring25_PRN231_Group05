@@ -124,7 +124,8 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
                     description = t.Description,
                     startDate = t.StartDate,
                     endDate = t.EndDate,
-                    status = t.UserTasks.First(ut => ut.UserId.ToString() == userId).Status
+                    status = t.UserTasks.First(ut => ut.UserId.ToString() == userId).Status,
+                    taskStatus = t.TaskStatus
                 }).ToList();
                 
                 return Ok(simplifiedTasks);

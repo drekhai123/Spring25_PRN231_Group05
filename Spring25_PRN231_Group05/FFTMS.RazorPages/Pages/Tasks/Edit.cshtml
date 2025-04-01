@@ -142,6 +142,18 @@
                     </div>
 
                     <div class="form-group">
+                        <label asp-for="Task.TaskStatus">Task Progress</label>
+                        <select asp-for="Task.TaskStatus" class="form-control">
+                            <option
+                                value="@((int)FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskProgressStatus.INPROGRESS)">
+                                In Progress</option>
+                            <option
+                                value="@((int)FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskProgressStatus.COMPLETED)">
+                                Completed</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
                         <button type="submit" class="btn btn-primary">Save Changes</button>
                         <a asp-page="Index" class="btn btn-secondary">Cancel</a>
                     </div>
@@ -222,22 +234,31 @@
                                 const statusText = task.status === 0 ? 'Waiting' :
                                     task.status === 1 ? 'Processing' : 'Completed';
 
+                                // TaskStatus (0 = InProgress, 1 = Completed)
+                                const taskStatusClass = task.taskStatus === 0 ? 'bg-warning' : 'bg-success';
+                                const taskStatusText = task.taskStatus === 0 ? 'In Progress' : 'Completed';
+
                                 tasksHtml += `
-                                            <div class="list-group-item p-2 border-0">
-                                                <h6 class="mb-1">${task.jobTitle}</h6>
-                                                <p class="mb-1 small text-truncate">${task.description}</p>
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    <small class="text-muted">
-                                                        ${startDate.toLocaleDateString()} ${startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - 
-                                                        ${endDate.toLocaleDateString()} ${endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                    </small>
-                                                    <span class="badge ${statusClass === 'text-danger' ? 'bg-danger' :
-                                        statusClass === 'text-warning' ? 'bg-warning' : 'bg-success'}">
-                                                        ${statusText}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        `;
+                                                        <div class="list-group-item p-2 border-0">
+                                                            <h6 class="mb-1">${task.jobTitle}</h6>
+                                                            <p class="mb-1 small text-truncate">${task.description}</p>
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <small class="text-muted">
+                                                                    ${startDate.toLocaleDateString()} ${startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - 
+                                                                    ${endDate.toLocaleDateString()} ${endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                                </small>
+                                                                <div>
+                                                                    <span class="badge ${statusClass === 'text-danger' ? 'bg-danger' :
+                                        statusClass === 'text-warning' ? 'bg-warning' : 'bg-success'} me-1">
+                                                                        ${statusText}
+                                                                    </span>
+                                                                    <span class="badge ${taskStatusClass}">
+                                                                        ${taskStatusText}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    `;
                             });
                             tasksHtml += '</div>';
                             tasksContainer.html(tasksHtml);
@@ -258,7 +279,7 @@
                     let currentValue = currentSelect.data('previous');
 
                     let options = '<option value="">-- Select Staff --</option>';
-                            @foreach (var item in Model.UserList)
+                                                            @foreach (var item in Model.UserList)
                         {
                             @:if (!selectedStaff.has('@item.Value') || '@item.Value' === currentValue) {
                                 @:options += `<option value="@item.Value" ${('@item.Value' === currentValue ? 'selected' : '')}> @item.Text</option>`;
@@ -291,29 +312,29 @@
             $('#addStaff').click(function () {
                 if (staffCount < 5) {
                     const newStaff = `
-                                <div class="staff-assignment">
-                                    <select name="Task.UserTasks[${staffCount}].AssignedTo" 
-                                        class="form-control mb-2 staff-select">
-                                        <option value="">-- Select Staff --</option>
-                                    </select>
-                                    <div class="staff-tasks-info mb-2 d-none">
-                                        <div class="alert alert-info p-2">
-                                            <h6 class="mb-1"><i class="fas fa-info-circle me-2"></i>Current Tasks</h6>
-                                            <div class="staff-current-tasks">
-                                                <div class="text-center py-2">
-                                                    <div class="spinner-border spinner-border-sm text-primary" role="status">
-                                                        <span class="visually-hidden">Loading...</span>
-                                                    </div>
-                                                    <span class="ms-2">Loading tasks...</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <textarea name="Task.UserTasks[${staffCount}].UserTaskDescription" 
-                                        class="form-control mb-2" 
-                                        placeholder="Task description for this staff"></textarea>
-                                    <button type="button" class="btn btn-danger mb-3 remove-staff">Remove</button>
-                                </div>`;
+                                                                <div class="staff-assignment">
+                                                                    <select name="Task.UserTasks[${staffCount}].AssignedTo" 
+                                                                        class="form-control mb-2 staff-select">
+                                                                        <option value="">-- Select Staff --</option>
+                                                                    </select>
+                                                                    <div class="staff-tasks-info mb-2 d-none">
+                                                                        <div class="alert alert-info p-2">
+                                                                            <h6 class="mb-1"><i class="fas fa-info-circle me-2"></i>Current Tasks</h6>
+                                                                            <div class="staff-current-tasks">
+                                                                                <div class="text-center py-2">
+                                                                                    <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                                                                        <span class="visually-hidden">Loading...</span>
+                                                                                    </div>
+                                                                                    <span class="ms-2">Loading tasks...</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <textarea name="Task.UserTasks[${staffCount}].UserTaskDescription" 
+                                                                        class="form-control mb-2" 
+                                                                        placeholder="Task description for this staff"></textarea>
+                                                                    <button type="button" class="btn btn-danger mb-3 remove-staff">Remove</button>
+                                                                </div>`;
                     $('#staffAssignments').append(newStaff);
                     updateAvailableStaff();
                     staffCount++;

@@ -174,7 +174,7 @@
                                                         <button type="button" class="btn btn-sm btn-primary upload-image-btn"
                                                             data-bs-toggle="modal" data-bs-target="#uploadImageModal"
                                                             data-task-id="@task.UserTaskId">
-                                                            <i class="fa-solid fa-image"></i> Tải ảnh & Hoàn thành
+                                                            <i class="fa-solid fa-image"></i> Upload Image & Complete
                                                         </button>
                                                     }
                                                 </div>
@@ -412,7 +412,7 @@
                                 alert("Error: " + errorMessage);
                             } else {
                                 alert("Farm tool returned successfully.");
-                                location.reload(); // Reload để cập nhật trạng thái
+                                location.reload(); // Reload to update status
                             }
                         } catch (error) {
                             alert("Failed to return the farm tool. Please try again.");

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
+using FlowerFarmTaskManagementSystem.BusinessObject.Models;
 
 namespace FlowerFarmTaskManagementSystem.BusinessObject.DTO
 {
@@ -14,6 +15,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.DTO
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public bool Status { get; set; }
+        public TaskProgressStatus TaskStatus { get; set; }
         public DateTime CreateDate { get; set; }
         public DateTime UpdateDate { get; set; }
         public string? ImageUrl { get; set; }
