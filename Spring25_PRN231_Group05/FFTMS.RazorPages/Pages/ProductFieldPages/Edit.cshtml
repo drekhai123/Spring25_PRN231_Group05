@@ -2,85 +2,121 @@
 @model FFTMS.RazorPages.Pages.ProductFieldPages.EditModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Product Field";
+    Layout = "_Layout";
 }
-
 
 <div class="main-container">
     <div class="pd-ltr-20">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-3">
+                <h3 class="mb-0"><i class="fas fa-edit me-2"></i>Edit Product Field</h3>
+                <a asp-page="./Index" class="btn btn-outline-light">
+                    <i class="fas fa-arrow-left me-1"></i> Back to List
+                </a>
+            </div>
 
-    <h1>Edit</h1>
+            <div class="card-body">
+                <form method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <input type="hidden" asp-for="ProductField.ProductFieldId" />
 
-    <h4>ProductField</h4>
-    <hr />
-    <div class="row">
-        <div class="col-md-4">
-            <form method="post">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <input type="hidden" asp-for="ProductField.ProductFieldId" />
-                <div class="form-group">
-                    <label asp-for="ProductField.Productivity" class="control-label"></label>
-                    <input asp-for="ProductField.Productivity" class="form-control" />
-                    <span asp-validation-for="ProductField.Productivity" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="ProductField.ProductivityUnit" class="control-label"></label>
-                    <input asp-for="ProductField.ProductivityUnit" class="form-control" />
-                    <span asp-validation-for="ProductField.ProductivityUnit" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="ProductField.StartDate" class="control-label"></label>
-                    <input asp-for="ProductField.StartDate" class="form-control" />
-                    <span asp-validation-for="ProductField.StartDate" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="ProductField.EndDate" class="control-label"></label>
-                    <input asp-for="ProductField.EndDate" class="form-control" />
-                    <span asp-validation-for="ProductField.EndDate" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="ProductField.CreateDate" class="control-label"></label>
-                    <input asp-for="ProductField.CreateDate" class="form-control" />
-                    <span asp-validation-for="ProductField.CreateDate" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="ProductField.UpdateDate" class="control-label"></label>
-                    <input asp-for="ProductField.UpdateDate" class="form-control" />
-                    <span asp-validation-for="ProductField.UpdateDate" class="text-danger"></span>
-                </div>
-                <div class="form-group form-check">
-                    <label class="form-check-label">
-                        <input class="form-check-input" asp-for="ProductField.Status" /> @Html.DisplayNameFor(model => model.ProductField.Status)
-                    </label>
-                </div>
-                <div class="form-group">
-                    <label asp-for="ProductField.ProductId" class="control-label"></label>
-                    <select asp-for="ProductField.ProductId" class="form-control" asp-items="ViewBag.ProductId"></select>
-                    <span asp-validation-for="ProductField.ProductId" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="ProductField.FieldId" class="control-label"></label>
-                    <select asp-for="ProductField.FieldId" class="form-control" asp-items="ViewBag.FieldId"></select>
-                    <span asp-validation-for="ProductField.FieldId" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <input type="submit" value="Save" class="btn btn-primary" />
-                </div>
-            </form>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="ProductField.Productivity" class="control-label fw-bold"></label>
+                                <input asp-for="ProductField.Productivity" class="form-control" />
+                                <span asp-validation-for="ProductField.Productivity" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="ProductField.ProductivityUnit" class="control-label fw-bold"></label>
+                                <input asp-for="ProductField.ProductivityUnit" class="form-control" />
+                                <span asp-validation-for="ProductField.ProductivityUnit" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="ProductField.StartDate" class="control-label fw-bold"></label>
+                                <input asp-for="ProductField.StartDate" class="form-control" type="date" />
+                                <span asp-validation-for="ProductField.StartDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="ProductField.EndDate" class="control-label fw-bold"></label>
+                                <input asp-for="ProductField.EndDate" class="form-control" type="date" />
+                                <span asp-validation-for="ProductField.EndDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="ProductField.CreateDate" class="control-label fw-bold"></label>
+                                <input asp-for="ProductField.CreateDate" class="form-control" type="datetime-local" readonly />
+                                <span asp-validation-for="ProductField.CreateDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="ProductField.UpdateDate" class="control-label fw-bold"></label>
+                                <input asp-for="ProductField.UpdateDate" class="form-control" type="datetime-local" readonly />
+                                <span asp-validation-for="ProductField.UpdateDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="ProductField.ProductId" class="control-label fw-bold"></label>
+                                <select asp-for="ProductField.ProductId" class="form-control" asp-items="ViewBag.ProductId"></select>
+                                <span asp-validation-for="ProductField.ProductId" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label asp-for="ProductField.FieldId" class="control-label fw-bold"></label>
+                                <select asp-for="ProductField.FieldId" class="form-control" asp-items="ViewBag.FieldId"></select>
+                                <span asp-validation-for="ProductField.FieldId" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="form-check-label">
+                            <input class="form-check-input" asp-for="ProductField.Status" /> @Html.DisplayNameFor(model => model.ProductField.Status)
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i> Save
+                        </button>
+                        <a asp-page="./Index" class="btn btn-secondary">
+                            <i class="fas fa-times me-1"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
-
-    <div>
-        <a asp-page="./Index">Back to List</a>
-    </div>
     </div>
 </div>
 
 <style>
-    .row {
-        margin-left: 250px;
+    .main-container {
+        margin-left: 250px; /* Đảm bảo căn chỉnh với sidebar */
     }
 </style>
+
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

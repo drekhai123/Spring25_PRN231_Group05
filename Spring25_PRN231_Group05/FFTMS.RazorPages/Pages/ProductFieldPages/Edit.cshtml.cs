@@ -1,23 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Json;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using FlowerFarmTaskManagementSystem.BusinessObject.Models;
-using FlowerFarmTaskManagementSystem.DataAccess;
+using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
 
 namespace FFTMS.RazorPages.Pages.ProductFieldPages
 {
     public class EditModel : PageModel
     {
-        private readonly HttpClient  _httpClient;
+        private readonly HttpClient _httpClient;
+        private readonly IConfiguration _configuration;
 
-        public EditModel(HttpClient httpClient)
+        public EditModel(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
+            _configuration = configuration;
+            _httpClient.BaseAddress = new Uri(_configuration["ApiSettings:BaseUrl"]);
         }
 
         [BindProperty]
@@ -25,55 +29,119 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
-           // if (id == null)
-           // {
-           //     return NotFound();
-           // }
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-           // var productfield =  await _context.ProductFields.FirstOrDefaultAsync(m => m.ProductFieldId == id);
-           // if (productfield == null)
-           // {
-           //     return NotFound();
-           // }
-           // ProductField = productfield;
-           //ViewData["FieldId"] = new SelectList(_context.Fields, "FieldId", "Description");
-           //ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "Description");
-            return Page();
+            try
+            {
+                // Lấy ProductField từ API
+                var response = await _httpClient.GetAsync($"odata/ProductField/{id}");
+                if (response.IsSuccessStatusCode)
+                {
+                    ProductField = await response.Content.ReadFromJsonAsync<ProductField>(new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+
+                    if (ProductField == null)
+                    {
+                        return NotFound();
+                    }
+                }
+                else
+                {
+                    return NotFound();
+                }
+
+                // Lấy danh sách Product để điền vào dropdown
+                var productResponse = await _httpClient.GetAsync("odata/Product/get-all-product");
+                if (productResponse.IsSuccessStatusCode)
+                {
+                    var products = await productResponse.Content.ReadFromJsonAsync<List<Product>>(new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+                    ViewData["ProductId"] = new SelectList(products, "ProductId", "Description", ProductField.ProductId);
+                }
+
+                // Lấy danh sách Field để điền vào dropdown
+                var fieldResponse = await _httpClient.GetAsync("odata/Field/get-all-field");
+                if (fieldResponse.IsSuccessStatusCode)
+                {
+                    var fields = await fieldResponse.Content.ReadFromJsonAsync<List<FieldDTO>>(new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+                    ViewData["FieldId"] = new SelectList(fields, "FieldId", "FieldName", ProductField.FieldId);
+                }
+
+                return Page();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching ProductField: {ex.Message}");
+                return NotFound();
+            }
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            //if (!ModelState.IsValid)
-            //{
-            //    return Page();
-            //}
+            if (!ModelState.IsValid)
+            {
+                // Nếu validation thất bại, cần tải lại danh sách Product và Field cho dropdown
+                await LoadDropdownData();
+                return Page();
+            }
 
-            //_context.Attach(ProductField).State = EntityState.Modified;
-
-            //try
-            //{
-            //    await _context.SaveChangesAsync();
-            //}
-            //catch (DbUpdateConcurrencyException)
-            //{
-            //    if (!ProductFieldExists(ProductField.ProductFieldId))
-            //    {
-            //        return NotFound();
-            //    }
-            //    else
-            //    {
-            //        throw;
-            //    }
-            //}
-
-            return RedirectToPage("./Index");
+            try
+            {
+                // Cập nhật ProductField qua API
+                var response = await _httpClient.PutAsJsonAsync($"odata/ProductField/{ProductField.ProductFieldId}", ProductField);
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToPage("./Index");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Failed to update ProductField. Please try again.");
+                    await LoadDropdownData();
+                    return Page();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating ProductField: {ex.Message}");
+                ModelState.AddModelError(string.Empty, "An error occurred while updating the ProductField.");
+                await LoadDropdownData();
+                return Page();
+            }
         }
 
-        private bool ProductFieldExists(Guid id)
+        private async Task LoadDropdownData()
         {
-            return true;
+            // Tải lại danh sách Product
+            var productResponse = await _httpClient.GetAsync("odata/Product/get-all-product");
+            if (productResponse.IsSuccessStatusCode)
+            {
+                var products = await productResponse.Content.ReadFromJsonAsync<List<Product>>(new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+                ViewData["ProductId"] = new SelectList(products, "ProductId", "Description", ProductField.ProductId);
+            }
+
+            // Tải lại danh sách Field
+            var fieldResponse = await _httpClient.GetAsync("odata/Field/get-all-field");
+            if (fieldResponse.IsSuccessStatusCode)
+            {
+                var fields = await fieldResponse.Content.ReadFromJsonAsync<List<FieldDTO>>(new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+                ViewData["FieldId"] = new SelectList(fields, "FieldId", "FieldName", ProductField.FieldId);
+            }
         }
     }
 }
