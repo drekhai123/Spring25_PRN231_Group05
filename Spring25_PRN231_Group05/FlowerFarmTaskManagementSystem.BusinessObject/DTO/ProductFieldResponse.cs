@@ -18,15 +18,15 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.DTO
         public DateTime CreateDate { get; set; }
         public DateTime UpdateDate { get; set; }
         public string Status { get; set; }
-        public ProductDTO Product { get; set; }
-        public FieldDTO Field { get; set; }
+        public Guid ProductiD { get; set; }
+        public Guid FieldiD { get; set; }
     }
-    //public enum ProductFieldStatus
-    //{
-    //    Planned,
-    //    InProgress,
-    //    Completed,
-    //    Cancelled,
-    //    Overdue
-    //}
+    public enum ProductFieldStatus
+    {
+        Planned,
+        InProgress,
+        Completed,
+        Cancelled,
+        Overdue
+    }
 }
