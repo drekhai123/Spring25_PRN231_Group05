@@ -31,62 +31,62 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
         public string ErrorMessage { get; set; }
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
-            if (id != null)
+            
+            if (id == null)
             {
-                return Page();
+                return NotFound();
+            }
+            var apiUrl = $"http://localhost:5281/odata/ProductFields/get-by-id?id={id}";
+            var response = await _httpClient.GetAsync(apiUrl);
+            if (!response.IsSuccessStatusCode)
+            {
+                return NotFound();
             }
 
-            try
-            {
-                var apiUrl = "https://localhost:7207/odata/ProductField/get-by-id";
-                var response = await _httpClient.GetAsync(apiUrl);
+            var jsonResponse = await response.Content.ReadAsStringAsync();
 
-                if (!response.IsSuccessStatusCode)
-                {
-                    
-                    return NotFound();
-                }
 
-                var jsonResponse = await response.Content.ReadAsStringAsync();
-                var parsedResponse = JsonSerializer.Deserialize<ProductFieldRequest>(jsonResponse, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                });
-            }
-            catch (Exception ex)
+            ProductField parsedResponse;
+
+            parsedResponse = JsonSerializer.Deserialize<ProductField>(jsonResponse, new JsonSerializerOptions
             {
-                ViewData["ErrorMessage"] = $"An error occurred: {ex.Message}";
-                return Page();
+                PropertyNameCaseInsensitive = true
+            });
+
+
+
+            if (parsedResponse == null)
+            {
+                return NotFound();
             }
 
+            ProductField = parsedResponse;
             return Page();
+        
         }
 
         public async Task<IActionResult> OnPostAsync(Guid? id)
         {
-            //if (id == null)
-            //{
-            //    return NotFound();
-            //}
-
-            //var productfield = await _context.ProductFields.FindAsync(id);
-            //if (productfield != null)
-            //{
-            //    ProductField = productfield;
-            //    _context.ProductFields.Remove(ProductField);
-            //    await _context.SaveChangesAsync();
-            //}
+            
             try
             {
-                var api = "https://localhost:7207/odata/delete-by-id";
-                var response = _httpClient.DeleteAsync(api);
-                if (response.IsCompletedSuccessfully)
+                var api = $"https://localhost:5281/odata/ProductFields/delete-by-id?id={id}";
+                var response = await _httpClient.DeleteAsync(api);
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                if (response.IsSuccessStatusCode)
                 {
                     await _hubContext.Clients.All.SendAsync("ProductFieldDeleted", api);
+                    ProductField parsedResponse;
+
+                    parsedResponse = JsonSerializer.Deserialize<ProductField>(jsonResponse, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+
                     return RedirectToPage("/Index");
                 }
                             
-            ErrorMessage = $"Error deleting productField. Status code: {response.Status}";
+            ErrorMessage = $"Error deleting productField. Status code: {response.StatusCode}";
             return Page();
         }
             catch (Exception ex)

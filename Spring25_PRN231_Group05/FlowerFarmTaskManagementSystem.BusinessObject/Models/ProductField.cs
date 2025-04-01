@@ -27,5 +27,15 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Models
         public Guid FieldId { get; set; }
         [ForeignKey(nameof(FieldId))]
         public Field? Field { get; set; }
+
+
+    }
+    public enum ProductFieldStatus
+    {
+        Planned,
+        InProgress, 
+        Completed,
+        Cancelled,
+        Overdue
     }
 }

@@ -5,7 +5,10 @@
     ViewData["Title"] = "Delete";
 }
 
-<h1>Delete</h1>
+@if (Model.ProductField == null)
+{
+    <p>Product Field not found.</p>
+}
 
 <h3>Are you sure you want to delete this?</h3>
 <div class="row-container">
