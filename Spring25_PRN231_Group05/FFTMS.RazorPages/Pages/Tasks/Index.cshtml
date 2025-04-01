@@ -88,16 +88,25 @@
                                     <td>@item.StartDate.ToString("dd/MM/yyyy HH:mm")</td>
                                     <td>@item.EndDate.ToString("dd/MM/yyyy HH:mm")</td>
                                     <td>
+                                        @{
+                                            var currentDate = DateTime.Now;
+                                            var isOverdue = item.EndDate < currentDate && item.TaskStatus !=
+                                            FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskProgressStatus.COMPLETED;
+                                        }
                                         <span class="badge @(item.Status ? "bg-success" : "bg-danger")">
                                             @(item.Status ? "Active" : "Inactive")
                                         </span>
-                                    </td>
-                                    <td>
-                                        <span
-                                            class="badge @(item.TaskStatus == FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskProgressStatus.INPROGRESS ? "bg-warning" : "bg-success")">
-                                            @(item.TaskStatus ==
-                                                                                    FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskProgressStatus.INPROGRESS
-                                                                                    ? "In Progress" : "Completed")
+                                        @if (isOverdue)
+                                        {
+                                            <span class="badge bg-danger ms-1">Overdue</span>
+                                        }
+                                </td>
+                                <td>
+                                    <span
+                                        class="badge @(item.TaskStatus == FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskProgressStatus.INPROGRESS ? "bg-warning" : "bg-success")">
+                                        @(item.TaskStatus ==
+                                                                                FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskProgressStatus.INPROGRESS
+                                                                                ? "In Progress" : "Completed")
                                     </span>
                                 </td>
                                 <td class="text-center">
