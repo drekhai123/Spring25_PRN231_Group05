@@ -90,7 +90,6 @@
 
 <div class="main-container">
     <div class="pd-ltr-20">
-        <div class="min-height-200px">
             <div class="page-header">
                 <div class="row">
                     <div class="col-md-6 col-sm-12">
@@ -175,7 +174,7 @@
                                                         <button type="button" class="btn btn-sm btn-primary upload-image-btn"
                                                             data-bs-toggle="modal" data-bs-target="#uploadImageModal"
                                                             data-task-id="@task.UserTaskId">
-                                                            <i class="fa-solid fa-image"></i> Tải ảnh & Hoàn thành
+                                                            <i class="fa-solid fa-image"></i> Upload Image & Complete
                                                         </button>
                                                     }
                                                 </div>
@@ -288,11 +287,14 @@
                                                                         <li class="list-group-item text-center text-muted">No tools assigned</li>
                                                                     }
                                                                 </ul>
-                                                                <div class="mt-3 d-flex justify-content-center">
-                                                                    <a asp-page="/FarmToolsOfTask/Create" asp-route-userTaskId="@task.UserTaskId" class="btn btn-sm btn-primary">
-                                                                        <i class="fa-solid fa-plus"></i> Add Tools
-                                                                    </a>
-                                                                </div>
+                                                                @if (task.Status != 2)
+                                                                {
+                                                                    <div class="mt-3 d-flex justify-content-center">
+                                                                        <a asp-page="/FarmToolsOfTask/Create" asp-route-userTaskId="@task.UserTaskId" class="btn btn-sm btn-primary">
+                                                                            <i class="fa-solid fa-plus"></i> Add Tools
+                                                                        </a>
+                                                                    </div>
+                                                                }
                                                             }
                                                             else
                                                             {
@@ -321,7 +323,6 @@
                         </table>
                     </div>
                 </div>
-            </div>
         </div>
     </div>
 </div>
@@ -411,7 +412,7 @@
                                 alert("Error: " + errorMessage);
                             } else {
                                 alert("Farm tool returned successfully.");
-                                location.reload(); // Reload để cập nhật trạng thái
+                                location.reload(); // Reload to update status
                             }
                         } catch (error) {
                             alert("Failed to return the farm tool. Please try again.");

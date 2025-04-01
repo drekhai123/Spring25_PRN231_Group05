@@ -22,7 +22,7 @@ namespace FFTMS.RazorPages.Pages.Tasks
         public SelectList UserList { get; set; }
         public SelectList ProductFieldList { get; set; }
         public string ErrorMessage { get; set; }
-        public List<ProductFieldRequest> ProductFieldsData { get; set; }
+        public List<ProductFieldResponse> ProductFieldsData { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -96,7 +96,7 @@ namespace FFTMS.RazorPages.Pages.Tasks
                 if (response.IsSuccessStatusCode)
                 {
                     var jsonResponse = await response.Content.ReadAsStringAsync();
-                    var productFields = JsonSerializer.Deserialize<List<ProductFieldRequest>>(jsonResponse, new JsonSerializerOptions
+                    var productFields = JsonSerializer.Deserialize<List<ProductFieldResponse>>(jsonResponse, new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
                     });
@@ -133,6 +133,7 @@ namespace FFTMS.RazorPages.Pages.Tasks
                     Task.AssignedBy = JwtHelper.GetUserIdFromToken(token);
                 }
                 Task.Status = true;
+                Task.TaskStatus = FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskProgressStatus.INPROGRESS;
 
                 // Debug: Kiểm tra dữ liệu trước khi gửi
                 Console.WriteLine($"StartDate: {Task.StartDate}");

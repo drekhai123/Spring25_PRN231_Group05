@@ -1,31 +1,42 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using FlowerFarmTaskManagementSystem.BusinessLogic.IService;
+﻿using FlowerFarmTaskManagementSystem.BusinessLogic.IService;
 using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OData.Routing.Controllers;
 
-namespace FlowerFarmTaskManagementSystem.APIWithOdata.Controllers
+namespace FlowerFarmTaskManagementSystem.API.Controllers
 {
     [Route("odata/[controller]")]
     [ApiController]
-    public class ProductFieldsController : ControllerBase
+    public class ProductFieldController : ODataController
     {
         private readonly IProductFieldService _productFieldService;
 
-        public ProductFieldsController(IProductFieldService productFieldService)
+        public ProductFieldController(IProductFieldService productFieldService)
         {
             _productFieldService = productFieldService;
         }
 
-        [HttpGet("get-all-productField")]
+        // GET: odata/ProductField
+        [HttpGet]
         [EnableQuery]
-        public async Task<ActionResult<IEnumerable<ProductFieldRequest>>> GetAllProductFields()
+        public async Task<ActionResult<IEnumerable<ProductFieldResponse>>> GetAllProductFields([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 5)
         {
-            var productFields = await _productFieldService.GetAllProductFieldsAsync();
-            return Ok(productFields);
+            try
+            {
+                var productFields = await _productFieldService.GetAllProductFieldsAsync(pageNumber, pageSize);
+                return Ok(productFields);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
         }
 
-        [HttpGet("get-by-id")]
-        public async Task<ActionResult<ProductFieldRequest>> GetProductFieldById(Guid id)
+        // GET: odata/ProductField/{id}
+        [HttpGet("{id}")]
+        [EnableQuery]
+        public async Task<ActionResult<ProductFieldResponse>> GetProductFieldById(Guid id)
         {
             try
             {
@@ -34,21 +45,95 @@ namespace FlowerFarmTaskManagementSystem.APIWithOdata.Controllers
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(ex.Message);
+                return NotFound(new { Message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Message = ex.Message });
             }
         }
 
-        [HttpDelete("delete-by-id")]
-        public async Task<ActionResult<bool>> DeleteProductFieldAsync(Guid id)
+        // POST: odata/ProductField
+        [HttpPost]
+        public async Task<ActionResult<ProductFieldResponse>> CreateProductField([FromBody] ProductFieldRequest newProductField)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             try
             {
-                await _productFieldService.DeleteProductFieldsAsync(id);
-                return NoContent();
+                var productField = await _productFieldService.CreateProductFieldsAsync(newProductField);
+                return CreatedAtAction(nameof(GetProductFieldById), new { id = productField.ProductFieldId }, productField);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { Message = ex.Message });
             }
             catch (KeyNotFoundException ex)
             {
                 return NotFound(new { Message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
+        }
+
+        // PUT: odata/ProductField/{id}
+        [HttpPut("{id}")]
+        public async Task<ActionResult<ProductFieldResponse>> UpdateProductField(Guid id, [FromBody] ProductFieldRequest productFieldRequest)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (id != productFieldRequest.ProductFieldId)
+            {
+                return BadRequest(new { Message = "ProductField ID mismatch." });
+            }
+
+            try
+            {
+                var updatedProductField = await _productFieldService.UpdateProductFieldsAsync(id, productFieldRequest);
+                return Ok(updatedProductField);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { Message = ex.Message });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
+        }
+
+        // DELETE: odata/ProductField/{id}
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteProductField(Guid id)
+        {
+            try
+            {
+                var result = await _productFieldService.DeleteProductFieldsAsync(id);
+                if (result)
+                {
+                    return NoContent();
+                }
+                return BadRequest(new { Message = "Failed to delete ProductField." });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { Message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Message = ex.Message });
             }
         }
     }
