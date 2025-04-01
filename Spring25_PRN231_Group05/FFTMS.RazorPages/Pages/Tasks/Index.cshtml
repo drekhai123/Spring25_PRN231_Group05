@@ -50,8 +50,8 @@
                     <div class="col-sm-12 col-md-6 mt-3 mt-md-0">
                         <form method="get" class="d-flex justify-content-md-end">
                             <div class="input-group">
-                                <input type="search" name="SearchTerm" value="@Model.SearchTerm"
-                                       class="form-control" placeholder="Search tasks...">
+                                <input type="search" name="SearchTerm" value="@Model.SearchTerm" class="form-control"
+                                    placeholder="Search tasks...">
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-search"></i>
                                 </button>
@@ -92,13 +92,16 @@
                                         </span>
                                     </td>
                                     <td class="text-center">
-                                        <a asp-page="./Details" asp-route-id="@item.TaskWorkId" class="btn btn-sm btn-info me-1">
+                                        <a asp-page="./Details" asp-route-id="@item.TaskWorkId"
+                                            class="btn btn-sm btn-info me-1">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        <a asp-page="./Edit" asp-route-id="@item.TaskWorkId" class="btn btn-sm btn-warning me-1">
+                                        <a asp-page="./Edit" asp-route-id="@item.TaskWorkId"
+                                            class="btn btn-sm btn-warning me-1">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <a asp-page="./Delete" asp-route-id="@item.TaskWorkId" class="btn btn-sm btn-danger">
+                                        <a asp-page="./Delete" asp-route-id="@item.TaskWorkId"
+                                            class="btn btn-sm btn-danger">
                                             <i class="fas fa-trash-alt"></i>
                                         </a>
                                     </td>

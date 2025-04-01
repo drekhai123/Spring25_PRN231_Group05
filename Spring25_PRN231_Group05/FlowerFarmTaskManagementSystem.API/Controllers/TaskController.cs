@@ -94,5 +94,45 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
                 return StatusCode(500, new { Success = false, Message = "An unexpected error occurred" });
             }
         }
+
+        [HttpGet("GetTasksByUserId")]
+        public async Task<ActionResult<IEnumerable<object>>> GetTasksByUserId([FromQuery] string userId, [FromQuery] string excludeTaskId = null)
+        {
+            try
+            {
+                var allTasks = await _taskService.GetAllTasksAsync();
+                
+                // Filter tasks for the specific user
+                var userTasks = allTasks
+                    .Where(t => t.UserTasks != null && 
+                                t.UserTasks.Any(ut => ut.UserId.ToString() == userId) && 
+                                t.Status == true)
+                    .ToList();
+                
+                // Exclude a specific task if needed (for Edit page)
+                if (!string.IsNullOrEmpty(excludeTaskId))
+                {
+                    var taskIdToExclude = Guid.Parse(excludeTaskId);
+                    userTasks = userTasks.Where(t => t.TaskWorkId != taskIdToExclude).ToList();
+                }
+                
+                // Simplify and transform the data for the UI
+                var simplifiedTasks = userTasks.Select(t => new
+                {
+                    taskId = t.TaskWorkId,
+                    jobTitle = t.JobTitle,
+                    description = t.Description,
+                    startDate = t.StartDate,
+                    endDate = t.EndDate,
+                    status = t.UserTasks.First(ut => ut.UserId.ToString() == userId).Status
+                }).ToList();
+                
+                return Ok(simplifiedTasks);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Success = false, Message = ex.Message });
+            }
+        }
     }
 }

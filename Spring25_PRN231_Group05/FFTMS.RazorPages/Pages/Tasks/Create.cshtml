@@ -93,6 +93,20 @@
                                     }
                                 </select>
                                 <div class="invalid-feedback">Please select a staff member</div>
+                                <div class="staff-tasks-info mb-2 d-none">
+                                    <div class="alert alert-info p-2">
+                                        <h6 class="mb-1"><i class="fas fa-info-circle me-2"></i>Current Tasks</h6>
+                                        <div class="staff-current-tasks">
+                                            <div class="text-center py-2">
+                                                <div class="spinner-border spinner-border-sm text-primary"
+                                                    role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                                <span class="ms-2">Loading tasks...</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <textarea name="Task.UserTasks[0].UserTaskDescription" class="form-control mb-2"
                                     required placeholder="Task description for this staff"></textarea>
                                 <div class="invalid-feedback">Please provide a task description</div>
@@ -176,6 +190,80 @@
                 if (value) selectedStaff.add(value);
             });
 
+            // Hàm lấy task hiện tại của một user
+            function loadStaffTasks(userId, container) {
+                if (!userId) {
+                    container.addClass('d-none');
+                    return;
+                }
+
+                container.removeClass('d-none');
+                const tasksContainer = container.find('.staff-current-tasks');
+                tasksContainer.html('<div class="text-center py-2"><div class="spinner-border spinner-border-sm text-primary" role="status"></div><span class="ms-2">Loading tasks...</span></div>');
+
+                // Call API to get user tasks
+                $.ajax({
+                    url: `https://localhost:7207/odata/Task/GetTasksByUserId?userId=${userId}`,
+                    type: 'GET',
+                    success: function (data) {
+                        if (data && data.length > 0) {
+                            let tasksHtml = '<div class="list-group list-group-flush">';
+                            data.forEach(task => {
+                                const startDate = new Date(task.startDate);
+                                const endDate = new Date(task.endDate);
+                                const statusClass = task.status === 0 ? 'text-danger' :
+                                    task.status === 1 ? 'text-warning' : 'text-success';
+                                const statusText = task.status === 0 ? 'Waiting' :
+                                    task.status === 1 ? 'Processing' : 'Completed';
+
+                                tasksHtml += `
+                                            <div class="list-group-item p-2 border-0">
+                                                <h6 class="mb-1">${task.jobTitle}</h6>
+                                                <p class="mb-1 small text-truncate">${task.description}</p>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <small class="text-muted">
+                                                        ${startDate.toLocaleDateString()} ${startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - 
+                                                        ${endDate.toLocaleDateString()} ${endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                    </small>
+                                                    <span class="badge ${statusClass === 'text-danger' ? 'bg-danger' :
+                                        statusClass === 'text-warning' ? 'bg-warning' : 'bg-success'}">
+                                                        ${statusText}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        `;
+                            });
+                            tasksHtml += '</div>';
+                            tasksContainer.html(tasksHtml);
+                        } else {
+                            tasksContainer.html('<div class="text-center p-2"><i class="fas fa-check-circle text-success me-2"></i>No active tasks assigned</div>');
+                        }
+                    },
+                    error: function () {
+                        tasksContainer.html('<div class="text-center p-2 text-danger"><i class="fas fa-exclamation-circle me-2"></i>Error loading tasks</div>');
+                    }
+                });
+            }
+
+            // Event handler for staff selection change
+            $(document).on('change', '.staff-select', function () {
+                let previousValue = $(this).data('previous');
+                let currentValue = $(this).val();
+                const tasksInfoContainer = $(this).siblings('.staff-tasks-info');
+
+                if (previousValue) selectedStaff.delete(previousValue);
+                if (currentValue) {
+                    selectedStaff.add(currentValue);
+                    // Load tasks for the selected staff
+                    loadStaffTasks(currentValue, tasksInfoContainer);
+                } else {
+                    tasksInfoContainer.addClass('d-none');
+                }
+
+                $(this).data('previous', currentValue);
+                updateAvailableStaff();
+            });
+
             // Cập nhật danh sách staff available khi có thay đổi
             function updateAvailableStaff() {
                 $('.staff-select').each(function () {
@@ -184,7 +272,7 @@
 
                     // Lưu các option hiện tại
                     let options = '<option value="">-- Select Staff --</option>';
-                                                                                                                                @foreach (var item in Model.UserList)
+                            @foreach (var item in Model.UserList)
                         {
                             @:if (!selectedStaff.has('@item.Value') || '@item.Value' === currentValue) {
                                 @:options += `<option value="@item.Value" ${('@item.Value' === currentValue ? 'selected' : '')}> @item.Text</option>`;
@@ -194,34 +282,35 @@
                 });
             }
 
-            // Xử lý khi thay đổi staff selection
-            $(document).on('change', '.staff-select', function () {
-                let previousValue = $(this).data('previous');
-                let currentValue = $(this).val();
-
-                if (previousValue) selectedStaff.delete(previousValue);
-                if (currentValue) selectedStaff.add(currentValue);
-
-                $(this).data('previous', currentValue);
-                updateAvailableStaff();
-            });
-
             // Thêm staff mới
             $('#addStaff').click(function () {
                 if (staffCount < 5) {
                     const newStaff = `
-                                                                                                        <div class="staff-assignment">
-                                                                                                            <select name="Task.UserTasks[${staffCount}].AssignedTo" 
-                                                                                                                class="form-control mb-2 staff-select" required>
-                                                                                                                <option value="">-- Select Staff --</option>
-                                                                                                            </select>
-                                                                                                            <div class="invalid-feedback">Please select a staff member</div>
-                                                                                                            <textarea name="Task.UserTasks[${staffCount}].UserTaskDescription" 
-                                                                                                                class="form-control mb-2" required
-                                                                                                                placeholder="Task description for this staff"></textarea>
-                                                                                                            <div class="invalid-feedback">Please provide a task description</div>
-                                                                                                            <button type="button" class="btn btn-danger mb-3 remove-staff">Remove</button>
-                                                                                                        </div>`;
+                                <div class="staff-assignment">
+                                    <select name="Task.UserTasks[${staffCount}].AssignedTo" 
+                                        class="form-control mb-2 staff-select" required>
+                                        <option value="">-- Select Staff --</option>
+                                    </select>
+                                    <div class="invalid-feedback">Please select a staff member</div>
+                                    <div class="staff-tasks-info mb-2 d-none">
+                                        <div class="alert alert-info p-2">
+                                            <h6 class="mb-1"><i class="fas fa-info-circle me-2"></i>Current Tasks</h6>
+                                            <div class="staff-current-tasks">
+                                                <div class="text-center py-2">
+                                                    <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </div>
+                                                    <span class="ms-2">Loading tasks...</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <textarea name="Task.UserTasks[${staffCount}].UserTaskDescription" 
+                                        class="form-control mb-2" required
+                                        placeholder="Task description for this staff"></textarea>
+                                    <div class="invalid-feedback">Please provide a task description</div>
+                                    <button type="button" class="btn btn-danger mb-3 remove-staff">Remove</button>
+                                </div>`;
                     $('#staffAssignments').append(newStaff);
                     updateAvailableStaff();
                     staffCount++;
