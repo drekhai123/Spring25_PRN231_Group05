@@ -93,27 +93,27 @@
 				$("#farmToolsTable").DataTable().destroy();
 			}
 
-			$("#farmToolsTable").DataTable({
-				"paging": true,
-				"ordering": true,
-				"info": true,
-				"searching": true,
-				"lengthMenu": [5, 10, 25, 50, 100],
-				"order": [[0, "asc"]],
-				"language": {
-					"lengthMenu": "Hiển thị _MENU_ dòng mỗi trang",
-					"zeroRecords": "Not found",
-					"info": "Trang _PAGE_ / _PAGES_",
-					"infoEmpty": "No data",
-					"search": "Find:",
-					"paginate": {
-						"first": "First",
-						"last": "Last",
-						"next": "Next",
-						"previous": "Previous"
-					}
-				}
-			});
+			 $("#farmToolsTable").DataTable({
+                "paging": true,
+                "ordering": true,
+                "info": true,
+                "searching": true,
+                "lengthMenu": [5, 10, 25, 50, 100],
+                "order": [[0, "asc"]],
+                "language": {
+                    "lengthMenu": "Show _MENU_ ",
+                    "zeroRecords": "Not found",
+                    "info": "Pages _PAGE_ / _PAGES_",
+                    "infoEmpty": "No data",
+                    "search": "Find:",
+                    "paginate": {
+                        "first": "First",
+                        "last": "Last",
+                        "next": "Next",
+                        "previous": "Previous"
+                    }
+                }
+            });
 		});
 	</script>
 }

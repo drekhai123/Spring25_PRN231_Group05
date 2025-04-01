@@ -232,43 +232,67 @@
                                                                                                                 t.FarmToolsOfTask.Any()))
                                                             {
                                                                 <ul class="list-group">
-
                                                                     @if (task.FarmToolsOfTask != null && task.FarmToolsOfTask.Any())
                                                                     {
                                                                         foreach (var tool in task.FarmToolsOfTask)
                                                                         {
-                                                                            <li class="list-group-item">
-                                                                                <div class="mb-2">
-                                                                                    <strong>Name:</strong> @tool.FarmTools.FarmToolsName
+                                                                            <li class="list-group-item d-flex flex-column gap-2 p-3">
+                                                                                <div class="d-flex justify-content-between align-items-center">
+                                                                                    <strong>Name:</strong>
+                                                                                    <span>@tool.FarmTools.FarmToolsName</span>
                                                                                 </div>
-                                                                                <div class="mb-2">
-                                                                                    <strong>Quantity:</strong> @tool.FarmToolOfTaskQuantity @tool.FarmToolOfTaskUnit
+                                                                                <div class="d-flex justify-content-between align-items-center">
+                                                                                    <strong>Quantity:</strong>
+                                                                                    <span>@tool.FarmToolOfTaskQuantity @tool.FarmToolOfTaskUnit</span>
                                                                                 </div>
-                                                                                <div class="mb-2
-                                                                                         @(tool.Status == 1 ? "text-warning fw-bold" :
-                                                                                               tool.Status == 2 ? "text-info fw-bold" :
-                                                                                               tool.Status == 3 ? "text-primary fw-bold" :
-                                                                                               tool.Status == 4 ? "text-success fw-bold" :
-                                                                                               tool.Status == 5 ? "text-danger fw-bold" : "text-secondary fw-bold")">
+                                                                                <div class="d-flex justify-content-between align-items-center @(tool.Status switch
+                                                                                  {
+                                                                                    1 => "text-warning fw-bold",
+                                                                                    2 => "text-info fw-bold",
+                                                                                    3 => "text-primary fw-bold",
+                                                                                    4 => "text-success fw-bold",
+                                                                                    5 => "text-danger fw-bold",
+                                                                                    _ => "text-secondary fw-bold"
+                                                                                     })">
                                                                                     <strong>Status:</strong>
-                                                                                    @(tool.Status == 1 ? "Pending" :
-                                                                                        tool.Status == 2 ? "Extend" :
-                                                                                        tool.Status == 3 ? "Returning" :
-                                                                                        tool.Status == 4 ? "Returned" :
-                                                                                        tool.Status == 5 ? "Damaged" : "Unknown")
+                                                                                    <span>
+                                                                                        @(tool.Status switch
+                                                                                        {
+                                                                                            1 => "Pending",
+                                                                                            2 => "Extend",
+                                                                                            3 => "Returning",
+                                                                                            4 => "Returned",
+                                                                                            5 => "Damaged",
+                                                                                            _ => "Unknown"
+                                                                                        })
+                                                                                    </span>
                                                                                 </div>
+                                                                                @if (tool.Status == 1 || tool.Status == 2)
+                                                                                {
+                                                                                    <div class="d-flex gap-2 mt-2">
+                                                                                        <a asp-page="/FarmToolsOfTask/Extend" asp-route-id="@tool.FarmToolsOfTaskId" class="btn btn-sm btn-warning">
+                                                                                            <i class="fa-solid fa-clock"></i> Extend
+                                                                                        </a>
+
+                                                                                        <button class="btn btn-sm btn-success return-button"
+                                                                                                data-id="@tool.FarmToolsOfTaskId">
+                                                                                            <i class="fa-solid fa-reply"></i> Return
+                                                                                        </button>
+                                                                                    </div>
+                                                                                }
                                                                             </li>
-                                                                            @if (tool.Status == 1 || tool.Status == 2)
-                                                                            {
-                                                                                <a asp-page="/FarmToolsOfTask/Extend"
-                                                                                   asp-route-id="@tool.FarmToolsOfTaskId"
-                                                                                   class="btn btn-sm btn-primary">
-                                                                                    <i class="fa-solid fa-plus"></i> Extend
-                                                                                </a>
-                                                                            }
                                                                         }
                                                                     }
+                                                                    else
+                                                                    {
+                                                                        <li class="list-group-item text-center text-muted">No tools assigned</li>
+                                                                    }
                                                                 </ul>
+                                                                <div class="mt-3 d-flex justify-content-center">
+                                                                    <a asp-page="/FarmToolsOfTask/Create" asp-route-userTaskId="@task.UserTaskId" class="btn btn-sm btn-primary">
+                                                                        <i class="fa-solid fa-plus"></i> Add Tools
+                                                                    </a>
+                                                                </div>
                                                             }
                                                             else
                                                             {
@@ -362,6 +386,42 @@
 
 @section Scripts {
     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const returnButtons = document.querySelectorAll(".return-button");
+
+            returnButtons.forEach(button => {
+                button.addEventListener("click", async function () {
+                    const farmToolsOfTaskId = this.getAttribute("data-id");
+
+                    if (!farmToolsOfTaskId) {
+                        alert("Invalid Farm Tool Task ID.");
+                        return;
+                    }
+
+                    const apiUrl = `https://localhost:7207/api/FarmToolsOfTasks/update-farm-tools-of-task-staff-return?FarmToolsOfTaskId=${farmToolsOfTaskId}`;
+
+                    if (confirm("Are you sure you want to return this farm tool?")) {
+                        try {
+                            const response = await fetch(apiUrl, {
+                                method: "PUT",
+                            });
+
+                            if (!response.ok) {
+                                const errorMessage = await response.text();
+                                alert("Error: " + errorMessage);
+                            } else {
+                                alert("Farm tool returned successfully.");
+                                location.reload(); // Reload để cập nhật trạng thái
+                            }
+                        } catch (error) {
+                            alert("Failed to return the farm tool. Please try again.");
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+    <script>
         $(document).ready(function () {
             // Setup for AJAX
             $.ajaxSetup({
@@ -406,6 +466,7 @@
             });
         });
     </script>
+    
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />

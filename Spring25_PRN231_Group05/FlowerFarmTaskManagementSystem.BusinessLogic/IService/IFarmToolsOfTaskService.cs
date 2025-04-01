@@ -15,7 +15,8 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.IService
 		Task<FarmToolsOfTaskResponseDTO> UpdateFarmToolsOfTasksAsync(FarmToolsOfTaskRequestDTO request);
 		Task<FarmToolsOfTaskResponseDTO> UpdateFarmToolsOfTasksExtendAsync(FarmToolsOfTaskExtendRequestDTO request);
 		Task<FarmToolsOfTaskResponseDTO> UpdateFarmToolsOfTasksStatusFinishAsync(string FarmToolsOfTasksId, string? note, int? quantity);
-		Task<FarmToolsOfTaskResponseDTO> UpdateFarmToolsOfTasksStatusCompletedAsync(string FarmToolsOfTasksId);
+        Task<FarmToolsOfTaskResponseDTO> UpdateFarmToolsOfTasksStaffReturnAsync(string FarmToolsOfTasksId);
+        Task<FarmToolsOfTaskResponseDTO> UpdateFarmToolsOfTasksStatusCompletedAsync(string FarmToolsOfTasksId);
         Task<IEnumerable<FarmToolsOfTaskResponseDTO>> UpdateFarmToolsOfTasksStatusCompletedByUserTaskIdAsync(string userTaskId);
         Task<FarmToolsOfTaskResponseDTO> UpdateFarmToolsOfTasksStatusPendingAsync(String FarmToolsOfTasksId);
 		Task<bool> DeleteFarmToolsOfTasksAsync(String FarmToolsOfTasksId);

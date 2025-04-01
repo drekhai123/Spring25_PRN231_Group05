@@ -104,6 +104,25 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
 			}
 		}
 
+
+        [HttpPut("update-farm-tools-of-task-staff-return")]
+        public async Task<ActionResult<FarmToolsOfTaskResponseDTO>> UpdateFarmToolsOfTasksStaffReturnAsync(string FarmToolsOfTaskId)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            try
+            {
+                var farmToolsOT = await _farmToolsOfTaskService.UpdateFarmToolsOfTasksStaffReturnAsync(FarmToolsOfTaskId);
+                return Ok(farmToolsOT);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
         [HttpPut("update-farm-tools-of-task-status-completed")]
         public async Task<ActionResult<FarmToolsOfTaskResponseDTO>> UpdateFarmToolsOfTasksStatusCompletedAsync(string FarmToolsOfTaskId)
         {
