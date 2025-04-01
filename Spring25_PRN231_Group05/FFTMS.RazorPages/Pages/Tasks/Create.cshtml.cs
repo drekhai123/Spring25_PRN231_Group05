@@ -133,6 +133,7 @@ namespace FFTMS.RazorPages.Pages.Tasks
                     Task.AssignedBy = JwtHelper.GetUserIdFromToken(token);
                 }
                 Task.Status = true;
+                Task.TaskStatus = FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskProgressStatus.INPROGRESS;
 
                 // Debug: Kiểm tra dữ liệu trước khi gửi
                 Console.WriteLine($"StartDate: {Task.StartDate}");

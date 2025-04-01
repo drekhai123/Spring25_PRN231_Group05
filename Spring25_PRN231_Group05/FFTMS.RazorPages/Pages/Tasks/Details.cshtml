@@ -23,9 +23,12 @@
                         </nav>
                     </div>
                     <div class="col-md-6 col-sm-12 text-end">
-                        <a asp-page="./Edit" asp-route-id="@Model.Task.TaskWorkId" class="btn btn-primary">
-                            <i class="icon-copy dw dw-edit2"></i> Edit Task
-                        </a>
+                        @if (Model.Task.TaskStatus != FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskProgressStatus.COMPLETED)
+                        {
+                            <a asp-page="./Edit" asp-route-id="@Model.Task.TaskWorkId" class="btn btn-primary">
+                                <i class="icon-copy dw dw-edit2"></i> Edit Task
+                            </a>
+                        }
                         <a asp-page="./Index" class="btn btn-secondary">
                             <i class="icon-copy dw dw-list"></i> Back to List
                         </a>
@@ -37,6 +40,15 @@
             {
                 <div class="alert alert-danger">
                     @Model.ErrorMessage
+                </div>
+            }
+            
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             }
 
@@ -60,6 +72,15 @@
                                     <span
                                         class="badge text-white @(Convert.ToInt32(Model.Task.Status) == 1 ? "bg-success" : "bg-danger")">
                                         @(Convert.ToInt32(Model.Task.Status) == 1 ? "Active" : "Inactive")
+                                    </span>
+                                </li>
+                                <li>
+                                    <span>Task Progress:</span>
+                                    <span
+                                        class="badge text-white @(Model.Task.TaskStatus == FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskProgressStatus.INPROGRESS ? "bg-warning" : "bg-success")">
+                                        @(Model.Task.TaskStatus ==
+                                                                                FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskProgressStatus.INPROGRESS
+                                                                                ? "In Progress" : "Completed")
                                     </span>
                                 </li>
                                 <li>
@@ -92,15 +113,20 @@
                             <ul>
                                 <li>
                                     <span>Product Name:</span>
-                                    @Model.Task.Product.ProductName
+                                    @(Model.Task.Product != null ? Model.Task.Product.ProductName : "N/A")
                                 </li>
                                 <li>
                                     <span>Category:</span>
-                                    @Model.Task.Product.Category.CategoryName
+                                    @(Model.Task.Product != null && Model.Task.Product.Category != null ?
+                                                                        Model.Task.Product.Category.CategoryName : "N/A")
+                                </li>
+                                <li>
+                                    <span>Field Name:</span>
+                                    @(Model.Task.Field != null ? Model.Task.Field.FieldName : "N/A")
                                 </li>
                                 <li>
                                     <span>Productivity:</span>
-                                    @Model.Task.Productivity @Model.Task.ProductivityUnit
+                                    @(Model.Task.Productivity > 0 ? $"{Model.Task.Productivity} {(string.IsNullOrEmpty(Model.Task.ProductivityUnit) ? "N/A" : Model.Task.ProductivityUnit)}" : $"0 {(string.IsNullOrEmpty(Model.Task.ProductivityUnit) ? "N/A" : Model.Task.ProductivityUnit)}")
                                 </li>
                                 @if (!string.IsNullOrEmpty(Model.Task.ImageUrl))
                                 {
@@ -127,7 +153,7 @@
                                         <h6 class="mb-0">@userTask.UserName</h6>
                                         <span
                                             class="badge text-white @(Convert.ToInt32(userTask.Status) == 0 ? "bg-danger" : 
-                                                                                                                                                                                                                                       Convert.ToInt32(userTask.Status) == 1 ? "bg-warning" : "bg-success")">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   Convert.ToInt32(userTask.Status) == 1 ? "bg-warning" : "bg-success")">
                                             @(Convert.ToInt32(userTask.Status) == 0 ? "Waiting" :
                                                                                 Convert.ToInt32(userTask.Status) == 1 ? "Processing" : "Completed")
                                 </span>

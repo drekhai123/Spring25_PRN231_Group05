@@ -111,6 +111,46 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
                 };
 
                 var updatedUserTask = await _userTaskService.UpdateUserTaskAsync(id, userTaskRequest);
+                
+                // Get the parent task to check if all user tasks are completed
+                var userTask = await _userTaskService.GetUserTaskByIdAsync(id);
+                if (userTask != null && userTask.TaskWorkId != Guid.Empty)
+                {
+                    // Check if all user tasks for this task are completed
+                    var taskId = userTask.TaskWorkId;
+                    var taskService = HttpContext.RequestServices.GetService<ITaskService>();
+                    if (taskService != null)
+                    {
+                        var task = await taskService.GetTaskByIdAsync(taskId);
+                        
+                        // If all user tasks are completed, update task status to COMPLETED
+                        if (task != null && task.UserTasks != null && task.UserTasks.Count > 0 && 
+                            task.UserTasks.All(ut => Convert.ToInt32(ut.Status) == 2) && 
+                            task.TaskStatus != FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskProgressStatus.COMPLETED)
+                        {
+                            // Update task status to COMPLETED
+                            var taskRequest = new TaskRequestDTO
+                            {
+                                JobTitle = task.JobTitle,
+                                Description = task.Description,
+                                AssignedBy = task.AssignedBy,
+                                StartDate = task.StartDate,
+                                EndDate = task.EndDate,
+                                Status = task.Status,
+                                ImageUrl = task.ImageUrl,
+                                ProductFieldId = task.ProductFieldId,
+                                TaskStatus = FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskProgressStatus.COMPLETED,
+                                UserTasks = task.UserTasks.Select(ut => new UserTaskRequest
+                                {
+                                    AssignedTo = ut.UserId.ToString(),
+                                    UserTaskDescription = ut.UserTaskDescription
+                                }).ToList()
+                            };
+                            
+                            await taskService.UpdateTaskAsync(taskId, taskRequest);
+                        }
+                    }
+                }
 
                 return Ok(new { Message = "Task status updated successfully", UserTask = updatedUserTask });
             }

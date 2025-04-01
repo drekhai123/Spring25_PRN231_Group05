@@ -22,7 +22,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Models
         public bool Status { get; set; }
         public DateTime CreateDate { get; set; }
         public string? ImageUrl { get; set; }
-        public TaskStatus TaskStatus { get; set; }
+        public TaskProgressStatus TaskStatus { get; set; }
 
         // Navigation properties
         public virtual ICollection<UserTask> UserTasks { get; set; }
@@ -31,7 +31,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Models
     }
 
     [JsonConverter(typeof(JsonStringEnumConverter))]
-    public enum TaskStatus
+    public enum TaskProgressStatus
     {
         [EnumMember(Value = "InProgress")]
         INPROGRESS,

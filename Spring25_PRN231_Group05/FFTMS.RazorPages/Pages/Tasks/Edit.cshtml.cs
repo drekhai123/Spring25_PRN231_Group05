@@ -7,6 +7,7 @@ using FFTMS.RazorPages.Helpers;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using FlowerFarmTaskManagementSystem.BusinessObject.Models;
 
 namespace FFTMS.RazorPages.Pages.Tasks
 {
@@ -54,6 +55,13 @@ namespace FFTMS.RazorPages.Pages.Tasks
                     {
                         PropertyNameCaseInsensitive = true
                     });
+                    
+                    // Check if task is already completed, if so redirect to details page
+                    if (taskResponse.TaskStatus == TaskProgressStatus.COMPLETED)
+                    {
+                        TempData["ErrorMessage"] = "Cannot edit a completed task.";
+                        return RedirectToPage("./Details", new { id = TaskId });
+                    }
 
                     Task = new TaskRequestDTO
                     {

@@ -25,6 +25,13 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             var tasks = await Task.FromResult(_unitOfWork.TaskWorkRepository.Get(
                 includeProperties: "UserTasks.User,ProductField.Product.Category,ProductField.Field"
             ));
+            
+            // Check each task if all UserTasks are completed, update task status to COMPLETED
+            foreach (var task in tasks)
+            {
+                await CheckAndUpdateTaskCompletionStatus(task);
+            }
+            
             return _mapper.Map<IEnumerable<TaskResponseDTO>>(tasks);
         }
 
@@ -37,6 +44,9 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 
             if (task == null)
                 throw new KeyNotFoundException($"Task with ID {id} not found");
+            
+            // Check if all UserTasks are completed, update task status to COMPLETED
+            await CheckAndUpdateTaskCompletionStatus(task);
 
             return _mapper.Map<TaskResponseDTO>(task);
         }
@@ -325,6 +335,24 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
                 // Kiểm tra Category
                 if (task.ProductField.Product?.Category != null && !task.ProductField.Product.Category.Status)
                     throw new InvalidOperationException("Cannot delete task because associated category is inactive");
+            }
+        }
+
+        // Method to check and update task completion status
+        private async Task CheckAndUpdateTaskCompletionStatus(TaskWork task)
+        {
+            // Only check active tasks that are not already completed
+            if (task.Status && task.TaskStatus != TaskProgressStatus.COMPLETED)
+            {
+                // If task has UserTasks and all of them are completed (status = 2)
+                if (task.UserTasks != null && task.UserTasks.Count > 0 && 
+                    task.UserTasks.All(ut => ut.Status == (int)UserTaskStatus.Completed))
+                {
+                    // Update task status to COMPLETED
+                    task.TaskStatus = TaskProgressStatus.COMPLETED;
+                    _unitOfWork.TaskWorkRepository.Update(task);
+                    await _unitOfWork.SaveChangesAsync();
+                }
             }
         }
     }
