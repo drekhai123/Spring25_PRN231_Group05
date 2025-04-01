@@ -6,11 +6,25 @@
     Layout = "_Layout";
 }
 <div class="main-container">
-    <h1>Index</h1>
+    <h1>History Of Tools</h1>
 
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
     <p>
         <a asp-page="Create">Create New</a>
     </p>
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
     <table class="table" id="farmToolsTable">
         <thead>
             <tr>
@@ -55,12 +69,17 @@
                         @Html.DisplayFor(modelItem => item.FarmToolOfTaskUnit)
                     </td>
                     <td>
-                        <span>
-                            @(item.Status == 1 ? "Pending" :
-                                item.Status == 2 ? "Extend" :
-                                item.Status == 3 ? "Pending Return" :
-                                item.Status == 4 ? "Finish" :
-                                item.Status == 5 ? "Damaged" : "Unknown")
+                        <span class="badge
+                                @(item.Status == 1 ? "badge-warning" :
+                                 item.Status == 2 ? "badge-info" :
+                                 item.Status == 3 ? "badge-primary" :
+                                 item.Status == 4 ? "badge-success" :
+                                 item.Status == 5 ? "badge-danger" : "badge-secondary")">
+                                     @(item.Status == 1 ? "Pending" :
+                                         item.Status == 2 ? "Extend" :
+                                         item.Status == 3 ? "Pending Return" :
+                                         item.Status == 4 ? "Returned" :
+                                         item.Status == 5 ? "Damaged" : "Unknown")
                         </span>
                     </td>
                     <td>
@@ -70,15 +89,6 @@
                         @Html.DisplayFor(modelItem => item.UserTask.UserTaskDescription)
                     </td>
                     <td>
-                        
-                            @if (item.Status != 3)
-                            {
-                                <a class="dropdown-item" asp-page="./Details" asp-route-id="@item.FarmToolsOfTaskId">
-                                    <i class="dw dw-eye"></i> View
-                                </a>
-                            }
-                            @if (item.Status == 3)
-                            {
                             <div class="dropdown">
                                 <a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle" href="#" role="button" data-toggle="dropdown">
                                     <i class="dw dw-more"></i>
@@ -88,12 +98,13 @@
 
                                     <a class="dropdown-item" asp-page="./Details" asp-route-id="@item.FarmToolsOfTaskId">
                                         <i class="dw dw-eye"></i> View
-                                    </a>
+                                </a>@if (item.Status == 3)
+                                {
                                     <a class="dropdown-item" asp-page="./ReturnPage" asp-route-id="@item.FarmToolsOfTaskId"><i class="dw dw-edit2"></i> Return</a>
-                                    <a class="dropdown-item" asp-page="./FarmToolDetails" asp-route-id="@item.FarmToolsOfTaskId"><i class="dw dw-delete-3"></i> Delete</a>
+                                }
                                 </div>
                             </div>
-                            }
+                            
                     </td>
                 </tr>
             }
@@ -101,6 +112,9 @@
     </table>
 </div>
 @section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
     <script>
         $(document).ready(function () {
             if ($.fn.DataTable.isDataTable("#farmToolsTable")) {
@@ -116,15 +130,15 @@
                 "order": [[0, "asc"]],
                 "language": {
                     "lengthMenu": "Hiển thị _MENU_ dòng mỗi trang",
-                    "zeroRecords": "Không tìm thấy dữ liệu",
+                    "zeroRecords": "Not found",
                     "info": "Trang _PAGE_ / _PAGES_",
-                    "infoEmpty": "Không có dữ liệu",
-                    "search": "Tìm kiếm:",
+                    "infoEmpty": "No data",
+                    "search": "Find:",
                     "paginate": {
-                        "first": "Đầu",
-                        "last": "Cuối",
-                        "next": "Tiếp",
-                        "previous": "Trước"
+                        "first": "First",
+                        "last": "Last",
+                        "next": "Next",
+                        "previous": "Previous"
                     }
                 }
             });

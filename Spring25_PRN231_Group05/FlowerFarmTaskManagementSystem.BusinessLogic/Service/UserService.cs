@@ -50,10 +50,8 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             return _mapper.Map<UserResponseDTO>(user);
         }
 
-        public async Task<UserResponseDTO> UpdateUserAsync(Guid id, UserRequestDTO userDto)
+        public async Task<UserResponseDTO> UpdateUserAsync(Guid id, UpdateUserRequestDTO userDto)
         {
-            ValidateUserData(userDto);
-
             // Check if email exists for different user
             var existingUser = await GetUserByEmailAsync(userDto.Email);
             if (existingUser != null && existingUser.UserId != id)

@@ -127,8 +127,8 @@
                                         <h6 class="mb-0">@userTask.UserName</h6>
                                         <span
                                             class="badge text-white @(Convert.ToInt32(userTask.Status) == 0 ? "bg-danger" : 
-                                                                                                                                               Convert.ToInt32(userTask.Status) == 1 ? "bg-warning" : "bg-success")">
-                                            @(Convert.ToInt32(userTask.Status) == 0 ? "Inactive" :
+                                                                                                                                                                                                                                       Convert.ToInt32(userTask.Status) == 1 ? "bg-warning" : "bg-success")">
+                                            @(Convert.ToInt32(userTask.Status) == 0 ? "Waiting" :
                                                                                 Convert.ToInt32(userTask.Status) == 1 ? "Processing" : "Completed")
                                 </span>
                             </div>

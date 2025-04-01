@@ -244,12 +244,18 @@
                                                                                 <div class="mb-2">
                                                                                     <strong>Quantity:</strong> @tool.FarmToolOfTaskQuantity @tool.FarmToolOfTaskUnit
                                                                                 </div>
-                                                                                <div class="mb-2">
-                                                                                    <strong>Status:</strong>  @(tool.Status == 1 ? "Pending" :
-                                                                                                                tool.Status == 2 ? "Extend" :
-                                                                                                                tool.Status == 3 ? "Returning" :
-                                                                                                                tool.Status == 4 ? "Finish" :
-                                                                                                                tool.Status == 5 ? "Damaged" : "Unknown")
+                                                                                <div class="mb-2
+                                                                                         @(tool.Status == 1 ? "text-warning fw-bold" :
+                                                                                               tool.Status == 2 ? "text-info fw-bold" :
+                                                                                               tool.Status == 3 ? "text-primary fw-bold" :
+                                                                                               tool.Status == 4 ? "text-success fw-bold" :
+                                                                                               tool.Status == 5 ? "text-danger fw-bold" : "text-secondary fw-bold")">
+                                                                                    <strong>Status:</strong>
+                                                                                    @(tool.Status == 1 ? "Pending" :
+                                                                                        tool.Status == 2 ? "Extend" :
+                                                                                        tool.Status == 3 ? "Returning" :
+                                                                                        tool.Status == 4 ? "Returned" :
+                                                                                        tool.Status == 5 ? "Damaged" : "Unknown")
                                                                                 </div>
                                                                             </li>
                                                                             @if (tool.Status == 1 || tool.Status == 2)

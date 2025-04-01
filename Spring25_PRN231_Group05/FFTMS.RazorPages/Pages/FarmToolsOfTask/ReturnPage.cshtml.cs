@@ -18,6 +18,8 @@ namespace FFTMS.RazorPages.Pages.FarmToolsOfTask
         public FarmToolsOfTaskResponseDTO FarmToolsOfTaskRequest { get; set; } = default!;
         [BindProperty]
         public string NoteInf { get; set; } = string.Empty;
+        [BindProperty]
+        public int Quantity { get; set; } = 0;
         public async Task<IActionResult> OnGetAsync(String? id)
         {
             if (id == null)
@@ -57,25 +59,35 @@ namespace FFTMS.RazorPages.Pages.FarmToolsOfTask
                     ModelState.AddModelError(string.Empty, "Invalid request data.");
                     return Page();
                 }
+                if (!string.IsNullOrWhiteSpace(NoteInf) && (Quantity == null || Quantity <= 0))
+                {
+                    TempData["ErrorMessage"] = "Quantity must be greater than 0 when Note is provided.";
+                    return RedirectToPage("/FarmToolsOfTask/Index");
+                }
+                if (Quantity > 0 && string.IsNullOrWhiteSpace(NoteInf))
+                {
+                    TempData["ErrorMessage"] = "Note is required when Quantity is provided.";
+                    return RedirectToPage("/FarmToolsOfTask/Index");
+                }
 
-                var apiUrl = $"https://localhost:7207/api/FarmToolsOfTasks/update-farm-tools-of-task-status-finish?FarmToolsOfTaskId={FarmToolsOfTaskRequest.FarmToolsOfTaskId}&NoteInf={NoteInf}";
+                var apiUrl = $"https://localhost:7207/api/FarmToolsOfTasks/update-farm-tools-of-task-status-finish?FarmToolsOfTaskId={FarmToolsOfTaskRequest.FarmToolsOfTaskId}&NoteInf={NoteInf}&Quantity={Quantity}";
 
                 var response = await _httpClient.PutAsync(apiUrl, null);
 
                 if (!response.IsSuccessStatusCode)
                 {
                     var errorMessage = await response.Content.ReadAsStringAsync();
-                    ModelState.AddModelError(string.Empty, $"Error updating data: {errorMessage}");
-                    return Page();
+                    TempData["ErrorMessage"] = errorMessage;
+                    return RedirectToPage("/FarmToolsOfTask/Index");
                 }
 
                 TempData["SuccessMessage"] = "Farm tool task marked as finished successfully.";
-                return RedirectToPage("/UserTasks/Index");
+                return RedirectToPage("/FarmToolsOfTask/Index");
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(string.Empty, $"An error occurred: {ex.Message}");
-                return Page();
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToPage("/FarmToolsOfTask/Index");
             }
         }
 

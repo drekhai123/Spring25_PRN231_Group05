@@ -194,8 +194,19 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
                 throw new ArgumentException("Job title is required");
             if (string.IsNullOrWhiteSpace(taskRequest.Description))
                 throw new ArgumentException("Description is required");
-            if (taskRequest.StartDate >= taskRequest.EndDate)
+            
+            // First check: End date must not be earlier than start date
+            if (taskRequest.EndDate.Date < taskRequest.StartDate.Date)
+            {
                 throw new ArgumentException("Start date must be before end date");
+            }
+            
+            // Second check: If on same day, check if time difference is at least 2 hours
+            TimeSpan timeDifference = taskRequest.EndDate - taskRequest.StartDate;
+            if (timeDifference.TotalHours < 2)
+            {
+                throw new ArgumentException("End time must be at least 2 hours after start time");
+            }
 
             // Validate ProductField và các bảng liên quan
             var productField = await _unitOfWork.ProductFieldRepository.GetByIdAsync(taskRequest.ProductFieldId);

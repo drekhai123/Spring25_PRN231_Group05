@@ -2,11 +2,13 @@ using FlowerFarmTaskManagementSystem.BusinessLogic.Service;
 using Microsoft.AspNetCore.Builder;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddHttpContextAccessor();
 // Add services to the container.
 builder.Services.AddRazorPages(); // Removed the AddPageRoute configuration
 builder.Services.AddHttpClient();
+builder.Services.AddSession();
 builder.Services.AddSignalR();
+builder.Services.AddHttpClient();
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30); // Set session timeout
@@ -28,7 +30,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-app.UseSession(); // Add this line to enable session middleware
+app.UseSession(); 
 app.UseAuthorization();
 
 // Redirect unauthenticated users to /Auth/LoginPage
