@@ -43,8 +43,7 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
             {
                 return NotFound();
             }
-            var apiUrl = "https://localhost:7207/odata/get-all-productField";
-
+            var apiUrl = $"http://localhost:5281/odata/ProductFields/get-by-id?id={id}";
             var response = await _httpClient.GetAsync(apiUrl);
             if (!response.IsSuccessStatusCode)
             {
@@ -52,35 +51,41 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
             }
 
             var jsonResponse = await response.Content.ReadAsStringAsync();
-            var parsedResponse = JsonSerializer.Deserialize<List<ProductField>>(jsonResponse, new JsonSerializerOptions
+            // Since this is an OData API, the response might be wrapped in a "value" property
+            // First, parse the JSON to check its structure
+            using var jsonDoc = JsonDocument.Parse(jsonResponse);
+            var root = jsonDoc.RootElement;
+
+            ProductField parsedResponse;
+
+            // Check if the response has a "value" property (common in OData responses)
+            if (root.TryGetProperty("value", out var valueElement))
             {
-                PropertyNameCaseInsensitive = true
-            });
+                // Deserialize the "value" property into a ProductField object
+                parsedResponse = JsonSerializer.Deserialize<ProductField>(valueElement.GetRawText(), new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+            }
+            else
+            {
+                // If there's no "value" property, deserialize the entire response
+                parsedResponse = JsonSerializer.Deserialize<ProductField>(jsonResponse, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+            }
 
-            ProductField = parsedResponse?.FirstOrDefault();
+            if (parsedResponse == null)
+            {
+                return NotFound();
+            }
 
+            // Assign the deserialized response to the ProductField property
+            ProductField = parsedResponse;
             return Page();
         }
 
-        //public async Task<IActionResult> OnPostAsync()
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return Page();
-        //    }
 
-        //    var apiUrl = "https://localhost:7207/odata/get-all-productField";
-
-        //    var response = await _httpClient.PutAsJsonAsync(apiUrl, ProductField);
-
-        //    if (!response.IsSuccessStatusCode)
-        //    {
-        //        ModelState.AddModelError(string.Empty, "Error  productField.");
-        //        return Page();
-        //    }
-
-        //    return RedirectToPage("./Index");
-        //}
     }
 }
-
