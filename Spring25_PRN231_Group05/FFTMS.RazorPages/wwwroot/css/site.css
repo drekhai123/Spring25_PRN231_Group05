@@ -11,6 +11,12 @@ html {
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
+.main-container {
+    margin-left: 250px; /* ?i?u ch?nh d?a trên chi?u r?ng c?a sidebar */
+    width: calc(100% - 250px); /* ??m b?o main-container chi?m toàn b? không gian còn l?i */
+    padding: 20px; /* ?i?u ch?nh padding n?u c?n */
+    box-sizing: border-box;
+}
 
 html {
   position: relative;
