@@ -145,7 +145,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 
             if (farmTools.FarmToolsQuantity < farmToolsOfTask.FarmToolOfTaskQuantity)
             {
-                throw new Exception($"Not enough farm tools for ID {farmToolsId}. Available: {farmTools.FarmToolsQuantity}, Requested: {farmToolsOfTask.FarmToolOfTaskQuantity}");
+                throw new KeyNotFoundException($"Not enough farm tools for {farmTools.FarmToolsName}. Available: {farmTools.FarmToolsQuantity}, Requested: {farmToolsOfTask.FarmToolOfTaskQuantity}");
             }
 
             if (farmToolsOfTask.FarmToolOfTaskQuantity <= request.FarmToolOfTaskQuantity)
