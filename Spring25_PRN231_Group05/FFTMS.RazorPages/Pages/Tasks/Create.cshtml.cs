@@ -92,7 +92,7 @@ namespace FFTMS.RazorPages.Pages.Tasks
         {
             try
             {
-                var response = await _httpClient.GetAsync("http://localhost:5281/odata/ProductFields/get-all-productField");
+                var response = await _httpClient.GetAsync("http://localhost:5281/odata/ProductField");
                 if (response.IsSuccessStatusCode)
                 {
                     var jsonResponse = await response.Content.ReadAsStringAsync();
