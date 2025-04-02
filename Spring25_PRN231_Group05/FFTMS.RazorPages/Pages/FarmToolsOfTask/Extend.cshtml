@@ -13,11 +13,18 @@
                     <h2>Extend Farm Tools Task</h2>
                 </div>
             </div>
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger">
+                    @TempData["ErrorMessage"]
+                </div>
+            }
             <div class="card-body">
                 <form method="post">
                     <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
                     <input type="hidden" asp-for="FarmToolsOfTaskRequest.FarmToolsOfTaskId" />
+
 
                     <div class="mb-3">
                         <label asp-for="FarmToolsOfTaskRequest.EndDate" class="form-label fw-bold">End Date</label>
