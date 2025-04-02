@@ -1,7 +1,7 @@
 @page
 @model FFTMS.RazorPages.Pages.Users.CreateModel
 @{
-    ViewData["Title"] = "Create User";
+    ViewData["Title"] = "Create Manager";
     Layout = "_Layout";
 }
 
@@ -12,67 +12,110 @@
                 <div class="row">
                     <div class="col-md-6 col-sm-12">
                         <div class="title">
-                            <h4>Create New User</h4>
+                            <h4>Create New Manager</h4>
                         </div>
                         <nav aria-label="breadcrumb" role="navigation">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item"><a asp-page="/Index">Home</a></li>
                                 <li class="breadcrumb-item"><a asp-page="/Users/Index">Users</a></li>
-                                <li class="breadcrumb-item active">Create</li>
+                                <li class="breadcrumb-item active">Create Manager</li>
                             </ol>
                         </nav>
                     </div>
                 </div>
             </div>
 
-            <div class="pd-20 card-box mb-30">
-                <form method="post">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    <div class="form-group">
-                        <label asp-for="User.UserName" class="control-label">Username</label>
-                        <input asp-for="User.UserName" class="form-control" />
-                        <span asp-validation-for="User.UserName" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="User.Password" class="control-label">Password</label>
-                        <input asp-for="User.Password" type="password" class="form-control" />
-                        <span asp-validation-for="User.Password" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="User.Email" class="control-label">Email</label>
-                        <input asp-for="User.Email" class="form-control" />
-                        <span asp-validation-for="User.Email" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="User.Phone" class="control-label">Phone</label>
-                        <input asp-for="User.Phone" class="form-control" />
-                        <span asp-validation-for="User.Phone" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="User.Address" class="control-label">Address</label>
-                        <input asp-for="User.Address" class="form-control" />
-                        <span asp-validation-for="User.Address" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="User.Role" class="control-label">Role</label>
-                        <select asp-for="User.Role" class="form-control">
-                            <option value="">Select Role</option>
-                            <option value="Admin">Admin</option>
-                            <option value="Manager">Manager</option>
-                            <option value="Staff">Staff</option>
-                        </select>
-                        <span asp-validation-for="User.Role" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="User.DateOfBirth" class="control-label">Date of Birth</label>
-                        <input asp-for="User.DateOfBirth" type="date" class="form-control" />
-                        <span asp-validation-for="User.DateOfBirth" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <input type="submit" value="Create" class="btn btn-primary" />
-                        <a asp-page="Index" class="btn btn-secondary">Back to List</a>
-                    </div>
-                </form>
+            <div class="pd-20 card-box mb-30 shadow-sm">
+                <div class="card-header bg-transparent pb-0">
+                    <h5 class="mb-3 text-primary">Manager Information</h5>
+                    <p class="text-muted small">Fill in the details to create a new manager account</p>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger rounded p-2 mb-3"></div>
+
+                        <!-- Hidden input for Role -->
+                        <input type="hidden" asp-for="User.Role" value="Manager" />
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="User.UserName" class="form-label">Username</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="icon-copy dw dw-user1"></i></span>
+                                        <input asp-for="User.UserName" class="form-control form-control-lg"
+                                            placeholder="Enter username" />
+                                    </div>
+                                    <span asp-validation-for="User.UserName" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="User.Password" class="form-label">Password</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="icon-copy dw dw-padlock"></i></span>
+                                        <input asp-for="User.Password" type="password"
+                                            class="form-control form-control-lg" placeholder="Enter password" />
+                                    </div>
+                                    <span asp-validation-for="User.Password" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="User.Email" class="form-label">Email</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="icon-copy dw dw-email"></i></span>
+                                        <input asp-for="User.Email" class="form-control form-control-lg"
+                                            placeholder="name@example.com" />
+                                    </div>
+                                    <span asp-validation-for="User.Email" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="User.Phone" class="form-label">Phone</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="icon-copy dw dw-smartphone"></i></span>
+                                        <input asp-for="User.Phone" class="form-control form-control-lg"
+                                            placeholder="Enter phone number" />
+                                    </div>
+                                    <span asp-validation-for="User.Phone" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="User.Address" class="form-label">Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="icon-copy dw dw-home"></i></span>
+                                <input asp-for="User.Address" class="form-control form-control-lg"
+                                    placeholder="Enter address" />
+                            </div>
+                            <span asp-validation-for="User.Address" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label asp-for="User.DateOfBirth" class="form-label">Date of Birth</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="icon-copy dw dw-calendar"></i></span>
+                                <input asp-for="User.DateOfBirth" type="date" class="form-control form-control-lg" />
+                            </div>
+                            <span asp-validation-for="User.DateOfBirth" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group d-flex justify-content-between mt-4">
+                            <a asp-page="Index" class="btn btn-outline-secondary btn-lg">
+                                <i class="icon-copy dw dw-left-arrow1 mr-2"></i> Back to List
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="icon-copy dw dw-add mr-2"></i> Create Manager
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

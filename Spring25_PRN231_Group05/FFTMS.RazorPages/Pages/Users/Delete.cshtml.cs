@@ -9,10 +9,12 @@ namespace FFTMS.RazorPages.Pages.Users
     public class DeleteModel : PageModel
     {
         private readonly HttpClient _httpClient;
+        private readonly string _apiBaseUrl = "https://localhost:7207";
 
         public DeleteModel(HttpClient httpClient)
         {
             _httpClient = httpClient;
+            _httpClient.BaseAddress = new Uri(_apiBaseUrl);
         }
 
         [BindProperty]
@@ -35,7 +37,8 @@ namespace FFTMS.RazorPages.Pages.Users
                     return RedirectToPage("/Index");
                 }
 
-                var response = await _httpClient.GetAsync($"https://localhost:7207/odata/User/{id}");
+                _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                var response = await _httpClient.GetAsync($"/odata/User/{id}");
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -75,7 +78,8 @@ namespace FFTMS.RazorPages.Pages.Users
 
             try
             {
-                var response = await _httpClient.DeleteAsync($"https://localhost:7207/odata/User/{User.UserId}");
+                _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                var response = await _httpClient.DeleteAsync($"/odata/User/{User.UserId}");
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -83,7 +87,8 @@ namespace FFTMS.RazorPages.Pages.Users
                 }
                 else
                 {
-                    ErrorMessage = $"Error deleting user. API returned status code: {response.StatusCode}";
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    ErrorMessage = $"Error deactivating user. API returned status code: {response.StatusCode}. Details: {errorContent}";
                     return Page();
                 }
             }

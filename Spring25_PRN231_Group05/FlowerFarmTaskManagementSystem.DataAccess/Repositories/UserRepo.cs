@@ -15,7 +15,8 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.Repositories
 
         public async Task<IEnumerable<User>> GetAllUsersAsync()
         {
-            return await GetAllAsync();
+            // Only return active users by default
+            return Get(u => u.IsActive).ToList();
         }
 
         public async Task<User> GetUserByIdAsync(Guid id)
@@ -55,7 +56,9 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.Repositories
             var user = await GetByIdAsync(id);
             if (user == null) return false;
 
-            Delete(user);
+            // Soft delete - set IsActive to false instead of removing the record
+            user.IsActive = false;
+            Update(user);
             return true;
         }
 
