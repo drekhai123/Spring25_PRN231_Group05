@@ -136,7 +136,7 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
         }
 
         [HttpPut("update-productfield-by-id")]
-        public async Task<ActionResult<ProductFieldRequest>> UpdateProductFieldAsync(Guid id, [FromBody] ProductFieldRequest productFieldDto)
+        public async Task<ActionResult<ProductFieldRequest>> UpdateProductFieldAsync(Guid id, [FromBody] ProductFieldUpdateDTO productFieldDto)
         {
             try
             {

@@ -53,12 +53,29 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Mapper
                 .ForMember(dest => dest.UpdateDate, opt => opt.MapFrom(src => DateTime.UtcNow));
 
             // ProductField mappings
+
+            CreateMap<ProductFieldUpdateDTO, ProductField>()
+                .ForMember(dest => dest.Productivity, opt => opt.MapFrom(src => src.Productivity))
+                .ForMember(dest => dest.ProductivityUnit, opt => opt.MapFrom(src => src.ProductivityUnit))
+                .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
+                .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.ProductFieldStatus.ToString().ToLower())) // Chuyển bool thành string
+                .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.ProductId))
+                .ForMember(dest => dest.FieldId, opt => opt.MapFrom(src => src.FieldId))
+                .ForMember(dest => dest.UpdateDate, opt => opt.MapFrom(src => DateTime.UtcNow)) // Gán UpdateDate
+                .ForMember(dest => dest.CreateDate, opt => opt.Ignore()) // Bỏ qua CreateDate
+                .ForMember(dest => dest.Product, opt => opt.Ignore()) // Bỏ qua Product
+                .ForMember(dest => dest.Field, opt => opt.Ignore()); // Bỏ qua Field
+
             CreateMap<ProductField, ProductFieldRequest>();
             CreateMap<ProductFieldRequest, ProductField>();
             // ProductField -> ProductFieldResponse
             CreateMap<ProductField, ProductFieldResponse>()
+                .ForMember(dest => dest.Productivity, opt => opt.MapFrom(src => src.Productivity ?? 0)) // Xử lý nullable
                 .ForMember(dest => dest.Product, opt => opt.MapFrom(src => src.Product))
                 .ForMember(dest => dest.Field, opt => opt.MapFrom(src => src.Field));
+
+            CreateMap<ProductFieldUpdateDTO, ProductField>();
             // Task mappings
             CreateMap<TaskWork, TaskResponseDTO>()
                 .ForMember(dest => dest.TaskWorkId, opt => opt.MapFrom(src => src.TaskWorkId))

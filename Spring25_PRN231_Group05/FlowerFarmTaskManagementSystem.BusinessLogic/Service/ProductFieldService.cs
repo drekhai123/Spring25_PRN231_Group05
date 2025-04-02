@@ -32,9 +32,29 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             if (newProductField.CreateDate == default)
                 throw new ArgumentException("CreateDate is required.");
 
+            // Validate EndDate must be greater than StartDate
+            if (newProductField.EndDate <= newProductField.StartDate)
+            {
+                throw new ArgumentException("EndDate must be greater than StartDate.");
+            }
+
+            // Check for overlapping ProductFields in the same time period
+            var existingProductFields = await _unitOfWork.ProductFieldRepository
+                .FindAsync(pf => pf.Status && 
+                                pf.FieldId == newProductField.FieldId &&
+                                ((pf.StartDate <= newProductField.EndDate && pf.EndDate >= newProductField.StartDate)));
+
+            if (existingProductFields.Any())
+            {
+                var overlappingField = existingProductFields.First();
+                throw new InvalidOperationException(
+                    $"Cannot create new ProductField. Field is already in use from {overlappingField.StartDate:dd/MM/yyyy} to {overlappingField.EndDate:dd/MM/yyyy}");
+            }
+
             var productField = _mapper.Map<ProductField>(newProductField);
             productField.ProductFieldId = Guid.NewGuid();
-            productField.Status = newProductField.Status ?? "Planned";
+            productField.ProductFieldStatus = ProductFieldStatus.GROWING;
+            productField.Status = true;
 
             // Kiểm tra ProductId và FieldId
             var productExists = await _unitOfWork.ProductRepository.GetByIdAsync(productField.ProductId);
@@ -50,40 +70,71 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             return _mapper.Map<ProductFieldResponse>(productField);
         }
 
-        public async Task<ProductFieldResponse> UpdateProductFieldsAsync(Guid id, ProductFieldRequest productFieldRequest)
+        public async Task<ProductFieldResponse> UpdateProductFieldsAsync(Guid id, ProductFieldUpdateDTO productFieldRequest)
         {
             if (productFieldRequest == null)
+            {
                 throw new ArgumentNullException(nameof(productFieldRequest));
+            }
 
             var productField = await _unitOfWork.ProductFieldRepository.GetByIdAsync(id);
             if (productField == null)
+            {
                 throw new KeyNotFoundException("ProductField not found.");
+            }
 
             // Validation
             if (productFieldRequest.ProductId == Guid.Empty)
+            {
                 throw new ArgumentException("ProductId is required.");
+            }
             if (productFieldRequest.FieldId == Guid.Empty)
+            {
                 throw new ArgumentException("FieldId is required.");
+            }
             if (string.IsNullOrEmpty(productFieldRequest.ProductivityUnit))
+            {
                 throw new ArgumentException("ProductivityUnit is required.");
-            if (productFieldRequest.UpdateDate == default)
-                throw new ArgumentException("UpdateDate is required.");
+            }
+
+            // Validate EndDate must be greater than StartDate
+            if (productFieldRequest.EndDate <= productFieldRequest.StartDate)
+            {
+                throw new ArgumentException("EndDate must be greater than StartDate.");
+            }
 
             // Kiểm tra ProductId và FieldId
             var productExists = await _unitOfWork.ProductRepository.GetByIdAsync(productFieldRequest.ProductId);
             if (productExists == null)
+            {
                 throw new KeyNotFoundException($"Product with ID {productFieldRequest.ProductId} not found.");
+            }
 
             var fieldExists = await _unitOfWork.FieldRepository.GetByIdAsync(productFieldRequest.FieldId);
             if (fieldExists == null)
+            {
                 throw new KeyNotFoundException($"Field with ID {productFieldRequest.FieldId} not found.");
+            }
+
+            // Check ProductFieldStatus only for Productivity and ProductivityUnit updates
+            if (productField.Productivity != productFieldRequest.Productivity || 
+                productField.ProductivityUnit != productFieldRequest.ProductivityUnit)
+            {
+                if (productField.ProductFieldStatus != ProductFieldStatus.READYTOHARVEST)
+                {
+                    throw new InvalidOperationException("Cannot update Productivity and ProductivityUnit. ProductField must be in READYTOHARVEST status.");
+                }
+            }
 
             _mapper.Map(productFieldRequest, productField);
+
             _unitOfWork.ProductFieldRepository.Update(productField);
             await _unitOfWork.SaveChangesAsync();
-            return _mapper.Map<ProductFieldResponse>(productField);
-        }
 
+            var result = _mapper.Map<ProductFieldResponse>(productField);
+
+            return result;
+        }
         public async Task<bool> DeleteProductFieldsAsync(Guid id)
         {
             var productField = await _unitOfWork.ProductFieldRepository.GetByIdAsync(id);
