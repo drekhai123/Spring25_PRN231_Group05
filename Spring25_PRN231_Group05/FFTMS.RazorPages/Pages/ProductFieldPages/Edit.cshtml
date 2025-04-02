@@ -89,11 +89,24 @@
                         </div>
                     </div>
 
-                    <div class="form-group mb-3">
-                        <label class="form-check-label">
-                            <input class="form-check-input" asp-for="ProductField.Status" /> @Html.DisplayNameFor(model => model.ProductField.Status)
-                        </label>
-                    </div>
+                        <div class="form-group mb-3">
+                            <label asp-for="ProductField.ProductFieldStatus" class="form-label">Status</label>
+                            <input asp-for="ProductField.ProductFieldStatus" class="form-control" />
+                            <span asp-validation-for="ProductField.ProductFieldStatus" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="ProductField.ProductFieldId" class="form-label">Product</label>
+                            <select asp-for="ProductField.ProductFieldId" class="form-control" asp-items="ViewBag.ProductId as SelectList">
+                                <option value="">-- Select Product --</option>
+                            </select>
+                            <span asp-validation-for="ProductField.ProductFieldId" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="form-label">Field Name</label>
+                            <input class="form-control" value="@(Model.ProductField.Field?.FieldName ?? "N/A")" readonly />
+                        </div>
 
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary">

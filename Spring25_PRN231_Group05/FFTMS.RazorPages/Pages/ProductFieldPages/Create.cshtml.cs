@@ -1,14 +1,12 @@
-﻿    using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using FlowerFarmTaskManagementSystem.BusinessObject.Models;
-using FlowerFarmTaskManagementSystem.DataAccess;
 using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
-using System.Text.Json;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FFTMS.RazorPages.Pages.ProductFieldPages
 {
@@ -19,57 +17,96 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
         public CreateModel(HttpClient httpClient)
         {
             _httpClient = httpClient;
+            _httpClient.BaseAddress = new Uri("https://localhost:5281/"); // Set base address for consistency
         }
 
-        //public IActionResult OnGet()
-        //{
-        //ViewData["FieldId"] = new SelectList(_context.Fields, "FieldId", "Description");
-        //ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "Description");
-        //    return Page();
-        //}
-
         [BindProperty]
-        public ProductField ProductField { get; set; } = default!;
-        //public List<ProductFieldResponse>() {get; set} = new();
-        // For more information, see https://aka.ms/RazorPagesCRUD.
+        public ProductField ProductField { get; set; } = new ProductField();
+
+        public string ErrorMessage { get; set; }
+
+        public async Task<IActionResult> OnGetAsync()
+        {
+            try
+            {
+                // Fetch products for dropdown
+                var productResponse = await _httpClient.GetAsync("odata/Products");
+                if (productResponse.IsSuccessStatusCode)
+                {
+                    var productJson = await productResponse.Content.ReadAsStringAsync();
+                    Console.WriteLine($"API Response (Products): {productJson}");
+                    var products = JsonSerializer.Deserialize<List<ProductDTO>>(productJson, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    }) ?? new List<ProductDTO>();
+                    ViewData["ProductId"] = new SelectList(products, "ProductId", "ProductName");
+                }
+                else
+                {
+                    var errorResponse = await productResponse.Content.ReadAsStringAsync();
+                    Console.WriteLine($"API Error (Products): {productResponse.StatusCode} - {errorResponse}");
+                    ErrorMessage = $"Failed to load products: {productResponse.StatusCode} - {errorResponse}";
+                }
+
+                // Fetch fields for dropdown (uncomment and adjust endpoint as needed)
+                var fieldResponse = await _httpClient.GetAsync("odata/Fields"); // Adjusted endpoint assumption
+                if (fieldResponse.IsSuccessStatusCode)
+                {
+                    var fieldJson = await fieldResponse.Content.ReadAsStringAsync();
+                    Console.WriteLine($"API Response (Fields): {fieldJson}");
+                    var fields = JsonSerializer.Deserialize<List<FieldDTO>>(fieldJson, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    }) ?? new List<FieldDTO>();
+                    ViewData["FieldId"] = new SelectList(fields, "FieldId", "FieldName"); // Changed to FieldName for display
+                }
+                else
+                {
+                    var errorResponse = await fieldResponse.Content.ReadAsStringAsync();
+                    Console.WriteLine($"API Error (Fields): {fieldResponse.StatusCode} - {errorResponse}");
+                    ErrorMessage = $"Failed to load fields: {fieldResponse.StatusCode} - {errorResponse}";
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching data: {ex.Message}");
+                ErrorMessage = $"Error fetching data: {ex.Message}";
+            }
+
+            return Page();
+        }
+
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
             {
+                Console.WriteLine("OnPostAsync: ModelState is invalid.");
                 return Page();
             }
 
-            var apiUrl = "https://localhost:7207/odata/create-productField";
-
-            var response = await _httpClient.PostAsJsonAsync(apiUrl, ProductField);
-
-            if (!response.IsSuccessStatusCode)
+            try
             {
-                ModelState.AddModelError(string.Empty, "Error creating product field.");
+                var apiUrl = "odata/create-productField";
+                var response = await _httpClient.PostAsJsonAsync(apiUrl, ProductField);
+                if (response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine("OnPostAsync: ProductField created successfully. Redirecting to Index...");
+                    return RedirectToPage("./Index");
+                }
+                else
+                {
+                    var errorResponse = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine($"API Error: {response.StatusCode} - {errorResponse}");
+                    ErrorMessage = $"API Error: {response.StatusCode} - {errorResponse}";
+                    return Page();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error creating product field: {ex.Message}");
+                ErrorMessage = $"Error creating product field: {ex.Message}";
                 return Page();
             }
-
-            return RedirectToPage("./Index");
-
-        }
-        public async Task<IActionResult> OnGetAsync()
-        {
-            var product = await _httpClient.GetAsync("https://localhost:7207/odata/get-all-product"); 
-            if (product.IsSuccessStatusCode)
-            {
-                var productJson = await product.Content.ReadAsStringAsync();
-                var products = JsonSerializer.Deserialize<List<ProductDTO>>(productJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                ViewData["ProductId"] = new SelectList(products, "ProductId", "ProductName");
-            }
-            //var fieldResponse = await _httpClient.GetAsync("https://localhost:7207/odata/products");
-            //if (fieldResponse.IsSuccessStatusCode)
-            //{
-            //    var fieldJson = await fieldResponse.Content.ReadAsStringAsync();
-            //    var fields = JsonSerializer.Deserialize<List<FieldDTO>>(fieldJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            //    ViewData["FieldId"] = new SelectList(fields, "FieldId", "Description");
-            //}
-            return Page();
         }
     }
 }
-
