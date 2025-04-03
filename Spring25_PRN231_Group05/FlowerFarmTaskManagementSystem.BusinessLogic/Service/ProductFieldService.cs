@@ -135,6 +135,29 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 
             return result;
         }
+        public async Task<ProductFieldResponse> UpdateProductFieldProductivity(string id, double Productivity, string ProductivityUnit)
+        {
+            if (id == null)
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+            var Id = Guid.Parse(id);
+            var productField = await _unitOfWork.ProductFieldRepository.GetByIdAsync(Id);
+            if (productField == null)
+            {
+                throw new KeyNotFoundException("ProductField not found.");
+            }
+            productField.Productivity = Productivity;
+            productField.ProductivityUnit = ProductivityUnit;
+            productField.ProductFieldStatus = ProductFieldStatus.HARVESTED;
+           
+            _unitOfWork.ProductFieldRepository.Update(productField);
+            await _unitOfWork.SaveChangesAsync();
+
+            var result = _mapper.Map<ProductFieldResponse>(productField);
+
+            return result;
+        }
         public async Task<bool> DeleteProductFieldsAsync(Guid id)
         {
             var productField = await _unitOfWork.ProductFieldRepository.GetByIdAsync(id);
