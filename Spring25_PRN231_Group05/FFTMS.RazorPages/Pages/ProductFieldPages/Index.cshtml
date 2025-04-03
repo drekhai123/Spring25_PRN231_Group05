@@ -2,106 +2,102 @@
 @model FFTMS.RazorPages.Pages.ProductFieldPages.IndexModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Product Fields";
+    Layout = "_Layout";
 }
-
 
 <div class="main-container">
     <div class="pd-ltr-20">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-3">
+                <h3 class="mb-0"><i class="fas fa-list me-2"></i>Product Fields</h3>
+                <a asp-page="Create" class="btn btn-outline-light">
+                    <i class="fas fa-plus me-1"></i> Create New
+                </a>
+            </div>
 
-        <h1>Index</h1>
-            <p class="create-new">
-                <a asp-page="Create">Create New</a>
-            </p>
-
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>
-                            @Html.DisplayNameFor(model => model.ProductField[0].Productivity)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.ProductField[0].ProductivityUnit)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.ProductField[0].StartDate)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.ProductField[0].EndDate)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.ProductField[0].CreateDate)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.ProductField[0].UpdateDate)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.ProductField[0].Status)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.ProductField[0].Product)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.ProductField[0].Field)
-                        </th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.ProductField)
-                    {
-                        <tr productfiel-id="@item.ProductFieldId">
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Productivity)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.ProductivityUnit)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.StartDate)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.EndDate)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.CreateDate)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.UpdateDate)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Status)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Product.Description)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Field.FieldName)
-                            </td>
-                            <td>
-                                <a asp-page="./Edit" asp-route-id="@item.ProductFieldId">Edit</a> |
-                                <a asp-page="./Details" asp-route-id="@item.ProductFieldId">Details</a> |
-                                <a asp-page="./Delete" asp-route-id="@item.ProductFieldId">Delete</a>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        <style>
-            .table-container {
-                margin-left: 250px;
-            }
-
-            .create-new {
-                margin-top: 40px;
-                font-size: 20
-            }
-        </style>
-	</div>
+            <div class="card-body">
+                @if (Model.ProductField == null || !Model.ProductField.Any())
+                {
+                    <p class="text-muted">No Product Fields found.</p>
+                }
+                else
+                {
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Productivity</th>
+                                <th>Unit</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Created</th>
+                                <th>Updated</th>
+                                <th>Status</th>
+                                <th>Product</th>
+                                <th>Field</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.ProductField)
+                            {
+                                <tr productfield-id="@item.ProductFieldId">
+                                    <td>@item.Productivity</td>
+                                    <td>@item.ProductivityUnit</td>
+                                    <td>@item.StartDate.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                                    <td>@item.EndDate.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                                    <td>@item.CreateDate.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                                    <td>@item.UpdateDate.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                                    <td>
+                                        <span class="badge @(item.ProductFieldStatus.ToString() == "in progress" ? "bg-warning" : "bg-secondary")">
+                                            @item.ProductFieldStatus
+                                        </span>
+                                    </td>
+                                    <td>@(item.Product != null ? item.Product.ProductName : "N/A")</td>
+                                    <td>@(item.Field != null ? item.Field.FieldName : "N/A")</td>
+                                    <td>
+                                        <a asp-page="./Edit" asp-route-id="@item.ProductFieldId" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
+                                        <a asp-page="./Details" asp-route-id="@item.ProductFieldId" class="btn btn-sm btn-info">
+                                            <i class="fas fa-eye"></i> Details
+                                        </a>
+                                        <a asp-page="./Delete" asp-route-id="@item.ProductFieldId" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    </div>
 </div>
 
+<style>
+    .main-container {
+        margin-left: 250px;
+        padding: 20px;
+    }
+
+    .card-header {
+        border-bottom: 0;
+    }
+
+    .table th, .table td {
+        vertical-align: middle;
+    }
+
+    .badge {
+        font-size: 0.9em;
+        padding: 0.5em 1em;
+    }
+</style>
 
 <script src="~/js/microsoft/signalr/dist/browser/signalr.js"></script>
 <script src="~/js/microsoft/signalr/dist/browser/deleteProductField.js"></script>
 <script src="~/js/microsoft/signalr/dist/browser/createProductField.js"></script>
 <script src="~/js/microsoft/signalr/dist/browser/updateProductField.js"></script>
+

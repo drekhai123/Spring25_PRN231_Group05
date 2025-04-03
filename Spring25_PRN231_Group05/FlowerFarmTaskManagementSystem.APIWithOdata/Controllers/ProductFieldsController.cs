@@ -83,16 +83,11 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
 
         // PUT: odata/ProductField/{id}
         [HttpPut("{id}")]
-        public async Task<ActionResult<ProductFieldResponse>> UpdateProductField(Guid id, [FromBody] ProductFieldRequest productFieldRequest)
+        public async Task<ActionResult<ProductFieldResponse>> UpdateProductField(Guid id, [FromBody] ProductFieldUpdateDTO productFieldRequest)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
-            }
-
-            if (id != productFieldRequest.ProductFieldId)
-            {
-                return BadRequest(new { Message = "ProductField ID mismatch." });
             }
 
             try

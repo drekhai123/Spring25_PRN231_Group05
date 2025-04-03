@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using FlowerFarmTaskManagementSystem.BusinessObject.Models;
-using FlowerFarmTaskManagementSystem.DataAccess;
 using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
-using System.Text.Json;
 
 namespace FFTMS.RazorPages.Pages.ProductFieldPages
 {
@@ -19,73 +14,84 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
         public DetailsModel(HttpClient httpClient)
         {
             _httpClient = httpClient;
+            _httpClient.BaseAddress = new Uri("http://localhost:5281/");
         }
 
-        public ProductField ProductField { get; set; } = default!;
+        public ProductFieldResponse ProductField { get; set; }
+
+        public string ErrorMessage { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
-            //if (id == null)
-            //{
-            //    return NotFound();
-            //}
-
-            //var productfield = await _context.ProductFields.FirstOrDefaultAsync(m => m.ProductFieldId == id);
-            //if (productfield == null)
-            //{
-            //    return NotFound();
-            //}
-            //else
-            //{
-            //    ProductField = productfield;
-            //}
             if (id == null)
             {
                 return NotFound();
             }
-            var apiUrl = $"http://localhost:5281/odata/ProductFields/get-by-id?id={id}";
-            var response = await _httpClient.GetAsync(apiUrl);
-            if (!response.IsSuccessStatusCode)
+
+
+            try
             {
-                return NotFound();
-            }
+                var apiUrl = $"odata/ProductField/{id}?$expand=Product,Field";
 
-            var jsonResponse = await response.Content.ReadAsStringAsync();
-            // Since this is an OData API, the response might be wrapped in a "value" property
-            // First, parse the JSON to check its structure
-            using var jsonDoc = JsonDocument.Parse(jsonResponse);
-            var root = jsonDoc.RootElement;
+                var response = await _httpClient.GetAsync(apiUrl);
 
-            ProductField parsedResponse;
-
-            // Check if the response has a "value" property (common in OData responses)
-            if (root.TryGetProperty("value", out var valueElement))
-            {
-                // Deserialize the "value" property into a ProductField object
-                parsedResponse = JsonSerializer.Deserialize<ProductField>(valueElement.GetRawText(), new JsonSerializerOptions
+                if (response.IsSuccessStatusCode)
                 {
-                    PropertyNameCaseInsensitive = true
-                });
-            }
-            else
-            {
-                // If there's no "value" property, deserialize the entire response
-                parsedResponse = JsonSerializer.Deserialize<ProductField>(jsonResponse, new JsonSerializerOptions
+                    var jsonResponse = await response.Content.ReadAsStringAsync();
+
+                    // Kiểm tra nếu response rỗng
+                    if (string.IsNullOrEmpty(jsonResponse))
+                    {
+                        Console.WriteLine("OnGetAsync: API returned an empty response.");
+                        ErrorMessage = "API returned an empty response.";
+                        return Page();
+                    }
+
+                    // Phân tích JSON
+                    ProductFieldResponse productField;
+                    using var jsonDoc = JsonDocument.Parse(jsonResponse);
+                    var root = jsonDoc.RootElement;
+
+                    if (root.ValueKind == JsonValueKind.Array || !root.TryGetProperty("value", out var valueElement))
+                    {
+                        productField = JsonSerializer.Deserialize<ProductFieldResponse>(jsonResponse, new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true
+                        });
+                    }
+                    else
+                    {
+                        productField = JsonSerializer.Deserialize<ProductFieldResponse>(valueElement.GetRawText(), new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true
+                        });
+                    }
+
+                    if (productField == null)
+                    {
+                        return NotFound();
+                    }
+
+
+
+                    ProductField = productField;
+                }
+                else
                 {
-                    PropertyNameCaseInsensitive = true
-                });
-            }
+                    var errorResponse = await response.Content.ReadAsStringAsync();
 
-            if (parsedResponse == null)
+                    ErrorMessage = $"Error fetching ProductField: {response.StatusCode} - {errorResponse}";
+                    return Page();
+                }
+            }
+            catch (Exception ex)
             {
-                return NotFound();
+
+                ErrorMessage = $"Error fetching ProductField: {ex.Message}";
+                return Page();
             }
 
-            // Assign the deserialized response to the ProductField property
-            ProductField = parsedResponse;
             return Page();
         }
-
-
     }
 }

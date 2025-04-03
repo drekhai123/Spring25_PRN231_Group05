@@ -2,85 +2,166 @@
 @model FFTMS.RazorPages.Pages.ProductFieldPages.DetailsModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Product Field Details";
+    Layout = "_Layout";
 }
 
-
 <div class="main-container">
-	<div class="pd-ltr-20">
-		<h1>Details</h1>
+    <div class="pd-ltr-20">
+        <div class="card shadow">
+            <div class="card-header bg-info text-white d-flex justify-content-between align-items-center py-3">
+                <h3 class="mb-0"><i class="fas fa-info-circle me-2"></i>Product Field Details</h3>
+                <a asp-page="./Index" class="btn btn-outline-light">
+                    <i class="fas fa-arrow-left me-1"></i> Back to List
+                </a>
+            </div>
 
-        @if (Model.ProductField == null)
-        {
-            <p>Product Field not found.</p>
-        }
-        else
-        {
-            <div>
-                <h4>ProductField</h4>
-                <hr />
-                <dl class="row">
-                    <dt class="col-sm-2">
-                        @Html.DisplayNameFor(model => model.ProductField.Productivity)
-                    </dt>
-                    <dd class="col-sm-10">
-                        @Html.DisplayFor(model => model.ProductField.Productivity)
-                    </dd>
-                    <dt class="col-sm-2">
-                        @Html.DisplayNameFor(model => model.ProductField.ProductivityUnit)
-                    </dt>
-                    <dd class="col-sm-10">
-                        @Html.DisplayFor(model => model.ProductField.ProductivityUnit)
-                    </dd>
-                    <dt class="col-sm-2">
-                        @Html.DisplayNameFor(model => model.ProductField.StartDate)
-                    </dt>
-                    <dd class="col-sm-10">
-                        @Html.DisplayFor(model => model.ProductField.StartDate)
-                    </dd>
-                    <dt class="col-sm-2">
-                        @Html.DisplayNameFor(model => model.ProductField.EndDate)
-                    </dt>
-                    <dd class="col-sm-10">
-                        @Html.DisplayFor(model => model.ProductField.EndDate)
-                    </dd>
-                    <dt class="col-sm-2">
-                        @Html.DisplayNameFor(model => model.ProductField.CreateDate)
-                    </dt>
-                    <dd class="col-sm-10">
-                        @Html.DisplayFor(model => model.ProductField.CreateDate)
-                    </dd>
-                    <dt class="col-sm-2">
-                        @Html.DisplayNameFor(model => model.ProductField.UpdateDate)
-                    </dt>
-                    <dd class="col-sm-10">
-                        @Html.DisplayFor(model => model.ProductField.UpdateDate)
-                    </dd>
-                    <dt class="col-sm-2">
-                        @Html.DisplayNameFor(model => model.ProductField.Status)
-                    </dt>
-                    <dd class="col-sm-10">
-                        @Html.DisplayFor(model => model.ProductField.Status)
-                    </dd>
-                    <dt class="col-sm-2">
-                        @Html.DisplayNameFor(model => model.ProductField.Product)
-                    </dt>
-                    <dd class="col-sm-10">
-                        @(Model.ProductField.Product != null ? Html.DisplayFor(model => model.ProductField.Product.ProductName) : "N/A")
-                    </dd>
-                    <dt class="col-sm-2">
-                        @Html.DisplayNameFor(model => model.ProductField.Field)
-                    </dt>
-                    <dd class="col-sm-10">
-                        @(Model.ProductField.Field != null ? Html.DisplayFor(model => model.ProductField.Field.FieldName) : "N/A")
-                    </dd>
-                </dl>
+            <div class="card-body">
+                @if (Model.ProductField == null)
+                {
+                    <p class="text-danger">Product Field not found.</p>
+                }
+                else
+                {
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-4">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="mb-0"><i class="fas fa-seedling me-2"></i>Product Field Information</h5>
+                                </div>
+                                <div class="card-body">
+                                    <dl class="row">
+                                        <dt class="col-sm-4">Status</dt>
+                                        <dd class="col-sm-8">
+                                            <span class="badge @(Model.ProductField.ProductFieldStatus == FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.READYTOHARVEST ? "bg-success" : 
+                                                               Model.ProductField.ProductFieldStatus == FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.GROWING ? "bg-info" :
+                                                               Model.ProductField.ProductFieldStatus == FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.HARVESTED ? "bg-secondary" : "bg-warning")">
+                                                @Model.ProductField.ProductFieldStatus
+                                            </span>
+                                        </dd>
+
+                                        <dt class="col-sm-4">Productivity</dt>
+                                        <dd class="col-sm-8">@Model.ProductField.Productivity @Model.ProductField.ProductivityUnit</dd>
+
+                                        <dt class="col-sm-4">Start Date</dt>
+                                        <dd class="col-sm-8">@Model.ProductField.StartDate.ToString("dd/MM/yyyy")</dd>
+
+                                        <dt class="col-sm-4">End Date</dt>
+                                        <dd class="col-sm-8">@Model.ProductField.EndDate.ToString("dd/MM/yyyy")</dd>
+
+                                        <dt class="col-sm-4">Created Date</dt>
+                                        <dd class="col-sm-8">@Model.ProductField.CreateDate.ToString("dd/MM/yyyy HH:mm")</dd>
+
+                                        <dt class="col-sm-4">Last Updated</dt>
+                                        <dd class="col-sm-8">@Model.ProductField.UpdateDate.ToString("dd/MM/yyyy HH:mm")</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            @if (Model.ProductField?.Product != null)
+                            {
+                                <div class="card mb-4">
+                                    <div class="card-header bg-success text-white">
+                                        <h5 class="mb-0"><i class="fas fa-leaf me-2"></i>Product Information</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <dl class="row">
+                                            <dt class="col-sm-4">Product Name</dt>
+                                            <dd class="col-sm-8">@Model.ProductField.Product.ProductName</dd>
+
+                                            <dt class="col-sm-4">Description</dt>
+                                            <dd class="col-sm-8">@Model.ProductField.Product.Description</dd>
+
+                                            @if (Model.ProductField.Product.Category != null)
+                                            {
+                                                <dt class="col-sm-4">Category</dt>
+                                                <dd class="col-sm-8">@(Model.ProductField.Product.Category?.CategoryName ?? "N/A")</dd>
+                                            }
+                                        </dl>
+                                    </div>
+                                </div>
+                            }
+
+                            @if (Model.ProductField.Field != null)
+                            {
+                                <div class="card">
+                                    <div class="card-header bg-warning text-dark">
+                                        <h5 class="mb-0"><i class="fas fa-map-marker-alt me-2"></i>Field Information</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <dl class="row">
+                                            <dt class="col-sm-4">Field Name</dt>
+                                            <dd class="col-sm-8">@Model.ProductField.Field.FieldName</dd>
+
+                                            <dt class="col-sm-4">Dimensions</dt>
+                                            <dd class="col-sm-8">@Model.ProductField.Field.Length x @Model.ProductField.Field.Width meters</dd>
+
+                                            <dt class="col-sm-4">Description</dt>
+                                            <dd class="col-sm-8">@Model.ProductField.Field.Description</dd>
+
+                                            @if (!string.IsNullOrEmpty(Model.ProductField.Field.FieldImageUrl))
+                                            {
+                                                <dt class="col-sm-4">Field Image</dt>
+                                                <dd class="col-sm-8">
+                                                    <img src="@Model.ProductField.Field.FieldImageUrl" alt="Field Image" class="img-fluid rounded" style="max-height: 200px;" />
+                                                </dd>
+                                            }
+                                        </dl>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="mt-4 text-center">
+                        <a asp-page="./Edit" asp-route-id="@Model.ProductField.ProductFieldId" class="btn btn-primary">
+                            <i class="fas fa-edit me-1"></i> Edit
+                        </a>
+                        <a asp-page="./Index" class="btn btn-secondary ms-2">
+                            <i class="fas fa-list me-1"></i> Back to List
+                        </a>
+                    </div>
+                }
             </div>
-            <div>
-                <a asp-page="./Edit" asp-route-id="@Model.ProductField.ProductFieldId">Edit</a> |
-                <a asp-page="./Index">Back to List</a>
-            </div>
-        }
-	</div>
+        </div>
+    </div>
 </div>
 
+<style>
+    .main-container {
+        margin-left: 250px;
+    }
+
+    .card {
+        border: none;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    }
+
+    .card-header {
+        font-weight: 500;
+    }
+
+    dl.row {
+        margin-bottom: 0;
+    }
+
+    dt {
+        font-weight: 600;
+    }
+
+    dd {
+        margin-bottom: 0.5rem;
+    }
+
+    .badge {
+        padding: 0.5em 1em;
+        font-size: 0.875em;
+    }
+
+    img.img-fluid {
+        object-fit: cover;
+        width: 100%;
+    }
+</style>
