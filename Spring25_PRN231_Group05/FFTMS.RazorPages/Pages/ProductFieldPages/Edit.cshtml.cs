@@ -75,11 +75,11 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
-            {
-                await LoadDropdownData();
-                return Page();
-            }
+            //if (!ModelState.IsValid)
+            //{
+            //    await LoadDropdownData();
+            //    return Page();
+            //}
 
             try
             {
