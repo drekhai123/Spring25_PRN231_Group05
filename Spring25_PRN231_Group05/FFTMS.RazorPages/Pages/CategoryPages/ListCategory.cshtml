@@ -12,11 +12,11 @@
             <div class="page-header">
                 <div class="row align-items-center">
                     <div class="col-md-6 col-sm-12">
-                        <h4 class="mb-0">Category List</h4>
+                        <h4 class="mb-0">Danh mục</h4>
                         <nav aria-label="breadcrumb" role="navigation">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item">Category</li>
-                                <li class="breadcrumb-item active" aria-current="page">List</li>
+                                <li class="breadcrumb-item">Danh mục</li>
+                                <li class="breadcrumb-item active" aria-current="page">Danh sách</li>
                             </ol>
                         </nav>
                     </div>
@@ -26,26 +26,26 @@
             <!-- Action Buttons -->
             <div class="mb-4">
                 <a asp-page="CreateCategory" class="btn btn-success me-2">
-                    <i class="icon-copy dw dw-add"></i> Add Category
+                    <i class="icon-copy dw dw-add"></i> Thêm danh mục
                 </a>
             </div>
 
             <!-- Category Table -->
             <div class="card-box mb-30">
                 <div class="pd-20">
-                    <h4 class="text-blue h4 mb-0">Categories</h4>
+                    <h4 class="text-blue h4 mb-0">Danh mục</h4>
                 </div>
                 <div class="pb-20">
                     <table class="data-table table table-striped table-hover nowrap">
                         <thead class="table-dark">
                             <tr>
                                 <th scope="col">ID</th>
-                                <th scope="col">Name</th>
-                                <th scope="col">Description</th>
-                                <th scope="col">Image</th>
-                                <th scope="col">Created Date</th>
-                                <th scope="col">Status</th>
-                                <th scope="col" class="text-center">Actions</th>
+                                <th scope="col">Tên hoa</th>
+                                <th scope="col">Mô tả</th>
+                                <th scope="col">Hình Ảnh</th>
+                                <th scope="col">Ngày tạo</th>
+                                <th scope="col">Trạng thái</th>
+                                <th scope="col" class="text-center">Hành động</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -62,26 +62,26 @@
                                         }
                                         else
                                         {
-                                            <span class="text-muted">No Image</span>
+                                            <span class="text-muted">Không có hình ảnh</span>
                                         }
                                     </td>
                                     <td>@category.CreateDate.ToString("dd/MM/yyyy")</td>
                                     <td>
                                         <span class="badge @(category.Status ? "badge-success" : "badge-danger")">
-                                            @(category.Status ? "Active" : "Inactive")
+                                            @(category.Status ? "Hoạt động" : "Không hoạt động")
                                         </span>
                                     </td>
                                     <td class="text-center">
                                         <div class="d-flex justify-content-center gap-2">
-                                            <a asp-page="DetailsCategory" asp-route-id="@category.CategoryId" class="btn btn-sm btn-info" title="View Details">
+                                            <a asp-page="DetailsCategory" asp-route-id="@category.CategoryId" class="btn btn-sm btn-info" title="Xem chi tiết">
                                                 <i class="dw dw-eye"></i>
                                             </a>
-                                            <a asp-page="UpdateCategory" asp-route-id="@category.CategoryId" class="btn btn-sm btn-primary" title="Edit">
+                                            <a asp-page="UpdateCategory" asp-route-id="@category.CategoryId" class="btn btn-sm btn-primary" title="Sửa">
                                                 <i class="dw dw-edit"></i>
                                             </a>
                                             <a asp-page="DeleteCategory" asp-route-id="@category.CategoryId" 
-                                               class="btn btn-sm btn-danger" title="Delete"
-                                               onclick="return confirm('Are you sure you want to delete this category?');">
+                                               class="btn btn-sm btn-danger" title="Xóa"
+                                               onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này không?');">
                                                 <i class="dw dw-delete"></i>
                                             </a>
                                         </div>
@@ -102,11 +102,11 @@
             $('.data-table').DataTable({
                 responsive: true,
                 language: {
-                    search: "Search:",
-                    lengthMenu: "Show _MENU_ entries",
-                    info: "Showing _START_ to _END_ of _TOTAL_ entries",
-                    infoEmpty: "Showing 0 to 0 of 0 entries",
-                    infoFiltered: "(filtered from _MAX_ total entries)"
+                    search: "Tìm kiếm:",
+                    lengthMenu: "Hiển thị _MENU_ mục",
+                    info: "Hiển thị _START_ đến _END_ của _TOTAL_ mục",
+                    infoEmpty: "Hiển thị 0 đến 0 của 0 mục",
+                    infoFiltered: "(đã lọc từ _MAX_ mục tổng số)"
                 }
             });
         });

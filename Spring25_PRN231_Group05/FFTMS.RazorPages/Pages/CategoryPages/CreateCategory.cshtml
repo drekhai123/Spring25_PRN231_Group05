@@ -12,11 +12,11 @@
             <div class="page-header">
                 <div class="row align-items-center">
                     <div class="col-md-6 col-sm-12">
-                        <h4 class="mb-0">Create Category</h4>
+                        <h4 class="mb-0">Tạo danh mục</h4>
                         <nav aria-label="breadcrumb" role="navigation">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a asp-page="ListCategory">Category</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">Create</li>
+                                <li class="breadcrumb-item"><a asp-page="ListCategory">Danh mục</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Tạo</li>
                             </ol>
                         </nav>
                     </div>
@@ -26,7 +26,7 @@
             @if (!string.IsNullOrEmpty(Model.ErrorMessage))
             {
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <strong>Error!</strong> @Model.ErrorMessage
+                    <strong>Lỗi!</strong> @Model.ErrorMessage
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             }
@@ -34,7 +34,7 @@
             @if (!string.IsNullOrEmpty(Model.SuccessMessage))
             {
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <strong>Success!</strong> @Model.SuccessMessage
+                    <strong>Thành công!</strong> @Model.SuccessMessage
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             }
@@ -42,7 +42,7 @@
             <!-- Category Create Form -->
             <div class="card-box mb-30">
                 <div class="pd-20">
-                    <h4 class="text-blue h4 mb-3">Category Information</h4>
+                    <h4 class="text-blue h4 mb-3">Thông tin danh mục</h4>
                     <form method="post" class="needs-validation" novalidate>
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                         <input type="hidden" asp-for="Input.CategoryImageUrl" id="categoryImageUrl" />
@@ -73,12 +73,12 @@
                             <div class="col-md-4">
                                 <!-- Image Upload Area -->
                                 <div class="form-group mb-3">
-                                    <label class="form-label">Category Image</label>
+                                    <label class="form-label">Hình ảnh danh mục</label>
                                     <div id="dropArea" class="border rounded p-3 text-center cursor-pointer">
                                         <input type="file" id="imageUpload" accept="image/*" class="d-none" />
                                         <i class="icon-copy dw dw-upload1 fa-2x mb-2"></i>
-                                        <p class="mb-0">Drag and drop an image here or click to select</p>
-                                        <small class="text-muted">Supported formats: JPG, JPEG, PNG (max 5MB)</small>
+                                        <p class="mb-0">Kéo và thả hình ảnh vào đây hoặc nhấp để chọn</p>
+                                        <small class="text-muted">Định dạng hỗ trợ: JPG, JPEG, PNG (tối đa 5MB)</small>
                                     </div>
                                     <span asp-validation-for="Input.CategoryImageUrl" class="text-danger"></span>
                                 </div>
@@ -94,7 +94,7 @@
                                     <img id="imagePreview" src="#" 
                                          alt="Category image preview" class="img-fluid rounded mb-2" style="max-height: 200px;" />
                                     <button type="button" id="removeImageBtn" class="btn btn-danger btn-sm">
-                                        <i class="icon-copy dw dw-delete-3"></i> Remove Image
+                                        <i class="icon-copy dw dw-delete-3"></i> Xóa hình ảnh
                                     </button>
                                 </div>
                             </div>
@@ -102,10 +102,10 @@
 
                         <div class="form-group mt-4">
                             <button type="submit" class="btn btn-primary">
-                                <i class="icon-copy dw dw-save"></i> Create Category
+                                <i class="icon-copy dw dw-save"></i> Tạo danh mục
                             </button>
                             <a asp-page="ListCategory" class="btn btn-secondary">
-                                <i class="icon-copy dw dw-cancel"></i> Cancel
+                                <i class="icon-copy dw dw-cancel"></i> Hủy bỏ
                             </a>
                         </div>
                     </form>
@@ -185,7 +185,7 @@
                 fileInput.files = dt.files;
                 uploadFile(file);
             } else {
-                showToast('Please select an image file', 'error');
+                showToast('Vui lòng chọn một tệp hình ảnh', 'error');
             }
         }
 
@@ -205,7 +205,7 @@
         removeImageBtn.addEventListener('click', function() {
             categoryImageUrl.value = '';
             imagePreviewContainer.classList.add('d-none');
-            showToast('Image removed', 'success');
+            showToast('Hình ảnh đã được xóa', 'success');
         });
 
         // Upload file function
@@ -220,7 +220,7 @@
 
                 // Validate file size (max 5MB)
                 if (file.size > 5 * 1024 * 1024) {
-                    showToast('File size cannot exceed 5MB', 'error');
+                    showToast('Kích thước tệp không được vượt quá 5MB', 'error');
                     progressContainer.classList.add('d-none');
                     return;
                 }
@@ -256,16 +256,16 @@
                             imagePreviewContainer.classList.remove('d-none');
                             progressContainer.classList.add('d-none');
                             
-                            showToast('Image uploaded successfully', 'success');
+                            showToast('Hình ảnh đã được tải lên thành công', 'success');
                         } catch (error) {
-                            console.error('Error getting download URL:', error);
-                            showToast('Error getting download URL', 'error');
+                            console.error('Lỗi khi lấy URL tải xuống:', error);
+                            showToast('Lỗi khi lấy URL tải xuống', 'error');
                         }
                     }
                 );
             } catch (error) {
-                console.error('Error during upload setup:', error);
-                showToast('Error during upload setup', 'error');
+                console.error('Lỗi khi thiết lập tải lên:', error);
+                showToast('Lỗi khi thiết lập tải lên', 'error');
             }
         }
 
@@ -316,9 +316,9 @@
                 event.preventDefault();
                 event.stopPropagation();
                 if (!categoryImageUrl.value) {
-                    showToast('Please upload an image', 'error');
+                    showToast('Vui lòng tải lên một hình ảnh', 'error');
                 } else {
-                    showToast('Please fill all required fields correctly', 'error');
+                    showToast('Vui lòng điền đầy đủ các trường bắt buộc chính xác', 'error');
                 }
             }
             form.classList.add('was-validated');
