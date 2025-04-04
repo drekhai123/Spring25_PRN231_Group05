@@ -65,7 +65,7 @@ namespace FFTMS.RazorPages.Pages.FarmToolsOfTask
                 // Đảm bảo form data có giá trị
                 if (FarmToolsOfTask == null || string.IsNullOrEmpty(FarmToolsOfTask.UserTaskId))
                 {
-                    ModelState.AddModelError("", "Missing task information");
+                    ModelState.AddModelError("", "Thiếu thông tin tác vụ");
                     await LoadFarmToolsList();
                     return Page();
                 }
@@ -73,7 +73,7 @@ namespace FFTMS.RazorPages.Pages.FarmToolsOfTask
                 // Kiểm tra công cụ đã chọn
                 if (string.IsNullOrEmpty(selectedToolsJson))
                 {
-                    ModelState.AddModelError("", "Please select at least one farm tool");
+                    ModelState.AddModelError("", "Vui lòng chọn ít nhất một công cụ trang trại");
                     await LoadFarmToolsList();
                     return Page();
                 }
@@ -99,7 +99,7 @@ namespace FFTMS.RazorPages.Pages.FarmToolsOfTask
                             var availableTool = availableTools.FirstOrDefault(t => t.FarmToolsId == selectedTool.FarmToolsId);
                             if (availableTool != null && selectedTool.Quantity > availableTool.FarmToolsQuantity)
                             {
-                                ModelState.AddModelError("", $"Quantity for {availableTool.FarmToolsName} exceeds available quantity ({availableTool.FarmToolsQuantity})");
+                                ModelState.AddModelError("", $"Số lượng của {availableTool.FarmToolsName} vượt quá số lượng có sẵn ({availableTool.FarmToolsQuantity})");
                                 await LoadFarmToolsList();
                                 return Page();
                             }
@@ -118,14 +118,14 @@ namespace FFTMS.RazorPages.Pages.FarmToolsOfTask
 
                     if (toolsList == null || !toolsList.Any())
                     {
-                        ModelState.AddModelError("", "No valid farm tools selected");
+                        ModelState.AddModelError("", "Không có công cụ trang trại hợp lệ nào được chọn");
                         await LoadFarmToolsList();
                         return Page();
                     }
                 }
                 catch (JsonException ex)
                 {
-                    ModelState.AddModelError("", $"Error processing tool data: {ex.Message}");
+                    ModelState.AddModelError("", $"Lỗi khi xử lý dữ liệu công cụ: {ex.Message}");
                     await LoadFarmToolsList();
                     return Page();
                 }
@@ -197,7 +197,7 @@ namespace FFTMS.RazorPages.Pages.FarmToolsOfTask
                             // Vẫn tiếp tục quy trình
                         }
 
-                        TempData["SuccessMessage"] = "Farm tools added successfully";
+                        TempData["SuccessMessage"] = "Đã thêm công cụ trang trại thành công";
                         return RedirectToPage("/UserTasks/Index");
                     }
                     else
@@ -240,7 +240,7 @@ namespace FFTMS.RazorPages.Pages.FarmToolsOfTask
             {
                 AvailableTools = new List<FarmToolsResponseDTO>();
                 FarmToolsList = new SelectList(new List<FarmToolsResponseDTO>(), "FarmToolsId", "FarmToolsName");
-                ModelState.AddModelError("", "Error loading farm tools list.");
+                ModelState.AddModelError("", "Lỗi khi tải danh sách công cụ trang trại.");
             }
         }
     }
