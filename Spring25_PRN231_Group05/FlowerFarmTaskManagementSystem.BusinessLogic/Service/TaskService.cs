@@ -13,11 +13,13 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IProductFieldService _productFieldService;
 
-        public TaskService(IUnitOfWork unitOfWork, IMapper mapper)
+        public TaskService(IUnitOfWork unitOfWork, IMapper mapper, IProductFieldService productFieldService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _productFieldService = productFieldService;
         }
 
         public async Task<IEnumerable<TaskResponseDTO>> GetAllTasksAsync()
@@ -55,6 +57,26 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
         {
             await ValidateTaskData(taskRequest);
 
+            // Validate ProductField status must be READYTOPLANT or READYTOHARVEST for harvest tasks
+            var productField = await _unitOfWork.ProductFieldRepository.GetByIdAsync(taskRequest.ProductFieldId);
+            if (productField == null)
+                throw new ArgumentException($"ProductField with ID {taskRequest.ProductFieldId} not found");
+
+            // Check if this is a harvest task
+            bool isHarvestTask = taskRequest.JobTitle.Contains("Thu hoạch", StringComparison.OrdinalIgnoreCase);
+
+            // Validate status based on task type
+            if (isHarvestTask)
+            {
+                if (productField.ProductFieldStatus != ProductFieldStatus.READYTOHARVEST)
+                    throw new ArgumentException("Can only create harvest tasks for fields that are ready to harvest");
+            }
+            else
+            {
+                if (productField.ProductFieldStatus != ProductFieldStatus.READYTOPLANT)
+                    throw new ArgumentException("Can only create planting tasks for fields that are ready to plant");
+            }
+
             // Tạo Task mới
             var task = _mapper.Map<TaskWork>(taskRequest);
             task.TaskWorkId = Guid.NewGuid();
@@ -79,7 +101,6 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             {
                 try
                 {
-                    // Chỉ lưu TaskWork và UserTasks, không lưu ProductField
                     await _unitOfWork.TaskWorkRepository.AddAsync(task);
 
                     foreach (var userTask in userTasks)
@@ -89,7 +110,6 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 
                     await _unitOfWork.SaveChangesAsync();
 
-                    // Load lại task với đầy đủ thông tin
                     var createdTask = await Task.FromResult(_unitOfWork.TaskWorkRepository.Get(
                         filter: t => t.TaskWorkId == task.TaskWorkId,
                         includeProperties: "UserTasks.User,ProductField.Product.Category,ProductField.Field"
@@ -117,20 +137,57 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             if (task == null)
                 throw new KeyNotFoundException($"Task with ID {id} not found");
 
+            // Get existing UserTasks with their FarmTools to preserve their status and tools
+            var existingUserTasks = _unitOfWork.UserTaskRepository.Get(
+                filter: ut => ut.TaskWorkId == id,
+                includeProperties: "User,FarmToolsOfTasks"
+            ).ToDictionary(ut => ut.UserId.ToString());
+
             // Cập nhật thông tin task
             _mapper.Map(taskRequest, task);
             task.ProductFieldId = taskRequest.ProductFieldId;
 
-            // Tạo danh sách UserTask mới
-            var userTasks = taskRequest.UserTasks.Select(userTask => new UserTask
+            // Tạo danh sách UserTask mới, giữ nguyên status và farm tools nếu user đã tồn tại
+            var userTasks = taskRequest.UserTasks.Select(userTask =>
             {
-                UserTaskId = Guid.NewGuid(),
-                TaskWorkId = task.TaskWorkId,
-                UserId = Guid.Parse(userTask.AssignedTo),
-                UserTaskDescription = userTask.UserTaskDescription,
-                CreateDate = DateTime.UtcNow,
-                UpdateDate = DateTime.UtcNow,
-                Status = (int)UserTaskStatus.Waiting
+                var userId = userTask.AssignedTo;
+                var newUserTask = new UserTask
+                {
+                    UserTaskId = Guid.NewGuid(),
+                    TaskWorkId = task.TaskWorkId,
+                    UserId = Guid.Parse(userId),
+                    UserTaskDescription = userTask.UserTaskDescription,
+                    CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    // Giữ nguyên status cũ nếu user đã tồn tại trong task
+                    Status = existingUserTasks.ContainsKey(userId) 
+                        ? existingUserTasks[userId].Status 
+                        : (int)UserTaskStatus.Waiting,
+                    FarmToolsOfTasks = new List<FarmToolsOfTask>()
+                };
+
+                // Copy ImageUrl và FarmToolsOfTasks nếu có
+                if (existingUserTasks.ContainsKey(userId))
+                {
+                    var existingUserTask = existingUserTasks[userId];
+                    newUserTask.ImageUrl = existingUserTask.ImageUrl;
+                    
+                    // Copy FarmToolsOfTasks với đầy đủ thông tin
+                    if (existingUserTask.FarmToolsOfTasks != null)
+                    {
+                        newUserTask.FarmToolsOfTasks = existingUserTask.FarmToolsOfTasks
+                            .Select(ft => new FarmToolsOfTask
+                            {
+                                FarmToolsOfTaskId = Guid.NewGuid(),
+                                UserTaskId = newUserTask.UserTaskId,
+                                FarmToolsId = ft.FarmToolsId,
+                                Status = ft.Status,
+                                FarmToolOfTaskUnit = ft.FarmToolOfTaskUnit // Copy FarmToolOfTaskUnit
+                            }).ToList();
+                    }
+                }
+
+                return newUserTask;
             }).ToList();
 
             using (var transaction = await _unitOfWork.BeginTransactionAsync())
@@ -140,19 +197,29 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
                     // Cập nhật task
                     _unitOfWork.TaskWorkRepository.Update(task);
 
-                    // Xóa các UserTask cũ
-                    var oldUserTasks = _unitOfWork.UserTaskRepository.Get(
-                        filter: ut => ut.TaskWorkId == id
-                    );
-                    foreach (var oldUserTask in oldUserTasks)
+                    // Xóa các UserTask cũ và FarmToolsOfTask liên quan
+                    foreach (var oldUserTask in existingUserTasks.Values)
                     {
+                        // Xóa các FarmToolsOfTask trước
+                        foreach (var farmTool in oldUserTask.FarmToolsOfTasks)
+                        {
+                            _unitOfWork.FarmToolsOfTaskRepository.Delete(farmTool);
+                        }
+                        // Sau đó xóa UserTask
                         _unitOfWork.UserTaskRepository.Delete(oldUserTask);
                     }
 
-                    // Thêm các UserTask mới
+                    // Thêm các UserTask mới và FarmToolsOfTask của chúng
                     foreach (var userTask in userTasks)
                     {
                         await _unitOfWork.UserTaskRepository.AddAsync(userTask);
+                        if (userTask.FarmToolsOfTasks != null)
+                        {
+                            foreach (var farmTool in userTask.FarmToolsOfTasks)
+                            {
+                                await _unitOfWork.FarmToolsOfTaskRepository.AddAsync(farmTool);
+                            }
+                        }
                     }
 
                     await _unitOfWork.SaveChangesAsync();
@@ -160,7 +227,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
                     // Load lại task với đầy đủ thông tin
                     var updatedTask = await Task.FromResult(_unitOfWork.TaskWorkRepository.Get(
                         filter: t => t.TaskWorkId == task.TaskWorkId,
-                        includeProperties: "UserTasks.User,ProductField.Product.Category,ProductField.Field"
+                        includeProperties: "UserTasks.User,UserTasks.FarmToolsOfTasks,ProductField.Product.Category,ProductField.Field"
                     ).FirstOrDefault());
 
                     await transaction.CommitAsync();
@@ -344,14 +411,68 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             // Only check active tasks that are not already completed
             if (task.Status && task.TaskStatus != TaskProgressStatus.COMPLETED)
             {
-                // If task has UserTasks and all of them are completed (status = 2)
-                if (task.UserTasks != null && task.UserTasks.Count > 0 && 
-                    task.UserTasks.All(ut => ut.Status == (int)UserTaskStatus.Completed))
+                if (task.UserTasks != null && task.UserTasks.Any())
                 {
-                    // Update task status to COMPLETED
-                    task.TaskStatus = TaskProgressStatus.COMPLETED;
-                    _unitOfWork.TaskWorkRepository.Update(task);
-                    await _unitOfWork.SaveChangesAsync();
+                    // Check if any UserTask is in PROCESSING status
+                    bool hasAllProcessingTasks = task.UserTasks.All(ut => ut.Status == (int)UserTaskStatus.Processing);
+                    bool allTasksCompleted = task.UserTasks.All(ut => ut.Status == (int)UserTaskStatus.Completed);
+
+                    // If all tasks are processing, update ProductField status based on current status
+                    if (hasAllProcessingTasks && task.ProductFieldId.HasValue && task.ProductFieldId.Value != Guid.Empty)
+                    {
+                        task.TaskStatus = TaskProgressStatus.INPROGRESS;
+                        _unitOfWork.TaskWorkRepository.Update(task);
+
+                        var productField = await _unitOfWork.ProductFieldRepository.GetByIdAsync(task.ProductFieldId.Value);
+                        if (productField != null)
+                        {
+                            // Check if this is a harvest task
+                            bool isHarvestTask = task.JobTitle.Contains("Thu hoạch", StringComparison.OrdinalIgnoreCase);
+
+                            if (isHarvestTask && productField.ProductFieldStatus == ProductFieldStatus.READYTOHARVEST)
+                            {
+                                productField.ProductFieldStatus = ProductFieldStatus.HARVESTING;
+                                _unitOfWork.ProductFieldRepository.Update(productField);
+                            }
+                            else if (!isHarvestTask && productField.ProductFieldStatus == ProductFieldStatus.READYTOPLANT)
+                            {
+                                productField.ProductFieldStatus = ProductFieldStatus.GROWING;
+                                _unitOfWork.ProductFieldRepository.Update(productField);
+                            }
+
+                            await _unitOfWork.SaveChangesAsync();
+                        }
+                    }
+
+                    // If all tasks are completed, update task status and product field
+                    if (allTasksCompleted && task.UserTasks.Count > 0)
+                    {
+                        task.TaskStatus = TaskProgressStatus.COMPLETED;
+                        _unitOfWork.TaskWorkRepository.Update(task);
+
+                        // Update ProductField status based on current status
+                        if (task.ProductFieldId.HasValue && task.ProductFieldId.Value != Guid.Empty)
+                        {
+                            var productField = await _unitOfWork.ProductFieldRepository.GetByIdAsync(task.ProductFieldId.Value);
+                            if (productField != null)
+                            {
+                                bool isHarvestTask = task.JobTitle.Contains("Thu hoạch", StringComparison.OrdinalIgnoreCase);
+
+                                if (!isHarvestTask && productField.ProductFieldStatus == ProductFieldStatus.GROWING)
+                                {
+                                    productField.ProductFieldStatus = ProductFieldStatus.READYTOHARVEST;
+                                    _unitOfWork.ProductFieldRepository.Update(productField);
+                                }
+                                else if (isHarvestTask && productField.ProductFieldStatus == ProductFieldStatus.HARVESTING)
+                                {
+                                    productField.ProductFieldStatus = ProductFieldStatus.HARVESTED;
+                                    _unitOfWork.ProductFieldRepository.Update(productField);
+                                }
+
+                                await _unitOfWork.SaveChangesAsync();
+                            }
+                        }
+                    }
                 }
             }
         }

@@ -226,5 +226,71 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             var productFields = query.ToList();
             return _mapper.Map<IEnumerable<ProductFieldResponse>>(productFields);
         }
+
+        public async Task<ProductFieldResponse> UpdateProductFieldStatus(Guid id, ProductFieldStatus newStatus)
+        {
+            if (id == Guid.Empty)
+            {
+                throw new ArgumentException("ProductField ID is required.");
+            }
+
+            var productField = await _unitOfWork.ProductFieldRepository.GetByIdAsync(id);
+            if (productField == null)
+            {
+                throw new KeyNotFoundException("ProductField not found.");
+            }
+
+            // Validate status transition
+            if (!IsValidStatusTransition(productField.ProductFieldStatus, newStatus))
+            {
+                throw new InvalidOperationException($"Invalid status transition from {productField.ProductFieldStatus} to {newStatus}");
+            }
+
+            productField.ProductFieldStatus = newStatus;
+            productField.UpdateDate = DateTime.UtcNow;
+
+            _unitOfWork.ProductFieldRepository.Update(productField);
+            await _unitOfWork.SaveChangesAsync();
+
+            return _mapper.Map<ProductFieldResponse>(productField);
+        }
+
+        private bool IsValidStatusTransition(ProductFieldStatus currentStatus, ProductFieldStatus newStatus)
+        {
+            // Check if the new status is exactly one step higher than the current status
+            // and that we haven't reached the maximum status (HARVESTED)
+            return currentStatus < ProductFieldStatus.HARVESTED && 
+                   (int)newStatus == (int)currentStatus + 1;
+        }
+
+        public async Task<ProductFieldResponse> IncrementProductFieldStatus(Guid id)
+        {
+            var productField = await _unitOfWork.ProductFieldRepository.GetByIdAsync(id);
+            if (productField == null)
+            {
+                throw new KeyNotFoundException($"Product Field with ID {id} not found.");
+            }
+
+            // Increment the status based on current status
+            switch (productField.ProductFieldStatus)
+            {
+                case ProductFieldStatus.READYTOPLANT:
+                    productField.ProductFieldStatus = ProductFieldStatus.GROWING;
+                    break;
+                case ProductFieldStatus.GROWING:
+                    productField.ProductFieldStatus = ProductFieldStatus.READYTOHARVEST;
+                    break;
+                case ProductFieldStatus.READYTOHARVEST:
+                    productField.ProductFieldStatus = ProductFieldStatus.HARVESTED;
+                    break;
+                default:
+                    throw new InvalidOperationException($"Cannot increment status from {productField.ProductFieldStatus}");
+            }
+
+            _unitOfWork.ProductFieldRepository.Update(productField);
+            await _unitOfWork.SaveChangesAsync();
+
+            return _mapper.Map<ProductFieldResponse>(productField);
+        }
     }
 }

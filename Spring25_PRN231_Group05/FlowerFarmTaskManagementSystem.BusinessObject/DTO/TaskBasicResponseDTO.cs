@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using FlowerFarmTaskManagementSystem.BusinessObject.Models;
 
 namespace FlowerFarmTaskManagementSystem.BusinessObject.DTO
 {
@@ -21,6 +22,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.DTO
         public Guid ProductFieldId { get; set; }
         public double Productivity { get; set; }
         public string ProductivityUnit { get; set; }
+        public ProductFieldStatus ProductFieldStatus { get; set; }
         public ProductDTO Product { get; set; }
         public FieldDTO Field { get; set; }
     }
