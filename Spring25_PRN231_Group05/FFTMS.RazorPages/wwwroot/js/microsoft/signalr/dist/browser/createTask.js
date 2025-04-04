@@ -1,66 +1,60 @@
 ﻿"use strict"
-var connection = new signalR.HubConnectionBuilder().withUrl("/TaskHub").build();
 
+// Tạo kết nối SignalR
+var connection = new signalR.HubConnectionBuilder()
+    .withUrl("/hub")
+    .withAutomaticReconnect()
+    .build();
 
-console.log("SignalR connection created.");
-connection.on("Notification-Task", function (item) {
-    console.log(item);
-    if (!item) {
-        console.error("Item is null or undefined");
-        return;
-    }
+// Xử lý khi nhận được thông báo
+connection.on("ReceiveNotification", function (message) {
+    console.log("Received notification:", message);
 
-}
-connection.start().catch(function (err) {
-    return console.error(err.toString());
-});
-
-
-
-"use strict"
-var connection = new signalR.HubConnectionBuilder().withUrl("/TaskHub").build();
-
-console.log("SignalR connection created.");
-
-connection.on("Notification-Task", function (message) { 
-    console.log(message);
-    if (!message) {
-        console.error("Message is null or undefined");
-        return;
-    }
-
-
+    // Tạo thông báo mới
     var notificationItem = document.createElement("a");
     notificationItem.classList.add("dropdown-item");
-    notificationItem.href = "/UserTasks/Index"; 
-    notificationItem.textContent = message; 
+    notificationItem.href = "/UserTasks/Index";
+    notificationItem.textContent = message;
 
     // Thêm thông báo vào dropdown
     var dropdownMenu = document.querySelector(".notification-dropdown .dropdown-menu");
     if (dropdownMenu) {
-        dropdownMenu.appendChild(notificationItem);
-        // Hiển thị dropdown
-        $(".notification-dropdown .dropdown-menu").dropdown("show");
-        //cập nhật số lượng thông báo
+        // Thêm thông báo vào đầu danh sách
+        dropdownMenu.insertBefore(notificationItem, dropdownMenu.firstChild);
+
+        // Hiển thị badge với số lượng thông báo
         updateNotificationBadge();
-    } else {
-        console.error("Dropdown menu not found.");
+
+        // Hiển thị dropdown
+        var notificationBell = document.getElementById("notificationBell");
+        if (notificationBell) {
+            notificationBell.click();
+        }
     }
 });
 
-connection.start().catch(function (err) {
-    return console.error(err.toString());
-});
-
+// Cập nhật số lượng thông báo
 function updateNotificationBadge() {
     const badge = document.querySelector(".notification-dropdown .badge");
     const count = document.querySelectorAll(".notification-dropdown .dropdown-item").length;
     if (badge) {
         badge.textContent = count;
+        badge.style.display = count > 0 ? "inline" : "none";
     }
 }
 
-// Gọi hàm cập nhật badge khi tải trang để hiển thị số lượng thông báo ban đầu
-$(document).ready(function () {
+// Bắt đầu kết nối SignalR
+connection.start()
+    .then(function () {
+        console.log("SignalR connection established.");
+    })
+    .catch(function (err) {
+        console.error("SignalR connection error: ", err.toString());
+        // Thử kết nối lại sau 5 giây nếu thất bại
+        setTimeout(() => connection.start(), 5000);
+    });
+
+// Cập nhật badge khi tải trang
+document.addEventListener("DOMContentLoaded", function () {
     updateNotificationBadge();
 });

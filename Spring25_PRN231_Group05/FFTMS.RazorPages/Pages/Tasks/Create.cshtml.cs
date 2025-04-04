@@ -146,7 +146,7 @@ namespace FFTMS.RazorPages.Pages.Tasks
 
                 var response = await _httpClient.PostAsJsonAsync("https://localhost:7207/odata/Task", Task);
                 var responseContent = await response.Content.ReadAsStringAsync();
-                await _hubContext.Clients.All.SendAsync("Notification-Task", "Bạn vừa nhận được 1 công việc mới");
+                await _hubContext.Clients.All.SendAsync("ReceiveNotification", "Bạn vừa nhận được 1 công việc mới");
                 // In ra toàn bộ nội dung response để xem lỗi chi tiết
                 Console.WriteLine($"API Response: {responseContent}");
 

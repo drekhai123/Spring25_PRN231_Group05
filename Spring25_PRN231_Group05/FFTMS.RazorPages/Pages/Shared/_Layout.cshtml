@@ -65,10 +65,17 @@
                     <div class="notification-dropdown">
                         <a href="#" class="notification-icon" data-toggle="dropdown" id="notificationBell">
                             <i class="fas fa-bell fa-lg"></i>
-                            <span class="badge badge-danger">  </span>
+                            <span class="badge badge-danger" style="display: none;">0</span>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                        <a class="dropdown-item" asp-page="/UserTasks/Index"> </a>
+                        <div class="dropdown-menu dropdown-menu-right notification-menu" style="min-width: 300px; max-height: 400px; overflow-y: auto;">
+                            <div class="dropdown-header">
+                                <h6 class="mb-0">Thông báo</h6>
+                                <a href="#" class="text-muted small" onclick="clearNotifications()">Xóa tất cả</a>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <div id="notificationList">
+                                <!-- Notifications will be added here -->
+                            </div>
                         </div>
                     </div>
                        
@@ -218,6 +225,17 @@
 
     <!-- Custom JS -->
     <script src="~/js/notification.js" asp-append-version="true"></script>
+    <script src="~/js/microsoft/signalr/dist/browser/signalr.min.js"></script>
+    <script src="~/js/microsoft/signalr/dist/browser/createTask.js"></script>
+    <script>
+        function clearNotifications() {
+            const notificationList = document.getElementById('notificationList');
+            if (notificationList) {
+                notificationList.innerHTML = '';
+                updateNotificationBadge();
+            }
+        }
+    </script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>
