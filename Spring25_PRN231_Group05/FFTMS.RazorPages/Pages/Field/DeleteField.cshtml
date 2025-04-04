@@ -1,16 +1,16 @@
 @page "{id:guid}"
 @model FFTMS.RazorPages.Pages.Field.DeleteFieldModel
 @{
-    ViewData["Title"] = "Delete Field";
+    ViewData["Title"] = "Xóa khu đất";
     Layout = "_Layout";
 }
 
 <div class="main-container">
     <div class="card shadow">
         <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
-            <h3 class="mb-0"><i class="fas fa-trash-alt me-2"></i>Delete Field</h3>
+            <h3 class="mb-0"><i class="fas fa-trash-alt me-2"></i>Xóa khu đất</h3>
             <a asp-page="./ListField" class="btn btn-light btn-sm">
-                <i class="fas fa-arrow-left"></i> Back to List
+                <i class="fas fa-arrow-left"></i> Quay lại danh sách
             </a>
         </div>
 
@@ -21,8 +21,8 @@
                         <i class="fas fa-exclamation-triangle fa-2x text-warning"></i>
                     </div>
                     <div>
-                        <h4 class="alert-heading">Warning!</h4>
-                        <p class="mb-0">Are you sure you want to permanently delete this field? This action cannot be undone.</p>
+                        <h4 class="alert-heading">Cảnh báo!</h4>
+                        <p class="mb-0">Bạn có chắc chắn muốn xóa khu đất này? Hành động này không thể hoàn tác.</p>
                     </div>
                 </div>
             </div>
@@ -46,7 +46,7 @@
                     </div>
                 </div>
 
-                <!-- Field Details Section -->
+                <!-- Chi tiết khu đất -->
                 <div class="col-md-8">
                     <div class="card bg-light mb-4">
                         <div class="card-header">
@@ -55,24 +55,24 @@
                         <div class="card-body">
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <h6 class="text-muted mb-1">Dimensions</h6>
+                                    <h6 class="text-muted mb-1">Kích thước</h6>
                                     <p class="mb-0">
-                                        <i class="fas fa-ruler me-1 text-primary"></i> Length: <strong>@Model.Field.Length m</strong><br>
-                                        <i class="fas fa-ruler-horizontal me-1 text-primary"></i> Width: <strong>@Model.Field.Width m</strong><br>
-                                        <i class="fas fa-vector-square me-1 text-primary"></i> Area: <strong>@(Model.Field.Length * Model.Field.Width) m�</strong>
+                                        <i class="fas fa-ruler me-1 text-primary"></i> Chiều dài: <strong>@Model.Field.Length m</strong><br>
+                                        <i class="fas fa-ruler-horizontal me-1 text-primary"></i> Chiều rộng: <strong>@Model.Field.Width m</strong><br>
+                                        <i class="fas fa-vector-square me-1 text-primary"></i> Diện tích: <strong>@(Model.Field.Length * Model.Field.Width) m�</strong>
                                     </p>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <h6 class="text-muted mb-1">Status</h6>
+                                    <h6 class="text-muted mb-1">Trạng thái</h6>
                                     <p class="mb-0">
                                         <i class="fas @(Model.Field.Status ? "fa-check-circle text-success" : "fa-times-circle text-danger") me-1"></i>
-                                        <strong>@(Model.Field.Status ? "Active" : "Inactive")</strong>
+                                        <strong>@(Model.Field.Status ? "Hoạt động" : "Không hoạt động")</strong>
                                     </p>
 
-                                    <h6 class="text-muted mb-1 mt-3">Dates</h6>
+                                    <h6 class="text-muted mb-1 mt-3">Ngày tạo</h6>
                                     <p class="mb-0">
-                                        <i class="fas fa-calendar-plus me-1 text-primary"></i> Created:
+                                        <i class="fas fa-calendar-plus me-1 text-primary"></i> Ngày tạo:
                                         <strong>@Model.Field.CreatedDate.ToString("yyyy-MM-dd HH:mm")</strong>
 
                                         @if (Model.Field.UpdatedDate.HasValue)
@@ -88,11 +88,11 @@
                             </div>
 
                             <div class="mt-3">
-                                <h6 class="text-muted mb-1">Description</h6>
+                                <h6 class="text-muted mb-1">Mô tả</h6>
                                 <p class="mb-0">
                                     @if (string.IsNullOrEmpty(Model.Field.Description))
                                     {
-                                        <span class="text-muted fst-italic">No description provided</span>
+                                        <span class="text-muted fst-italic">Không có mô tả</span>
                                     }
                                     else
                                     {
@@ -111,10 +111,10 @@
                 <input type="hidden" asp-for="Field.FieldId" />
                 <div class="d-flex justify-content-between">
                     <a asp-page="./ListField" class="btn btn-secondary">
-                        <i class="fas fa-times me-1"></i> Cancel
+                        <i class="fas fa-times me-1"></i> Hủy bỏ
                     </a>
                     <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-trash-alt me-1"></i> Confirm Delete
+                        <i class="fas fa-trash-alt me-1"></i> Xác nhận xóa
                     </button>
                 </div>
             </form>

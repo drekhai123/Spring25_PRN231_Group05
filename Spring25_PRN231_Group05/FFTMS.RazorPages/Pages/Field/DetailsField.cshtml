@@ -1,16 +1,16 @@
 @page "{id:guid}"
 @model FFTMS.RazorPages.Pages.Field.DetailsFieldModel
 @{
-    ViewData["Title"] = "Field Details";
+    ViewData["Title"] = "Chi tiết khu đất";
     Layout = "_Layout";
 }
 
 <div class="main-container">
     <div class="card shadow">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h3 class="mb-0"><i class="fas fa-info-circle me-2"></i>Field Details</h3>
+            <h3 class="mb-0"><i class="fas fa-info-circle me-2"></i>Chi tiết khu đất</h3>
             <a asp-page="./ListField" class="btn btn-light btn-sm">
-                <i class="fas fa-arrow-left"></i> Back to List
+                <i class="fas fa-arrow-left"></i> Quay lại danh sách
             </a>
         </div>
 
@@ -42,7 +42,7 @@
                         <div class="col-md-4">
                             <div class="card bg-light h-100">
                                 <div class="card-body text-center">
-                                    <h6 class="text-muted mb-2">Length</h6>
+                                    <h6 class="text-muted mb-2">Chiều dài</h6>
                                     <h4 class="mb-0">@Model.Field.Length m</h4>
                                 </div>
                             </div>
@@ -51,7 +51,7 @@
                         <div class="col-md-4">
                             <div class="card bg-light h-100">
                                 <div class="card-body text-center">
-                                    <h6 class="text-muted mb-2">Width</h6>
+                                    <h6 class="text-muted mb-2">Chiều rộng</h6>
                                     <h4 class="mb-0">@Model.Field.Width m</h4>
                                 </div>
                             </div>
@@ -60,19 +60,19 @@
                         <div class="col-md-4">
                             <div class="card bg-light h-100">
                                 <div class="card-body text-center">
-                                    <h6 class="text-muted mb-2">Total Area</h6>
-                                    <h4 class="mb-0">@(Model.Field.Length * Model.Field.Width) m�</h4>
+                                    <h6 class="text-muted mb-2">Diện tích</h6>
+                                    <h4 class="mb-0">@(Model.Field.Length * Model.Field.Width) m�</h4>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="mb-4">
-                        <h5 class="fw-bold mb-2"><i class="fas fa-align-left me-2 text-primary"></i>Description</h5>
+                        <h5 class="fw-bold mb-2"><i class="fas fa-align-left me-2 text-primary"></i>Mô tả</h5>
                         <p class="bg-light p-3 rounded">
                             @if (string.IsNullOrEmpty(Model.Field.Description))
                             {
-                                <span class="text-muted fst-italic">No description provided</span>
+                                <span class="text-muted fst-italic">Không có mô tả</span>
                             }
                             else
                             {
@@ -83,10 +83,10 @@
 
                     <div class="row mb-4">
                         <div class="col-md-6">
-                            <h5 class="fw-bold mb-2"><i class="fas fa-calendar-alt me-2 text-primary"></i>Dates</h5>
+                            <h5 class="fw-bold mb-2"><i class="fas fa-calendar-alt me-2 text-primary"></i>Ngày tạo</h5>
                             <ul class="list-group">
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <span>Created</span>
+                                    <span>Ngày tạo</span>
                                     <span class="badge bg-secondary rounded-pill">
                                         @Model.Field.CreatedDate.ToString("yyyy-MM-dd HH:mm")
                                     </span>
@@ -94,7 +94,7 @@
                                 @if (Model.Field.UpdatedDate.HasValue)
                                 {
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <span>Last Updated</span>
+                                        <span>Ngày cập nhật</span>
                                         <span class="badge bg-info rounded-pill">
                                             @Model.Field.UpdatedDate.Value.ToString("yyyy-MM-dd HH:mm")
                                         </span>
@@ -104,7 +104,7 @@
                         </div>
 
                         <div class="col-md-6">
-                            <h5 class="fw-bold mb-2"><i class="fas fa-toggle-on me-2 text-primary"></i>Status</h5>
+                            <h5 class="fw-bold mb-2"><i class="fas fa-toggle-on me-2 text-primary"></i>Trạng thái</h5>
                             <div class="p-3 rounded @(Model.Field.Status ? "bg-success bg-opacity-10" : "bg-danger bg-opacity-10")">
                                 <div class="d-flex align-items-center">
                                     <div class="me-3">
@@ -113,12 +113,12 @@
                                     </div>
                                     <div>
                                         <h5 class="mb-0 @(Model.Field.Status ? "text-success" : "text-danger")">
-                                            @(Model.Field.Status ? "Active" : "Inactive")
+                                            @(Model.Field.Status ? "Hoạt động" : "Không hoạt động")
                                         </h5>
                                         <small class="text-muted">
                                             @(Model.Field.Status
-                                                ? "This field is ready to use"
-                                                : "This field is currently using")
+                                                ? "Khu đất đã sẵn sàng sử dụng"
+                                                : "Khu đất đang được sử dụng")
                                         </small>
                                     </div>
                                 </div>
@@ -132,13 +132,13 @@
         <div class="card-footer bg-light">
             <div class="d-flex justify-content-end gap-2">
                 <a asp-page="./ListField" class="btn btn-secondary">
-                    <i class="fas fa-list me-1"></i> Back to List
+                    <i class="fas fa-list me-1"></i> Quay lại danh sách
                 </a>
                 <a asp-page="./UpdateField" asp-route-id="@Model.Field.FieldId" class="btn btn-primary">
-                    <i class="fas fa-edit me-1"></i> Edit
+                    <i class="fas fa-edit me-1"></i> Sửa
                 </a>
                 <a asp-page="./DeleteField" asp-route-id="@Model.Field.FieldId" class="btn btn-danger">
-                    <i class="fas fa-trash-alt me-1"></i> Delete
+                    <i class="fas fa-trash-alt me-1"></i> Xóa
                 </a>
             </div>
         </div>
