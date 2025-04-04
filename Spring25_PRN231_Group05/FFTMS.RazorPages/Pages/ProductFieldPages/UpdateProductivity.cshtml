@@ -5,20 +5,20 @@
     Layout = "_Layout";
 }
 
-<div class="main-container">
+<div class="container-fluid py-4">
     <div class="pd-ltr-20">
         <div class="card shadow">
             <div class="card-header bg-info text-white d-flex justify-content-between align-items-center py-3">
-                <h3 class="mb-0"><i class="fas fa-info-circle me-2"></i>Product Field Details</h3>
+                <h3 class="mb-0"><i class="fas fa-info-circle me-2"></i>Năng suất</h3>
                 <a asp-page="./Index" class="btn btn-outline-light">
-                    <i class="fas fa-arrow-left me-1"></i> Back to List
+                    <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách
                 </a>
             </div>
 
             <div class="card-body">
                 @if (Model.ProductField == null)
                 {
-                    <p class="text-danger">Product Field not found.</p>
+                    <p class="text-danger">Không tìm thấy kế hoạch.</p>
                 }
                 else
                 {
@@ -26,32 +26,45 @@
                         <div class="col-md-6">
                             <div class="card mb-4">
                                 <div class="card-header bg-primary text-white">
-                                    <h5 class="mb-0"><i class="fas fa-seedling me-2"></i>Product Field Information</h5>
+                                    <h5 class="mb-0"><i class="fas fa-seedling me-2"></i>Thông tin kế hoạch</h5>
                                 </div>
                                 <div class="card-body">
                                     <dl class="row">
-                                        <dt class="col-sm-4">Status</dt>
+                                        <dt class="col-sm-4">Trạng thái:</dt>
                                         <dd class="col-sm-8">
-                                            <span class="badge @(Model.ProductField.ProductFieldStatus == FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.READYTOHARVEST ? "bg-success" :
-                                                               Model.ProductField.ProductFieldStatus == FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.GROWING ? "bg-info" :
-                                                               Model.ProductField.ProductFieldStatus == FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.HARVESTED ? "bg-secondary" : "bg-warning")">
-                                                @Model.ProductField.ProductFieldStatus
+                                            <span class="badge text-white @(Model.ProductField.ProductFieldStatus switch {
+                                                                            FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.READYTOPLANT => "bg-info",
+                                                                            FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.GROWING => "bg-primary",
+                                                                            FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.READYTOHARVEST => "bg-warning",
+                                                                            FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.HARVESTING => "bg-info",
+                                                                            FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.HARVESTED => "bg-success",
+                                                                            _ => "bg-secondary"
+                                                                        })">
+                                                @(Model.ProductField.ProductFieldStatus switch
+                                                {
+                                                    FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.READYTOPLANT => "Sẵn sàng trồng",
+                                                    FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.GROWING => "Đang phát triển",
+                                                    FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.READYTOHARVEST => "Sẵn sàng thu hoạch",
+                                                    FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.HARVESTING => "Đang thu hoạch",
+                                                    FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.HARVESTED => "Đã thu hoạch",
+                                                    _ => "Không xác định"
+                                                })
                                             </span>
                                         </dd>
 
-                                        <dt class="col-sm-4">Productivity</dt>
+                                        <dt class="col-sm-4">Năng suất:</dt>
                                         <dd class="col-sm-8">@Model.ProductField.Productivity @Model.ProductField.ProductivityUnit</dd>
 
-                                        <dt class="col-sm-4">Start Date</dt>
+                                        <dt class="col-sm-4">Ngày bắt đầu:</dt>
                                         <dd class="col-sm-8">@Model.ProductField.StartDate.ToString("dd/MM/yyyy")</dd>
 
-                                        <dt class="col-sm-4">End Date</dt>
+                                        <dt class="col-sm-4">Ngày kết thúc:</dt>
                                         <dd class="col-sm-8">@Model.ProductField.EndDate.ToString("dd/MM/yyyy")</dd>
 
-                                        <dt class="col-sm-4">Created Date</dt>
+                                        <dt class="col-sm-4">Ngày tạo:</dt>
                                         <dd class="col-sm-8">@Model.ProductField.CreateDate.ToString("dd/MM/yyyy HH:mm")</dd>
 
-                                        <dt class="col-sm-4">Last Updated</dt>
+                                        <dt class="col-sm-4">Ngày chỉnh sửa:</dt>
                                         <dd class="col-sm-8">@Model.ProductField.UpdateDate.ToString("dd/MM/yyyy HH:mm")</dd>
                                     </dl>
                                 </div>
@@ -61,24 +74,25 @@
                                 <form method="post">
                                     <input type="hidden" asp-for="ProductField.ProductFieldId" />
                                     <div class="mb-3">
-                                        <label class="form-label">Unit</label>
+                                        <label class="form-label">Đơn vị</label>
                                         <select asp-for="Unit" class="form-control" required>
-                                            <option value="">-- Select Unit --</option>
-                                            <option value="Bloom">Bloom</option>
-                                            <option value="Bundle">Bundle</option>
-                                            <option value="Pot">Pot</option>
+                                            <option value="">-- Chọn đơn vị --</option>
+                                            <option value="Đóa">Đóa</option>
+                                            <option value="Bó">Bó</option>
+                                            <option value="Chậu">Chậu</option>
+                                            <option value="Tấn">Tấn</option>
                                         </select>
                                     </div>
                                     <div class="mb-3">
-                                        <label class="form-label">Productivity</label>
+                                        <label class="form-label">Năng suất:</label>
                                         <input type="number" asp-for="Quantity" class="form-control" step="0" min="0" required />
                                     </div>
                                     <div class="d-flex justify-content-between">
                                         <button type="submit" class="btn btn-success">
-                                            <i class="fa fa-save"></i> Save
+                                            <i class="fa fa-save"></i> Lưu
                                         </button>
                                         <a asp-page="./Index" class="btn btn-secondary ms-2">
-                                            <i class="fas fa-list me-1"></i> Back to List
+                                            <i class="fas fa-list me-1"></i> Quay lại danh sách
                                         </a>
                                     </div>
                                 </form>
@@ -90,19 +104,19 @@
                             {
                                 <div class="card mb-4">
                                     <div class="card-header bg-success text-white">
-                                        <h5 class="mb-0"><i class="fas fa-leaf me-2"></i>Product Information</h5>
+                                        <h5 class="mb-0"><i class="fas fa-leaf me-2"></i>Thông tin hoa</h5>
                                     </div>
                                     <div class="card-body">
                                         <dl class="row">
-                                            <dt class="col-sm-4">Product Name</dt>
+                                            <dt class="col-sm-4">Tên hoa:</dt>
                                             <dd class="col-sm-8">@Model.ProductField.Product.ProductName</dd>
 
-                                            <dt class="col-sm-4">Description</dt>
+                                            <dt class="col-sm-4">Mô tả:</dt>
                                             <dd class="col-sm-8">@Model.ProductField.Product.Description</dd>
 
                                             @if (Model.ProductField.Product.Category != null)
                                             {
-                                                <dt class="col-sm-4">Category</dt>
+                                                <dt class="col-sm-4">Loại hoa:</dt>
                                                 <dd class="col-sm-8">@(Model.ProductField.Product.Category?.CategoryName ?? "N/A")</dd>
                                             }
                                         </dl>
@@ -114,22 +128,22 @@
                             {
                                 <div class="card">
                                     <div class="card-header bg-warning text-dark">
-                                        <h5 class="mb-0"><i class="fas fa-map-marker-alt me-2"></i>Field Information</h5>
+                                        <h5 class="mb-0"><i class="fas fa-map-marker-alt me-2"></i>Thông tin khu vực</h5>
                                     </div>
                                     <div class="card-body">
                                         <dl class="row">
-                                            <dt class="col-sm-4">Field Name</dt>
+                                            <dt class="col-sm-4">Tên khu vực:</dt>
                                             <dd class="col-sm-8">@Model.ProductField.Field.FieldName</dd>
 
-                                            <dt class="col-sm-4">Dimensions</dt>
+                                            <dt class="col-sm-4">Kích thước:</dt>
                                             <dd class="col-sm-8">@Model.ProductField.Field.Length x @Model.ProductField.Field.Width meters</dd>
 
-                                            <dt class="col-sm-4">Description</dt>
+                                            <dt class="col-sm-4">Mô tả:</dt>
                                             <dd class="col-sm-8">@Model.ProductField.Field.Description</dd>
 
                                             @if (!string.IsNullOrEmpty(Model.ProductField.Field.FieldImageUrl))
                                             {
-                                                <dt class="col-sm-4">Field Image</dt>
+                                                <dt class="col-sm-4">Ảnh khu vực:</dt>
                                                 <dd class="col-sm-8">
                                                     <img src="@Model.ProductField.Field.FieldImageUrl" alt="Field Image" class="img-fluid rounded" style="max-height: 200px;" />
                                                 </dd>

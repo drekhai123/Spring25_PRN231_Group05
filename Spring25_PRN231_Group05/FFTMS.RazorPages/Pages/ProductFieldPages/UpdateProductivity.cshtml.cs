@@ -1,4 +1,4 @@
-using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
+﻿using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Text.Json;
@@ -41,7 +41,7 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
 
                     if (string.IsNullOrEmpty(jsonResponse))
                     {
-                        ErrorMessage = "API returned an empty response.";
+                        ErrorMessage = "API trả về dữ liệu trống.";
                         return Page();
                     }
 
@@ -66,7 +66,7 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
 
                     if (productField == null)
                     {
-                        ErrorMessage = "No product field data returned.";
+                        ErrorMessage = "Không có kế hoạch.";
                         return Page();
                     }
 
@@ -75,13 +75,13 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
                 else
                 {
                     var errorResponse = await response.Content.ReadAsStringAsync();
-                    ErrorMessage = $"Error fetching ProductField: {response.StatusCode} - {errorResponse}";
+                    ErrorMessage = $"Lỗi khi tải: {response.StatusCode} - {errorResponse}";
                     return Page();
                 }
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"Error fetching ProductField: {ex.Message}";
+                ErrorMessage = $"Lỗi khi tải: {ex.Message}";
                 return Page();
             }
 
@@ -103,13 +103,13 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
 
                 if (!string.IsNullOrWhiteSpace(Unit) && (Quantity <= 0))
                 {
-                    TempData["ErrorMessage"] = "Quantity must be greater than 0 when Unit is provided.";
+                    TempData["ErrorMessage"] = "Số lượng phải lớn hơn 0 khi Đơn vị được cung cấp.";
                     return RedirectToPage("/ProductFieldPages/Index");
                 }
 
                 if (Quantity > 0 && string.IsNullOrWhiteSpace(Unit))
                 {
-                    TempData["ErrorMessage"] = "Unit is required when Quantity is provided.";
+                    TempData["ErrorMessage"] = "Đơn vị được yêu cầu khi Số lượng được cung cấp.";
                     return RedirectToPage("/ProductFieldPages/Index");
                 }
 
@@ -124,7 +124,7 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
                     return RedirectToPage("/ProductFieldPages/Index");
                 }
 
-                TempData["SuccessMessage"] = "Productivity updated successfully.";
+                TempData["SuccessMessage"] = "Năng suất đã được cập nhật thành công.";
                 return RedirectToPage("/ProductFieldPages/Index");
             }
             catch (Exception ex)

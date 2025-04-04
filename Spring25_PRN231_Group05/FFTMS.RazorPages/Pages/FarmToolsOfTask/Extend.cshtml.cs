@@ -78,7 +78,7 @@ namespace FFTMS.RazorPages.Pages.FarmToolsOfTask
                     return Page();
                 }
 
-                TempData["SuccessMessage"] = "Farm tool task updated successfully.";
+                TempData["SuccessMessage"] = "Nhiệm vụ công cụ nông trại đã được cập nhật thành công.";
                 return RedirectToPage("/UserTasks/Index");
             }
             catch (Exception ex)

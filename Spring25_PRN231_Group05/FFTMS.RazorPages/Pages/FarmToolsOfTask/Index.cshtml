@@ -2,117 +2,95 @@
 @model FFTMS.RazorPages.Pages.FarmToolsOfTask.IndexModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Lịch sử dụng dụng cụ";
     Layout = "_Layout";
 }
-<div class="main-container">
-    <h1>History Of Tools</h1>
+<div class="container-fluid px-4 mt-4">
+    <h2 class="mb-4 text-primary"><i class="fas fa-tools me-2"></i>Lịch sử dùng dụng cụ</h2>
 
     @if (TempData["ErrorMessage"] != null)
     {
-        <div class="alert alert-danger">
-            @TempData["ErrorMessage"]
-        </div>
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
     }
     @if (TempData["SuccessMessage"] != null)
     {
-        <div class="alert alert-success">
-            @TempData["SuccessMessage"]
-        </div>
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
     }
 
     <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-    <table class="table" id="farmToolsTable">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.FarmToolsOfTask[0].StartDate)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.FarmToolsOfTask[0].EndDate)
-                </th>
-                <th>
-                    Quantity
-                </th>
-                <th>
-                    Unit
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.FarmToolsOfTask[0].Status)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.FarmToolsOfTask[0].FarmTools)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.FarmToolsOfTask[0].UserTask)
-                </th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.FarmToolsOfTask)
-            {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.StartDate)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.EndDate)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.FarmToolOfTaskQuantity)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.FarmToolOfTaskUnit)
-                    </td>
-                    <td>
-                        <span class="badge
-                                @(item.Status == 1 ? "badge-warning" :
-                                 item.Status == 2 ? "badge-info" :
-                                 item.Status == 3 ? "badge-primary" :
-                                 item.Status == 4 ? "badge-success" :
-                                 item.Status == 5 ? "badge-danger" : "badge-secondary")">
-                                     @(item.Status == 1 ? "Pending" :
-                                         item.Status == 2 ? "Extend" :
-                                         item.Status == 3 ? "Pending Return" :
-                                         item.Status == 4 ? "Returned" :
-                                         item.Status == 5 ? "Damaged" : "Unknown")
-                        </span>
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.FarmTools.FarmToolsName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.UserTask.UserTaskDescription)
-                    </td>
-                    <td>
-                            <div class="dropdown">
-                                <a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle" href="#" role="button" data-toggle="dropdown">
-                                    <i class="dw dw-more"></i>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
-
-
-                                    <a class="dropdown-item" asp-page="./Details" asp-route-id="@item.FarmToolsOfTaskId">
-                                        <i class="dw dw-eye"></i> View
-                                </a>@if (item.Status == 3)
-                                {
-                                    <a class="dropdown-item" asp-page="./ReturnPage" asp-route-id="@item.FarmToolsOfTaskId"><i class="dw dw-edit2"></i> Return</a>
-                                }
+    <div class="card shadow">
+        <div class="card-body">
+            <table class="table table-striped table-hover text-center align-middle" id="farmToolsTable">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Ngày bắt đầu</th>
+                        <th>Ngày kết thúc</th>
+                        <th>Số lượng</th>
+                        <th>Đơn vị</th>
+                        <th>Trạng thái</th>
+                        <th>Dụng cụ</th>
+                        <th>Nhiệm vụ</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.FarmToolsOfTask)
+                    {
+                        <tr>
+                            <td>@item.StartDate.ToString("dd/MM/yyyy")</td>
+                            <td>@item.EndDate.ToString("dd/MM/yyyy")</td>
+                            <td>@item.FarmToolOfTaskQuantity</td>
+                            <td>@item.FarmToolOfTaskUnit</td>
+                            <td>
+                                <span class="badge px-3 py-2
+                                    @(item.Status == 1 ? "bg-warning text-dark" :
+                                      item.Status == 2 ? "bg-info text-dark" :
+                                      item.Status == 3 ? "bg-primary" :
+                                      item.Status == 4 ? "bg-success" :
+                                      item.Status == 5 ? "bg-danger" : "bg-secondary")">
+                                    @(item.Status == 1 ? "Đang dùng" :
+                                        item.Status == 2 ? "Gia hạn" :
+                                        item.Status == 3 ? "Đang trả" :
+                                        item.Status == 4 ? "Đã trả" :
+                                        item.Status == 5 ? "Hư hại" : "Không xác định")
+                                </span>
+                            </td>
+                            <td>@item.FarmTools.FarmToolsName</td>
+                            <td>@item.UserTask.UserTaskDescription</td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-light border dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li>
+                                            <a class="dropdown-item" asp-page="./Details" asp-route-id="@item.FarmToolsOfTaskId">
+                                                <i class="fas fa-eye me-2"></i>Chi tiết
+                                            </a>
+                                        </li>
+                                        @if (item.Status == 3)
+                                        {
+                                            <li>
+                                                <a class="dropdown-item" asp-page="./ReturnPage" asp-route-id="@item.FarmToolsOfTaskId">
+                                                    <i class="fas fa-undo-alt me-2"></i>Trả
+                                                </a>
+                                            </li>
+                                        }
+                                    </ul>
                                 </div>
-                            </div>
-                            
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
+
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
     <script>
         $(document).ready(function () {
             if ($.fn.DataTable.isDataTable("#farmToolsTable")) {
@@ -120,23 +98,23 @@
             }
 
             $("#farmToolsTable").DataTable({
-                "paging": true,
-                "ordering": true,
-                "info": true,
-                "searching": true,
-                "lengthMenu": [5, 10, 25, 50, 100],
-                "order": [[0, "asc"]],
-                "language": {
-                    "lengthMenu": "Show _MENU_ ",
-                    "zeroRecords": "Not found",
-                    "info": "Trang _PAGE_ / _PAGES_",
-                    "infoEmpty": "No data",
-                    "search": "Find:",
-                    "paginate": {
-                        "first": "First",
-                        "last": "Last",
-                        "next": "Next",
-                        "previous": "Previous"
+                paging: true,
+                ordering: true,
+                info: true,
+                searching: true,
+                lengthMenu: [5, 10, 25, 50, 100],
+                order: [[0, "asc"]],
+                language: {
+                    lengthMenu: "Hiện _MENU_ dòng",
+                    zeroRecords: "Không tìm thấy dữ liệu phù hợp",
+                    info: "Trang _PAGE_ / _PAGES_",
+                    infoEmpty: "Không có dữ liệu",
+                    search: "Tìm:",
+                    paginate: {
+                        first: "Đầu",
+                        last: "Cuối",
+                        next: "Sau",
+                        previous: "Trước"
                     }
                 }
             });

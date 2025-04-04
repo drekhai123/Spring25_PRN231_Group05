@@ -8,43 +8,41 @@
     <div class="container mt-4">
         <div class="card shadow-sm border-danger">
             <div class="card-header bg-danger text-white">
-                <h3 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Confirm Deletion</h3>
+                <h3 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Xác nhận xóa</h3>
             </div>
             <div class="card-body">
-                <h5 class="text-danger">Are you sure you want to delete this farm tool?</h5>
-                <hr />
-
+                <h5 class="text-danger">Bạn có chắc chắn muốn xóa công cụ trang trại này không?</h5>
                 <dl class="row">
-                    <dt class="col-sm-3">Name:</dt>
+                    <dt class="col-sm-3">Tên:</dt>
                     <dd class="col-sm-9">@Html.DisplayFor(model => model.FarmTool.FarmToolsName)</dd>
 
-                    <dt class="col-sm-3">Details:</dt>
+                    <dt class="col-sm-3">Mô tả:</dt>
                     <dd class="col-sm-9">@Html.DisplayFor(model => model.FarmTool.FarmToolsDetails)</dd>
 
-                    <dt class="col-sm-3">Quantity:</dt>
+                    <dt class="col-sm-3">Số lượng:</dt>
                     <dd class="col-sm-9">@Html.DisplayFor(model => model.FarmTool.FarmToolsQuantity) @Html.DisplayFor(model => model.FarmTool.FarmToolsUnit)</dd>
 
-                    <dt class="col-sm-3">Status:</dt>
+                    <dt class="col-sm-3">Trạng thái:</dt>
                     <dd class="col-sm-9">
                         <span class="badge @(Model.FarmTool.Status ? "bg-success" : "bg-danger")">
-                            @(Model.FarmTool.Status ? "Active" : "Inactive")
+                            @(Model.FarmTool.Status ? "Hoạt động" : "Không hoạt động")
                         </span>
                     </dd>
 
-                    <dt class="col-sm-3">Active:</dt>
+                    <dt class="col-sm-3">Hoạt động:</dt>
                     <dd class="col-sm-9">
                         <span class="badge @(Model.FarmTool.IsActive ? "bg-success" : "bg-secondary")">
-                            @(Model.FarmTool.IsActive ? "Yes" : "No")
+                            @(Model.FarmTool.IsActive ? "Có" : "Không")
                         </span>
                     </dd>
 
-                    <dt class="col-sm-3">Created On:</dt>
+                    <dt class="col-sm-3">Tạo vào:</dt>
                     <dd class="col-sm-9">@Html.DisplayFor(model => model.FarmTool.CreateDate)</dd>
 
-                    <dt class="col-sm-3">Last Updated:</dt>
+                    <dt class="col-sm-3">Chỉnh sửa vào:</dt>
                     <dd class="col-sm-9">@Html.DisplayFor(model => model.FarmTool.UpdateDate)</dd>
 
-                    <dt class="col-sm-3">Category:</dt>
+                    <dt class="col-sm-3">Loại dụng cụ:</dt>
                     <dd class="col-sm-9">
                         @if (Model.Category != null)
                         {
@@ -52,7 +50,7 @@
                         }
                         else
                         {
-                            <span class="text-muted">No Category</span>
+                            <span class="text-muted">Không có loại dụng cụ</span>
                         }
                     </dd>
                 </dl>
@@ -62,10 +60,10 @@
                     <input type="hidden" asp-for="FarmTool.FarmToolsId" />
                     <div class="d-flex justify-content-between">
                         <a asp-page="./ListFarmTools" class="btn btn-secondary">
-                            <i class="bi bi-arrow-left"></i> Back to List
+                            <i class="bi bi-arrow-left"></i> Quay về danh sách
                         </a>
                         <button type="submit" class="btn btn-danger">
-                            <i class="bi bi-trash"></i> Confirm Delete
+                            <i class="bi bi-trash"></i> Xác nhận xóa
                         </button>
                     </div>
                 </form>

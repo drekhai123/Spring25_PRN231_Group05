@@ -40,7 +40,7 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
                 
                 if (!response.IsSuccessStatusCode)
                 {
-                    ErrorMessage = "Failed to retrieve the Product Field. It may have been deleted or you may not have permission to view it.";
+                    ErrorMessage = "Không thể truy xuất Kế hoạch. Có thể Kế hoạch này đã bị xóa hoặc bạn không có quyền xem Kế hoạch này.";
                     return Page();
                 }
 
@@ -59,7 +59,7 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"An error occurred while retrieving the Product Field: {ex.Message}";
+                ErrorMessage = $"Đã xảy ra lỗi khi truy xuất Kế hoạch: {ex.Message}";
                 return Page();
             }
         }
@@ -88,11 +88,11 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
                     {
                         PropertyNameCaseInsensitive = true
                     });
-                    ErrorMessage = errorResponse?.Message ?? "Failed to delete the Product Field.";
+                    ErrorMessage = errorResponse?.Message ?? "Không xóa được kế hoạch.";
                 }
                 catch
                 {
-                    ErrorMessage = $"Failed to delete the Product Field. Status code: {response.StatusCode}";
+                    ErrorMessage = $"Không xóa được kế hoạch. Trạng thái: {response.StatusCode}";
                 }
                 
                 // Reload the product field data for the view
@@ -101,7 +101,7 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"An error occurred while deleting the Product Field: {ex.Message}";
+                ErrorMessage = $"Đã xảy ra lỗi khi đang xóa Kế hoạch: {ex.Message}";
                 // Reload the product field data for the view
                 await OnGetAsync(id);
                 return Page();

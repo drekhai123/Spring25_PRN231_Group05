@@ -9,9 +9,9 @@
 <div class="container-fluid py-4">
     <div class="card shadow">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h3 class="mb-0"><i class="fas fa-list me-2"></i>Product Fields</h3>
+            <h3 class="mb-0"><i class="fas fa-list me-2"></i>Kế hoạch trồng cây</h3>
             <a asp-page="Create" class="btn btn-light fw-bold">
-                <i class="fas fa-plus me-1"></i> Create New
+                <i class="fas fa-plus me-1"></i>  Tạo mới
             </a>
         </div>
 
@@ -19,7 +19,7 @@
             @if (Model.ProductField == null || !Model.ProductField.Any())
             {
                 <div class="alert alert-warning text-center" role="alert">
-                    <i class="fas fa-exclamation-circle me-2"></i> No Product Fields found.
+                    <i class="fas fa-exclamation-circle me-2"></i> Không có kế hoạch trồng.
                 </div>
             }
             else
@@ -28,14 +28,12 @@
                     <table class="table table-hover align-middle">
                         <thead class="table-dark">
                             <tr>
-                                <th>Product</th>
-                                <th>Field</th>
-                                <th>Start Date</th>
-                                <th>End Date</th>
-                                <th>Created</th>
-                                <th>Updated</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+                                <th>Hoa</th>
+                                <th>Khu</th>
+                                <th>Bắt đầu</th>
+                                <th>Kết thúc</th>
+                                <th>Trạng thái</th>
+                                <th>Hoạt động</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -46,28 +44,41 @@
                                     <td>@(item.Field?.FieldName ?? "N/A")</td>
                                     <td>@item.StartDate.ToString("yyyy-MM-dd HH:mm:ss")</td>
                                     <td>@item.EndDate.ToString("yyyy-MM-dd HH:mm:ss")</td>
-                                    <td>@item.CreateDate.ToString("yyyy-MM-dd HH:mm:ss")</td>
-                                    <td>@item.UpdateDate.ToString("yyyy-MM-dd HH:mm:ss")</td>
                                     <td>
-                                        <span class="badge @(item.ProductFieldStatus.ToString() == "in progress" ? "bg-warning text-dark" : "bg-secondary")">
-                                            @item.ProductFieldStatus
+                                        <span class="badge text-white @(item.ProductFieldStatus switch {
+                                                                            FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.READYTOPLANT => "bg-info",
+                                                                            FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.GROWING => "bg-primary",
+                                                                            FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.READYTOHARVEST => "bg-warning",
+                                                                            FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.HARVESTING => "bg-info",
+                                                                            FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.HARVESTED => "bg-success",
+                                                                            _ => "bg-secondary"
+                                                                        })">
+                                            @(item.ProductFieldStatus switch
+                                            {
+                                                FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.READYTOPLANT => "Sẵn sàng trồng",
+                                                FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.GROWING => "Đang phát triển",
+                                                FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.READYTOHARVEST => "Sẵn sàng thu hoạch",
+                                                FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.HARVESTING => "Đang thu hoạch",
+                                                FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.HARVESTED => "Đã thu hoạch",
+                                                _ => "Không xác định"
+                                            })
                                         </span>
                                     </td>
                                     <td>
                                         <div class="btn-group" role="group">
                                             <a asp-page="./Edit" asp-route-id="@item.ProductFieldId" class="btn btn-sm btn-outline-primary">
-                                                <i class="fas fa-edit me-1"></i> Edit
+                                                <i class="fas fa-edit me-1"></i> Chỉnh sửa
                                             </a>
-                                            @if(item.ProductFieldStatus == FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.READYTOHARVEST){
+                                            @if(item.ProductFieldStatus == FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.HARVESTING){
                                                 <a asp-page="./UpdateProductivity" asp-route-id="@item.ProductFieldId" class="btn btn-sm btn-outline-warning">
-                                                    <i class="fas fa-tasks me-1"></i> Productivity
+                                                    <i class="fas fa-tasks me-1"></i> Năng suất
                                                 </a>
                                             }
                                             <a asp-page="./Details" asp-route-id="@item.ProductFieldId" class="btn btn-sm btn-outline-info">
-                                                <i class="fas fa-eye me-1"></i> Details
+                                                <i class="fas fa-eye me-1"></i> Chi tiết
                                             </a>
                                             <a asp-page="./Delete" asp-route-id="@item.ProductFieldId" class="btn btn-sm btn-outline-danger">
-                                                <i class="fas fa-trash me-1"></i> Delete
+                                                <i class="fas fa-trash me-1"></i> Xóa
                                             </a>
                                         </div>
                                     </td>
