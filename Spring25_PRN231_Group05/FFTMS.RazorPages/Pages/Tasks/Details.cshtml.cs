@@ -1,10 +1,10 @@
 using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
+using FlowerFarmTaskManagementSystem.BusinessObject.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Text.Json;
 using System.Collections.Generic;
 using FFTMS.RazorPages.Helpers;
-using FlowerFarmTaskManagementSystem.BusinessObject.Models;
 
 namespace FFTMS.RazorPages.Pages.Tasks
 {
@@ -18,6 +18,7 @@ namespace FFTMS.RazorPages.Pages.Tasks
         }
 
         public TaskResponseDTO Task { get; set; } = default!;
+        public ProductFieldResponse? ProductField { get; set; }
         public string? ErrorMessage { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid id)
@@ -97,6 +98,20 @@ namespace FFTMS.RazorPages.Pages.Tasks
                         if (string.IsNullOrEmpty(Task.ProductivityUnit))
                         {
                             Task.ProductivityUnit = "N/A";
+                        }
+
+                        // Fetch ProductField data if ProductFieldId exists
+                        if (Task.ProductFieldId != Guid.Empty)
+                        {
+                            var productFieldResponse = await _httpClient.GetAsync($"http://localhost:5281/odata/ProductField/{Task.ProductFieldId}");
+                            if (productFieldResponse.IsSuccessStatusCode)
+                            {
+                                var productFieldJson = await productFieldResponse.Content.ReadAsStringAsync();
+                                ProductField = JsonSerializer.Deserialize<ProductFieldResponse>(productFieldJson, new JsonSerializerOptions
+                                {
+                                    PropertyNameCaseInsensitive = true
+                                });
+                            }
                         }
                         
                         // Check and update Task Status if all staff assignments are completed

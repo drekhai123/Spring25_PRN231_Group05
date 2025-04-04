@@ -12,5 +12,6 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.IService
         Task<bool> DeleteProductFieldsAsync(Guid id);
         Task<ProductFieldResponse> CreateProductFieldsAsync(ProductFieldRequest newProductField);
         Task<IEnumerable<ProductFieldResponse>> SearchProductFieldsAsync(string productivity, string productivityUnit);
+        Task<ProductFieldResponse> IncrementProductFieldStatus(Guid id);
     }
 }

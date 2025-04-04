@@ -32,10 +32,14 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Models
     }
     public enum ProductFieldStatus
     { 
+        [EnumMember(Value = "ReadyToPlant")]
+        READYTOPLANT,
         [EnumMember(Value = "Growing")]
         GROWING,
         [EnumMember(Value = "ReadyToHarvest")]
         READYTOHARVEST,
+        [EnumMember(Value = "Harvesting")]
+        HARVESTING,
         [EnumMember(Value = "Harvested")]
         HARVESTED,
         [EnumMember(Value = "Overdue")]

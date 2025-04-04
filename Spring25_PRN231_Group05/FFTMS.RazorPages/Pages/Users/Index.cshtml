@@ -54,7 +54,7 @@
                                 <input type="search" class="form-control form-control-sm me-2" style="width: 200px"
                                     placeholder="Tìm kiếm...">
                                 <button class="btn btn-success btn-sm" onclick="location.href='@Url.Page("./Create")'">
-                                    Add User
+                                    Add Manager
                                 </button>
                             </div>
                         </div>
@@ -110,17 +110,21 @@
                                             </span>
                                         </td>
                                         <td>
-                                            <span class="badge bg-success">Active</span>
+                                            <span class="badge @(item.IsActive ? "bg-success" : "bg-danger")">
+                                                @(item.IsActive ? "Active" : "Inactive")
+                                            </span>
                                         </td>
                                         <td class="text-center">
-                                            <a asp-page="./Details" asp-route-id="@item.UserId" class="text-dark mx-1">
+                                            <a asp-page="./Details" asp-route-id="@item.UserId" class="text-dark mx-1"
+                                                title="View">
                                                 <i class="dw dw-eye"></i>
                                             </a>
-                                            <a asp-page="./Edit" asp-route-id="@item.UserId" class="text-dark mx-1">
+                                            @* <a asp-page="./Edit" asp-route-id="@item.UserId" class="text-dark mx-1">
                                                 <i class="dw dw-edit2"></i>
-                                            </a>
-                                            <a asp-page="./Delete" asp-route-id="@item.UserId" class="text-dark mx-1">
-                                                <i class="dw dw-delete-3"></i>
+                                            </a> *@
+                                            <a asp-page="./Delete" asp-route-id="@item.UserId" class="text-dark mx-1"
+                                                title="@(item.IsActive ? "Deactivate" : "View")">
+                                                <i class="@(item.IsActive ? "dw dw-user-1" : "dw dw-eye")"></i>
                                             </a>
                                         </td>
                                     </tr>

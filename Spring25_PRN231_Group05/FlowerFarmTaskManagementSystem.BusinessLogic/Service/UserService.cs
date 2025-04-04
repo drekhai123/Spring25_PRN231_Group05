@@ -74,7 +74,9 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             if (user == null)
                 throw new KeyNotFoundException($"User with ID {id} not found");
 
-            _unitOfWork.UserRepository.Delete(user);
+            // Soft delete - set IsActive to false instead of physically deleting
+            user.IsActive = false;
+            _unitOfWork.UserRepository.Update(user);
             await _unitOfWork.SaveChangesAsync();
             return true;
         }
