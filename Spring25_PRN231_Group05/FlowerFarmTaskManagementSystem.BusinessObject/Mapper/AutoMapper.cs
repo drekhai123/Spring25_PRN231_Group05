@@ -141,6 +141,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Mapper
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
                 .ForMember(dest => dest.CreateDate, opt => opt.MapFrom(src => src.CreateDate))
                 .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.ImageUrl))
+                .ForMember(dest => dest.TaskStatus, opt => opt.MapFrom(src => src.TaskStatus))
                 .ForMember(dest => dest.ProductFieldId, opt => opt.MapFrom(src => src.ProductField.ProductFieldId))
                 .ForMember(dest => dest.Productivity, opt => opt.MapFrom(src => src.ProductField != null ? src.ProductField.Productivity : 0))
                 .ForMember(dest => dest.ProductivityUnit, opt => opt.MapFrom(src => src.ProductField != null ? src.ProductField.ProductivityUnit : null))

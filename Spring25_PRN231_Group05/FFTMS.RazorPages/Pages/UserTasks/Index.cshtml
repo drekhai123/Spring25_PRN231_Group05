@@ -1,7 +1,7 @@
 @page
 @model FFTMS.RazorPages.Pages.UserTasks.IndexModel
 @{
-    ViewData["Title"] = "My Tasks";
+    ViewData["Title"] = "Công việc của tôi";
     Layout = "_Layout";
 }
 
@@ -94,12 +94,12 @@
                 <div class="row">
                     <div class="col-md-6 col-sm-12">
                         <div class="title">
-                            <h4>My Tasks</h4>
+                            <h4>Công việc của tôi</h4>
                         </div>
                         <nav aria-label="breadcrumb" role="navigation">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
-                                <li class="breadcrumb-item active">My Tasks</li>
+                                <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                                <li class="breadcrumb-item active">Công việc của tôi</li>
                             </ol>
                         </nav>
                     </div>
@@ -134,11 +134,11 @@
                             <thead>
                                 <tr>
                                     <th></th>
-                                    <th>Task Description</th>
-                                    <th>Created Date</th>
-                                    <th>Updated Date</th>
-                                    <th>Status</th>
-                                    <th class="text-center">Actions</th>
+                                    <th>Mô tả công việc</th>
+                                    <th>Ngày tạo</th>
+                                    <th>Ngày cập nhật</th>
+                                    <th>Trạng thái</th>
+                                    <th class="text-center">Thao tác</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -156,8 +156,8 @@
                                             <td>
                                                 <span
                                                     class="badge @(task.Status == 0 ? "bg-danger" : task.Status == 1 ? "bg-warning" : "bg-success")">
-                                                    @(task.Status == 0 ? "Waiting" : task.Status == 1 ? "Processing" :
-                                                                                                "Completed")
+                                                    @(task.Status == 0 ? "Chờ xử lý" : task.Status == 1 ? "Đang xử lý" :
+                                                                                                "Hoàn thành")
                                         </span>
                                     </td>
                                     <td class="text-center">
@@ -166,7 +166,7 @@
                                                     {
                                                         <a asp-page="/FarmToolsOfTask/Create"
                                                             asp-route-userTaskId="@task.UserTaskId" class="btn btn-sm btn-primary">
-                                                            <i class="fa-solid fa-plus"></i> Add Tools
+                                                            <i class="fa-solid fa-plus"></i> Thêm công cụ
                                                         </a>
                                                     }
                                                     @if (task.Status == 1)
@@ -174,7 +174,7 @@
                                                         <button type="button" class="btn btn-sm btn-primary upload-image-btn"
                                                             data-bs-toggle="modal" data-bs-target="#uploadImageModal"
                                                             data-task-id="@task.UserTaskId">
-                                                            <i class="fa-solid fa-image"></i> Upload Image & Complete
+                                                            <i class="fa-solid fa-image"></i> Tải ảnh & Hoàn thành
                                                         </button>
                                                     }
                                                 </div>
@@ -185,48 +185,85 @@
                                                 <div class="p-4 bg-light rounded">
                                                     <div class="row">
                                                         <div class="col-md-4">
-                                                            <h5 class="mb-3">Task Information</h5>
+                                                            <h5 class="mb-3">Thông tin công việc</h5>
                                                             <div class="mb-2">
-                                                                <strong>Staff Name:</strong> @task.UserName
+                                                                <strong>Tên nhân viên:</strong> @task.UserName
                                                             </div>
                                                             <div class="mb-2">
-                                                                <strong>Job Title:</strong> @task.Task.JobTitle
+                                                                <strong>Tiêu đề:</strong> @task.Task.JobTitle
                                                             </div>
                                                             <div class="mb-2">
-                                                                <strong>Description:</strong> @task.Task.Description
+                                                                <strong>Mô tả:</strong> @task.Task.Description
                                                             </div>
                                                             <div class="mb-2">
-                                                                <strong>Start Date:</strong>
+                                                                <strong>Ngày bắt đầu:</strong>
                                                                 @task.Task.StartDate.ToString("dd/MM/yyyy HH:mm")
                                                             </div>
                                                             <div class="mb-2">
-                                                                <strong>End Date:</strong>
+                                                                <strong>Ngày kết thúc:</strong>
                                                                 @task.Task.EndDate.ToString("dd/MM/yyyy HH:mm")
+                                                            </div>
+                                                            <div class="mb-2">
+                                                                <strong>Trạng thái công việc:</strong>
+                                                                <span class="badge @(task.Task.TaskStatus == FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskProgressStatus.INPROGRESS ? "bg-warning" : "bg-success")">
+                                                                    @(task.Task.TaskStatus == FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskProgressStatus.INPROGRESS ? "Đang thực hiện" : "Hoàn thành")
+                                                                </span>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-4">
-                                                            <h5 class="mb-3">Product Information</h5>
+                                                            <h5 class="mb-3">Thông tin ruộng sản phẩm</h5>
                                                             @if (task.Task.Product != null)
                                                             {
                                                                 <div class="mb-2">
-                                                                    <strong>Product:</strong> @task.Task.Product.ProductName
+                                                                    <strong>Sản phẩm:</strong> @task.Task.Product.ProductName
                                                                 </div>
                                                                 <div class="mb-2">
-                                                                    <strong>Category:</strong>
+                                                                    <strong>Danh mục:</strong>
                                                                     @task.Task.Product.Category.CategoryName
                                                                 </div>
                                                                 <div class="mb-2">
-                                                                    <strong>Productivity:</strong>
+                                                                    <strong>Tên ruộng:</strong>
+                                                                    @(task.Task.Field != null ? task.Task.Field.FieldName : "Không có")
+                                                                </div>
+                                                                <div class="mb-2">
+                                                                    <strong>Năng suất:</strong>
                                                                     @task.Task.Productivity @task.Task.ProductivityUnit
                                                                 </div>
+                                                                @if (task.Task.ProductFieldId != null && task.Task.ProductFieldId != Guid.Empty)
+                                                                {
+                                                                    <div class="mb-2">
+                                                                        <strong>Diện tích:</strong>
+                                                                        @(task.Task.Field != null ? $"{task.Task.Field.Length} x {task.Task.Field.Width} m²" : "Không có")
+                                                                    </div>
+                                                                    <div class="mb-2">
+                                                                        <strong>Trạng thái ruộng:</strong>
+                                                                        <span class="badge text-white @(task.Task.ProductFieldStatus switch {
+                                                                            FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.READYTOPLANT => "bg-info",
+                                                                            FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.GROWING => "bg-primary",
+                                                                            FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.READYTOHARVEST => "bg-warning",
+                                                                            FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.HARVESTING => "bg-info",
+                                                                            FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.HARVESTED => "bg-success",
+                                                                            _ => "bg-secondary"
+                                                                        })">
+                                                                            @(task.Task.ProductFieldStatus switch {
+                                                                                FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.READYTOPLANT => "Sẵn sàng trồng",
+                                                                                FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.GROWING => "Đang phát triển",
+                                                                                FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.READYTOHARVEST => "Sẵn sàng thu hoạch",
+                                                                                FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.HARVESTING => "Đang thu hoạch",
+                                                                                FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.HARVESTED => "Đã thu hoạch",
+                                                                                _ => "Không xác định"
+                                                                            })
+                                                                        </span>
+                                                                    </div>
+                                                                }
                                                             }
                                                             else
                                                             {
-                                                                <div>No product information available</div>
+                                                                <div>Không có thông tin sản phẩm</div>
                                                             }
                                                         </div>
                                                         <div class="col-md-4">
-                                                            <h5 class="mb-3">Farm Tools List</h5>
+                                                            <h5 class="mb-3">Danh sách công cụ nông trại</h5>
                                                             @if (Model.UserTasks.Any(t => t.FarmToolsOfTask != null &&
                                                                                                                 t.FarmToolsOfTask.Any()))
                                                             {
@@ -237,11 +274,11 @@
                                                                         {
                                                                             <li class="list-group-item d-flex flex-column gap-2 p-3">
                                                                                 <div class="d-flex justify-content-between align-items-center">
-                                                                                    <strong>Name:</strong>
+                                                                                    <strong>Tên:</strong>
                                                                                     <span>@tool.FarmTools.FarmToolsName</span>
                                                                                 </div>
                                                                                 <div class="d-flex justify-content-between align-items-center">
-                                                                                    <strong>Quantity:</strong>
+                                                                                    <strong>Số lượng:</strong>
                                                                                     <span>@tool.FarmToolOfTaskQuantity @tool.FarmToolOfTaskUnit</span>
                                                                                 </div>
                                                                                 <div class="d-flex justify-content-between align-items-center @(tool.Status switch
@@ -253,16 +290,16 @@
                                                                                     5 => "text-danger fw-bold",
                                                                                     _ => "text-secondary fw-bold"
                                                                                      })">
-                                                                                    <strong>Status:</strong>
+                                                                                    <strong>Trạng thái:</strong>
                                                                                     <span>
                                                                                         @(tool.Status switch
                                                                                         {
-                                                                                            1 => "Pending",
-                                                                                            2 => "Extend",
-                                                                                            3 => "Returning",
-                                                                                            4 => "Returned",
-                                                                                            5 => "Damaged",
-                                                                                            _ => "Unknown"
+                                                                                            1 => "Đang xử lý",
+                                                                                            2 => "Đã gia hạn",
+                                                                                            3 => "Đang trả lại",
+                                                                                            4 => "Đã trả lại",
+                                                                                            5 => "Hư hỏng",
+                                                                                            _ => "Không xác định"
                                                                                         })
                                                                                     </span>
                                                                                 </div>
@@ -275,12 +312,12 @@
                                                                                     <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list p-1">
                                                                                         <div class="d-flex justify-content-center align-items-center gap-1 mt-2 mb-1">
                                                                                             <a asp-page="/FarmToolsOfTask/Extend" asp-route-id="@tool.FarmToolsOfTaskId" class="btn btn-sm btn-warning d-flex align-items-center">
-                                                                                                <i class="fa-solid fa-clock me-1"></i> Extend
+                                                                                                <i class="fa-solid fa-clock me-1"></i> Gia hạn
                                                                                             </a>
 
                                                                                             <button class="btn btn-sm btn-success return-button d-flex align-items-center"
                                                                                                     data-id="@tool.FarmToolsOfTaskId">
-                                                                                                <i class="fa-solid fa-reply me-1"></i> Return
+                                                                                                <i class="fa-solid fa-reply me-1"></i> Trả lại
                                                                                             </button>
                                                                                         </div>
                                                                                     </div>
@@ -291,30 +328,30 @@
                                                                     }
                                                                     else
                                                                     {
-                                                                        <li class="list-group-item text-center text-muted">No tools assigned</li>
+                                                                        <li class="list-group-item text-center text-muted">Chưa có công cụ được gán</li>
                                                                     }
                                                                 </ul>
                                                                 @if (task.Status != 2)
                                                                 {
                                                                     <div class="mt-3 d-flex justify-content-center">
                                                                         <a asp-page="/FarmToolsOfTask/Create" asp-route-userTaskId="@task.UserTaskId" class="btn btn-sm btn-primary">
-                                                                            <i class="fa-solid fa-plus"></i> Add Tools
+                                                                            <i class="fa-solid fa-plus"></i> Thêm công cụ
                                                                         </a>
                                                                     </div>
                                                                 }
                                                             }
                                                             else
                                                             {
-                                                                <div>No farm tools available</div>
+                                                                <div>Không có công cụ nông trại</div>
                                                             }
                                                         </div>
 
                                                         @if (task.Status == 2 && !string.IsNullOrEmpty(task.ImageUrl))
                                                         {
                                                             <div class="col-md-12 mt-4">
-                                                                <h5 class="mb-3">Task Completion Image</h5>
+                                                                <h5 class="mb-3">Ảnh hoàn thành công việc</h5>
                                                                 <div class="text-center">
-                                                                    <img src="@task.ImageUrl" alt="Task completion image"
+                                                                    <img src="@task.ImageUrl" alt="Ảnh hoàn thành công việc"
                                                                         class="img-fluid rounded shadow-sm"
                                                                         style="max-height: 300px;" />
                                                                 </div>
@@ -339,7 +376,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="uploadImageModalLabel">Upload Task Completion Image</h5>
+                <h5 class="modal-title" id="uploadImageModalLabel">Tải lên ảnh hoàn thành công việc</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -348,20 +385,20 @@
                     <input type="hidden" id="imageUrlInput" name="imageUrl" value="" />
 
                     <div class="mb-4">
-                        <label class="form-label fw-bold">Task Image</label>
+                        <label class="form-label fw-bold">Ảnh công việc</label>
 
                         <!-- Image Upload with Drag & Drop -->
                         <div id="dropArea" class="border rounded p-3 text-center mb-3"
                             style="border-style: dashed !important; cursor: pointer;">
                             <i class="fas fa-cloud-upload-alt fa-2x mb-2 text-muted"></i>
-                            <p class="mb-0">Drag and drop image here or click to browse</p>
+                            <p class="mb-0">Kéo và thả ảnh vào đây hoặc nhấp để chọn</p>
                             <input type="file" id="imageUpload" class="d-none" accept="image/*" />
                         </div>
 
                         <!-- Image Preview -->
                         <div id="imagePreviewContainer" class="mb-3 text-center d-none">
                             <div class="position-relative d-inline-block">
-                                <img id="imagePreview" src="" alt="Task Image Preview"
+                                <img id="imagePreview" src="" alt="Xem trước ảnh"
                                     class="img-fluid rounded shadow-sm mb-2" style="max-height: 250px;" />
                                 <button type="button" id="removeImageBtn"
                                     class="btn btn-sm btn-danger position-absolute"
@@ -383,7 +420,7 @@
                     <div class="d-grid">
                         <button type="submit" id="completeTaskBtn" class="btn btn-success btn-lg" disabled
                             asp-page-handler="Complete">
-                            <i class="fas fa-check me-2"></i> Upload Image
+                            <i class="fas fa-check me-2"></i> Tải ảnh lên
                         </button>
                     </div>
                 </form>
@@ -408,7 +445,7 @@
 
                     const apiUrl = `https://localhost:7207/api/FarmToolsOfTasks/update-farm-tools-of-task-staff-return?FarmToolsOfTaskId=${farmToolsOfTaskId}`;
 
-                    if (confirm("Are you sure you want to return this farm tool?")) {
+                    if (confirm("Bạn có chắc chắn muốn trả lại công cụ này không?")) {
                         try {
                             const response = await fetch(apiUrl, {
                                 method: "PUT",
@@ -416,13 +453,13 @@
 
                             if (!response.ok) {
                                 const errorMessage = await response.text();
-                                alert("Error: " + errorMessage);
+                                alert("Lỗi: " + errorMessage);
                             } else {
-                                alert("Farm tool returned successfully.");
-                                location.reload(); // Reload to update status
+                                alert("Trả lại công cụ thành công.");
+                                location.reload();
                             }
                         } catch (error) {
-                            alert("Failed to return the farm tool. Please try again.");
+                            alert("Không thể trả lại công cụ. Vui lòng thử lại.");
                         }
                     }
                 });
