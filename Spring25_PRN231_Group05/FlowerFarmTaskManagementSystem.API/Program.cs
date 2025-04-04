@@ -45,7 +45,7 @@ builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<IProductFieldService, ProductFieldService>();
 builder.Services.AddScoped<IFieldService, FieldService>();
 builder.Services.AddScoped<IFarmToolsOfTaskService, FarmToolsOfTaskService>();
-
+builder.Services.AddSignalR();
 // Configure Swagger
 builder.Services.AddSwaggerGen(c =>
 {
@@ -103,7 +103,7 @@ app.UseAuthorization();
 
 // Enable CORS
 app.UseCors("AllowAll");
-
+app.MapHub<HubServices>("TaskHub");
 app.MapControllers();
 
 app.Run();

@@ -7,20 +7,22 @@ using System.Text.Json.Serialization;
 using System.Text;
 using NuGet.Packaging;
 using FlowerFarmTaskManagementSystem.BusinessObject.Models;
+using Microsoft.AspNetCore.SignalR;
+using FlowerFarmTaskManagementSystem.BusinessLogic.Service;
 
 namespace FFTMS.RazorPages.Pages.UserTasks
 {
     public class IndexModel : PageModel
     {
         private readonly HttpClient _httpClient;
-
-        public IndexModel(HttpClient httpClient)
+        private readonly IHubContext<HubServices> _hubContext;
+        public IndexModel(HttpClient httpClient, IHubContext<HubServices> hubContext)
         {
             _httpClient = httpClient;
             UserTasks = new List<UserTaskFarmToolsResponseDTO>();
             FarmTools = new List<FarmToolsResponseDTO>();
             FarmToolsOfTask = new List<FarmToolsOfTaskResponseDTO>();
-
+            _hubContext = hubContext;
         }
 
         public IList<UserTaskFarmToolsResponseDTO> UserTasks { get; set; }
