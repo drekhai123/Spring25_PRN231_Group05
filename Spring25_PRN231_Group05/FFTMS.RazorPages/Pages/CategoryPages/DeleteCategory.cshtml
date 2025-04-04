@@ -1,0 +1,131 @@
+﻿@page
+@model FFTMS.RazorPages.Pages.CategoryPages.DeleteCategoryModel
+@{
+    ViewData["Title"] = "Xóa danh mục";
+    Layout = "_Layout";
+}
+
+<div class="main-container">
+    <div class="pd-ltr-20 xs-pd-20-10">
+        <div class="min-height-200px">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="row align-items-center">
+                    <div class="col-md-6 col-sm-12">
+                        <h4 class="mb-0">Xóa danh mục</h4>
+                        <nav aria-label="breadcrumb" role="navigation">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a asp-page="ListCategory">Danh mục</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Xóa</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>Lỗi!</strong> @Model.ErrorMessage
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            @if (Model.Category != null)
+            {
+                <!-- Delete Confirmation Card -->
+                <div class="card-box mb-30">
+                    <div class="pd-20">
+                        <div class="alert alert-warning" role="alert">
+                            <h4 class="alert-heading mb-2">
+                                <i class="icon-copy dw dw-warning"></i> Xác nhận xóa
+                            </h4>
+                            <p>Bạn có chắc chắn muốn xóa danh mục này không? Hành động này không thể hoàn tác.</p>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                @if (!string.IsNullOrEmpty(Model.Category.CategoryImageUrl))
+                                {
+                                    <img src="@Model.Category.CategoryImageUrl" alt="@Model.Category.CategoryName" 
+                                         class="img-fluid rounded mb-3" style="max-height: 200px;" />
+                                }
+                                else
+                                {
+                                    <div class="text-center p-4 bg-light rounded mb-3">
+                                        <i class="icon-copy dw dw-image" style="font-size: 48px;"></i>
+                                        <p class="mt-2">Không có hình ảnh</p>
+                                    </div>
+                                }
+                            </div>
+                            <div class="col-md-8">
+                                <div class="table-responsive">
+                                    <table class="table table-borderless">
+                                        <tbody>
+                                            <tr>
+                                                <th style="width: 200px;">ID:</th>
+                                                <td>@Model.Category.CategoryId</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Tên danh mục:</th>
+                                                <td>@Model.Category.CategoryName</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Mô tả:</th>
+                                                <td>@Model.Category.Description</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Ngày tạo:</th>
+                                                <td>@Model.Category.CreateDate.ToString("dd/MM/yyyy")</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Trạng thái:</th>
+                                                <td>
+                                                    <span class="badge @(Model.Category.Status ? "badge-success" : "badge-danger")">
+                                                        @(Model.Category.Status ? "Hoạt động" : "Không hoạt động")
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr />
+
+                        <form method="post">
+                            <input type="hidden" asp-for="Category.CategoryId" />
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-danger btn-lg me-2" onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này không?');">
+                                    <i class="icon-copy dw dw-delete-3"></i> Xóa danh mục
+                                </button>
+                                <a asp-page="ListCategory" class="btn btn-secondary btn-lg">
+                                    <i class="icon-copy dw dw-cancel"></i> Hủy bỏ
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Thêm hiệu ứng highlight cho card khi load trang
+        document.addEventListener('DOMContentLoaded', function() {
+            const card = document.querySelector('.card-box');
+            if (card) {
+                card.style.transition = 'all 0.3s ease';
+                card.style.transform = 'scale(0.98)';
+                card.style.boxShadow = '0 0 10px rgba(255, 0, 0, 0.2)';
+                
+                setTimeout(() => {
+                    card.style.transform = 'scale(1)';
+                }, 200);
+            }
+        });
+    </script>
+}
