@@ -1,4 +1,4 @@
-using AutoMapper;
+﻿using AutoMapper;
 using FlowerFarmTaskManagementSystem.BusinessLogic.IService;
 using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
 using FlowerFarmTaskManagementSystem.BusinessObject.Models;
@@ -18,22 +18,66 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-        public async Task<bool> DeleteProductFieldsAsync(Guid id)
+
+        public async Task<ProductFieldResponse> CreateProductFieldsAsync(ProductFieldRequest newProductField)
         {
-            var productField = await _unitOfWork.ProductFieldRepository.GetByIdAsync(id);
-            if (productField == null) throw new KeyNotFoundException("Product field not found");
-            _unitOfWork.ProductFieldRepository.Delete(productField);
+            if (newProductField == null)
+                throw new ArgumentNullException(nameof(newProductField));
+
+            // Validation
+            if (newProductField.ProductId == Guid.Empty)
+                throw new ArgumentException("ProductId is required.");
+            if (newProductField.FieldId == Guid.Empty)
+                throw new ArgumentException("FieldId is required.");
+            if (string.IsNullOrEmpty(newProductField.ProductivityUnit))
+                throw new ArgumentException("ProductivityUnit is required.");
+            if (newProductField.CreateDate == default)
+                throw new ArgumentException("CreateDate is required.");
+
+            // Validate EndDate must be greater than StartDate
+            if (newProductField.EndDate <= newProductField.StartDate)
+            {
+                throw new ArgumentException("EndDate must be greater than StartDate.");
+            }
+
+            // Check for overlapping ProductFields in the same time period
+            var existingProductFields = await _unitOfWork.ProductFieldRepository
+                .FindAsync(pf => pf.Status && 
+                                pf.FieldId == newProductField.FieldId &&
+                                ((pf.StartDate <= newProductField.EndDate && pf.EndDate >= newProductField.StartDate)));
+
+            if (existingProductFields.Any())
+            {
+                var overlappingField = existingProductFields.First();
+                throw new InvalidOperationException(
+                    $"Cannot create new ProductField. Field is already in use from {overlappingField.StartDate:dd/MM/yyyy} to {overlappingField.EndDate:dd/MM/yyyy}");
+            }
+
+            var productField = _mapper.Map<ProductField>(newProductField);
+            productField.ProductFieldId = Guid.NewGuid();
+            productField.ProductFieldStatus = ProductFieldStatus.GROWING;
+            productField.Status = true;
+
+            // Kiểm tra ProductId và FieldId
+            var productExists = await _unitOfWork.ProductRepository.GetByIdAsync(productField.ProductId);
+            if (productExists == null)
+                throw new KeyNotFoundException($"Product with ID {productField.ProductId} not found.");
+
+            var fieldExists = await _unitOfWork.FieldRepository.GetByIdAsync(productField.FieldId);
+            if (fieldExists == null)
+                throw new KeyNotFoundException($"Field with ID {productField.FieldId} not found.");
+
+            await _unitOfWork.ProductFieldRepository.AddAsync(productField);
             await _unitOfWork.SaveChangesAsync();
-            return true;
+            return _mapper.Map<ProductFieldResponse>(productField);
         }
 
-        public async Task<IEnumerable<ProductFieldRequest>> GetAllProductFieldsAsync()
+        public async Task<ProductFieldResponse> UpdateProductFieldsAsync(Guid id, ProductFieldUpdateDTO productFieldRequest)
         {
-            var productFields = await Task.FromResult(_unitOfWork.ProductFieldRepository
-                .Get(includeProperties: "Product.Category,Field"
-            ));
-            return _mapper.Map<IEnumerable<ProductFieldRequest>>(productFields);
-        }
+            if (productFieldRequest == null)
+            {
+                throw new ArgumentNullException(nameof(productFieldRequest));
+            }
 
         public async Task<ProductField> GetProductFieldByIdAsync(Guid id)
         {
@@ -49,10 +93,130 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             {
                 throw new KeyNotFoundException("ProductField not found.");
             }
+
+            // Validation
+            if (productFieldRequest.ProductId == Guid.Empty)
+            {
+                throw new ArgumentException("ProductId is required.");
+            }
+            if (productFieldRequest.FieldId == Guid.Empty)
+            {
+                throw new ArgumentException("FieldId is required.");
+            }
+            if (string.IsNullOrEmpty(productFieldRequest.ProductivityUnit))
+            {
+                throw new ArgumentException("ProductivityUnit is required.");
+            }
+
+            if (productFieldRequest.EndDate <= productFieldRequest.StartDate)
+            {
+                throw new ArgumentException("EndDate must be greater than StartDate.");
+            }
+            var fieldExists = await _unitOfWork.FieldRepository.GetByIdAsync(productFieldRequest.FieldId);
+            if (fieldExists == null)
+            {
+                throw new KeyNotFoundException($"Field with ID {productFieldRequest.FieldId} not found.");
+            }
+
+            bool isDateChanged = productField.StartDate != productFieldRequest.StartDate || productField.EndDate != productFieldRequest.EndDate;
+
+            if (isDateChanged)
+            {
+                var existingProductFields = await _unitOfWork.ProductFieldRepository
+      .FindAsync(pf => pf.FieldId == fieldExists.FieldId &&
+                       pf.ProductFieldId != id && 
+                       pf.Status == true && 
+                       ((pf.StartDate < productFieldRequest.EndDate && pf.EndDate > productFieldRequest.StartDate)));
+
+                if (existingProductFields.Any())
+                {
+                    var overlappingField = existingProductFields.First();
+                    throw new InvalidOperationException(
+                        $"Cannot update ProductField. The field with ID {fieldExists.FieldName} is already in use from {overlappingField.StartDate:dd/MM/yyyy} to {overlappingField.EndDate:dd/MM/yyyy}.");
+                }
+            }
+            var productExists = await _unitOfWork.ProductRepository.GetByIdAsync(productFieldRequest.ProductId);
+            if (productExists == null)
+            {
+                throw new KeyNotFoundException($"Product with ID {productFieldRequest.ProductId} not found.");
+            }
+
+
+
+            // Check ProductFieldStatus only for Productivity and ProductivityUnit updates
+            if (productField.Productivity != productFieldRequest.Productivity || 
+                productField.ProductivityUnit != productFieldRequest.ProductivityUnit)
+            {
+                if (productField.ProductFieldStatus != ProductFieldStatus.READYTOHARVEST)
+                {
+                    throw new InvalidOperationException("Cannot update Productivity and ProductivityUnit. ProductField must be in READYTOHARVEST status.");
+                }
+            }
+
             _mapper.Map(productFieldRequest, productField);
-            productField.UpdateDate = DateTime.UtcNow;
+
             _unitOfWork.ProductFieldRepository.Update(productField);
             await _unitOfWork.SaveChangesAsync();
+
+            var result = _mapper.Map<ProductFieldResponse>(productField);
+
+            return result;
+        }
+        public async Task<ProductFieldResponse> UpdateProductFieldProductivity(string id, double Productivity, string ProductivityUnit)
+        {
+            if (id == null)
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+            var Id = Guid.Parse(id);
+            var productField = await _unitOfWork.ProductFieldRepository.GetByIdAsync(Id);
+            if (productField == null)
+            {
+                throw new KeyNotFoundException("ProductField not found.");
+            }
+            productField.Productivity = Productivity;
+            productField.ProductivityUnit = ProductivityUnit;
+            productField.ProductFieldStatus = ProductFieldStatus.HARVESTED;
+           
+            _unitOfWork.ProductFieldRepository.Update(productField);
+            await _unitOfWork.SaveChangesAsync();
+
+            var result = _mapper.Map<ProductFieldResponse>(productField);
+
+            return result;
+        }
+        public async Task<bool> DeleteProductFieldsAsync(Guid id)
+        {
+            var productField = await _unitOfWork.ProductFieldRepository.GetByIdAsync(id);
+            if (productField == null)
+                throw new KeyNotFoundException("Product field not found");
+
+            _unitOfWork.ProductFieldRepository.Delete(productField);
+            var result = await _unitOfWork.SaveChangesAsync();
+            return result > 0;
+        }
+
+        public async Task<IEnumerable<ProductFieldResponse>> GetAllProductFieldsAsync(int pageNumber = 1, int pageSize = 5)
+        {
+            var productFields = _unitOfWork.ProductFieldRepository
+                .Get(includeProperties: "Product.Category,Field")
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            return _mapper.Map<IEnumerable<ProductFieldResponse>>(productFields);
+        }
+
+        public async Task<ProductFieldResponse> GetProductFieldByIdAsync(Guid id)
+        {
+            var productField = _unitOfWork.ProductFieldRepository.Get(
+                filter: pf => pf.ProductFieldId == id,
+                includeProperties: "Product.Category,Field"
+            ).FirstOrDefault();
+
+            if (productField == null)
+                throw new KeyNotFoundException($"ProductField with ID {id} not found");
+
             return _mapper.Map<ProductFieldResponse>(productField);
         }
 
@@ -68,11 +232,18 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             return  _mapper.Map<ProductFieldResponse>(productField);            
         }
 
-        public async  Task<IEnumerable<ProductFieldResponse>> SearchProductFieldsAsync(string Productivity, string ProductivityUnit)
-        {
-            throw new NotImplementedException();
-        }
+            if (!string.IsNullOrEmpty(productivity) && double.TryParse(productivity, out var productivityValue))
+            {
+                query = query.Where(pf => pf.Productivity == productivityValue);
+            }
 
-     
+            if (!string.IsNullOrEmpty(productivityUnit))
+            {
+                query = query.Where(pf => pf.ProductivityUnit != null && pf.ProductivityUnit.Contains(productivityUnit, StringComparison.OrdinalIgnoreCase));
+            }
+
+            var productFields = query.ToList();
+            return _mapper.Map<IEnumerable<ProductFieldResponse>>(productFields);
+        }
     }
-    }
+}

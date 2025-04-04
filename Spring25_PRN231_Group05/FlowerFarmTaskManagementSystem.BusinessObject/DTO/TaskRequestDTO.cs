@@ -1,3 +1,7 @@
+using FlowerFarmTaskManagementSystem.BusinessObject.Models;
+using System;
+using System.Collections.Generic;
+
 public class TaskRequestDTO
 {
     public string JobTitle { get; set; }
@@ -6,6 +10,7 @@ public class TaskRequestDTO
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public bool Status { get; set; }
+    public TaskProgressStatus TaskStatus { get; set; }
     public string? ImageUrl { get; set; }
 
     // Chỉ cần ProductFieldId
@@ -20,8 +25,6 @@ public class UserTaskRequest
     public string AssignedTo { get; set; }  // UserId của staff
     public string UserTaskDescription { get; set; }  // Mô tả công việc cho staff này
 }
-
-
 
 public class UserTaskCreateDTO
 {

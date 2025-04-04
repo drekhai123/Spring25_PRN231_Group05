@@ -1,111 +1,136 @@
 ﻿@page
 @model FFTMS.RazorPages.Pages.ProductFieldPages.DeleteModel
-
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Delete Product Field";
     Layout = "_Layout";
 }
 
-<div class="main-container">
-    <div class="pd-ltr-20 xs-pd-20-10">
-        <div class="min-height-200px">
-            <div class="page-header">
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Delete Product Field</h1>
+    
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @Model.ErrorMessage
+        </div>
+    }
+
+    @if (Model.ProductField == null)
+    {
+        <div class="alert alert-warning" role="alert">
+            Product Field not found.
+        </div>
+    }
+    else
+    {
+        <div class="card mb-4">
+            <div class="card-header bg-danger text-white">
+                <i class="fas fa-exclamation-triangle me-1"></i>
+                Confirm Deletion
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <h5 class="alert-heading">Warning!</h5>
+                    <p>Are you sure you want to delete this Product Field? This action cannot be undone.</p>
+                </div>
+
                 <div class="row">
-                    <div class="col-md-6 col-sm-12">
-                        <div class="title">
-                            <h4>Delete Product Field</h4>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Product Field Information
+                            </div>
+                            <div class="card-body">
+                                <dl class="row">
+                                    <dt class="col-sm-4">Status</dt>
+                                    <dd class="col-sm-8">
+                                        <span class="badge @(Model.ProductField.ProductFieldStatus == FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.GROWING ? "bg-success" : 
+                                                          Model.ProductField.ProductFieldStatus == FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.READYTOHARVEST ? "bg-warning" : "bg-secondary")">
+                                            @Model.ProductField.ProductFieldStatus
+                                        </span>
+                                    </dd>
+
+                                    <dt class="col-sm-4">Start Date</dt>
+                                    <dd class="col-sm-8">@Model.ProductField.StartDate.ToString("dd/MM/yyyy")</dd>
+
+                                    <dt class="col-sm-4">End Date</dt>
+                                    <dd class="col-sm-8">@Model.ProductField.EndDate.ToString("dd/MM/yyyy")</dd>
+
+                                    <dt class="col-sm-4">Productivity</dt>
+                                    <dd class="col-sm-8">
+                                        @(Model.ProductField.Productivity > 0 
+                                            ? $"{Model.ProductField.Productivity} {Model.ProductField.ProductivityUnit}"
+                                            : "Not available")
+                                    </dd>
+                                </dl>
+                            </div>
                         </div>
-                        <nav aria-label="breadcrumb" role="navigation">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a asp-page="/Index">Home</a></li>
-                                <li class="breadcrumb-item"><a asp-page="/ProductFieldPages/Index">Product Fields</a></li>
-                                <li class="breadcrumb-item active">Delete</li>
-                            </ol>
-                        </nav>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-header bg-warning text-dark">
+                                <i class="fas fa-seedling me-1"></i>
+                                Product Information
+                            </div>
+                            <div class="card-body">
+                                <dl class="row">
+                                    <dt class="col-sm-4">Product</dt>
+                                    <dd class="col-sm-8">@(Model.ProductField.Product?.ProductName ?? "N/A")</dd>
+
+                                    <dt class="col-sm-4">Category</dt>
+                                    <dd class="col-sm-8">@(Model.ProductField.Product?.Category?.CategoryName ?? "N/A")</dd>
+                                </dl>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header bg-success text-white">
+                                <i class="fas fa-map-marker-alt me-1"></i>
+                                Field Information
+                            </div>
+                            <div class="card-body">
+                                <dl class="row">
+                                    <dt class="col-sm-4">Field</dt>
+                                    <dd class="col-sm-8">@(Model.ProductField.Field?.FieldName ?? "N/A")</dd>
+                                </dl>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            
-
-            <div class="pd-20 card-box mb-30">
-                <h3>Are you sure you want to delete this product field?</h3>
-                <div>
-                    <dl class="row">
-                        <dt class="col-sm-2">Productivity</dt>
-                        <dd class="col-sm-10">@Model.ProductField.Productivity</dd>
-                        <dt class="col-sm-2">Productivity Unit</dt>
-                        <dd class="col-sm-10">@Model.ProductField.ProductivityUnit</dd>
-                        <dt class="col-sm-2">Start Date</dt>
-                        <dd class="col-sm-10">@Model.ProductField.StartDate</dd>
-                        <dt class="col-sm-2">End Date</dt>
-                        <dd class="col-sm-10">@Model.ProductField.EndDate</dd>
-                        <dt class="col-sm-2">Create Date</dt>
-                        <dd class="col-sm-10">@Model.ProductField.CreateDate</dd>
-                        <dt class="col-sm-2">Update Date</dt>
-                        <dd class="col-sm-10">@Model.ProductField.UpdateDate</dd>
-                        <dt class="col-sm-2">Status</dt>
-                        <dd class="col-sm-10">
-                            <span class="badge @(Model.ProductField.Status == "Active" ? "badge-success" : "badge-danger")">
-                                @(Model.ProductField.Status == "Active" ? "Active" : "Inactive")
-                            </span>
-                        </dd>
-                        <dt class="col-sm-2">Product</dt>
-                        <dd class="col-sm-10">@Model.ProductField.Product.ProductName</dd>
-                        <dt class="col-sm-2">Field</dt>
-                        <dd class="col-sm-10">@Model.ProductField.Field.FieldName</dd>
-                    </dl>
-
+                <div class="mt-4 text-center">
                     <form method="post">
                         <input type="hidden" asp-for="ProductField.ProductFieldId" />
-                        <button type="submit" class="btn btn-danger">Delete</button>
-                        <a asp-page="./Index" class="btn btn-secondary">Back to List</a>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash me-1"></i> Delete
+                        </button>
+                        <a asp-page="./Index" class="btn btn-secondary ms-2">
+                            <i class="fas fa-times me-1"></i> Cancel
+                        </a>
                     </form>
                 </div>
             </div>
         </div>
-    </div>
+    }
 </div>
 
-@section Styles {
-    <style>
-        .main-container {
-            margin-left: 250px;
-        }
+<style>
+    .card {
+        border: none;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    }
 
-        .title {
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
+    .card-header {
+        font-weight: 500;
+    }
 
-        .breadcrumb {
-            background: none;
-            padding: 0;
-            margin-bottom: 20px;
-        }
+    .btn {
+        border-radius: 0.35rem;
+    }
 
-        .breadcrumb-item a {
-            color: #007bff;
-        }
-
-        .breadcrumb-item.active {
-            color: #6c757d;
-        }
-
-        .alert {
-            margin-bottom: 20px;
-        }
-
-        .card-box {
-            padding: 20px;
-            margin-bottom: 30px;
-            border: 1px solid #f1f1f1;
-            border-radius: 5px;
-            background-color: #ffffff;
-        }
-
-        .btn-secondary {
-            margin-left: 10px;
-        }
-    </style>
-}
+    .alert {
+        border-radius: 0.35rem;
+    }
+</style>

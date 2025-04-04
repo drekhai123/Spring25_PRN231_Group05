@@ -1,79 +1,203 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Net.Http.Json;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using FlowerFarmTaskManagementSystem.BusinessObject.Models;
-using FlowerFarmTaskManagementSystem.DataAccess;
+using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
 
 namespace FFTMS.RazorPages.Pages.ProductFieldPages
 {
     public class EditModel : PageModel
     {
-        private readonly HttpClient  _httpClient;
+        private readonly HttpClient _httpClient;
+        private readonly HttpClient _configHttpClient;
+        private readonly IConfiguration _configuration;
 
-        public EditModel(HttpClient httpClient)
+        public EditModel(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
+            _httpClient.BaseAddress = new Uri("http://localhost:5281/");
+            
+            _configuration = configuration;
+            _configHttpClient = new HttpClient
+            {
+                BaseAddress = new Uri(_configuration["ApiSettings:BaseUrl"])
+            };
         }
 
         [BindProperty]
-        public ProductField ProductField { get; set; } = default!;
+        public ProductFieldResponse ProductField { get; set; }
+
+        public string ErrorMessage { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
-           // if (id == null)
-           // {
-           //     return NotFound();
-           // }
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-           // var productfield =  await _context.ProductFields.FirstOrDefaultAsync(m => m.ProductFieldId == id);
-           // if (productfield == null)
-           // {
-           //     return NotFound();
-           // }
-           // ProductField = productfield;
-           //ViewData["FieldId"] = new SelectList(_context.Fields, "FieldId", "Description");
-           //ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "Description");
-            return Page();
+            try
+            {
+                // Get ProductField using direct endpoint
+                var response = await _httpClient.GetAsync($"odata/ProductField/{id}?$expand=Product,Field");
+                if (!response.IsSuccessStatusCode)
+                {
+                    ErrorMessage = "Failed to retrieve product field.";
+                    return Page();
+                }
+
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                ProductField = JsonSerializer.Deserialize<ProductFieldResponse>(jsonResponse, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+                if (ProductField == null)
+                {
+                    return NotFound();
+                }
+
+                await LoadDropdownData();
+                return Page();
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"An error occurred: {ex.Message}";
+                return Page();
+            }
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
             //if (!ModelState.IsValid)
             //{
+            //    await LoadDropdownData();
             //    return Page();
             //}
 
-            //_context.Attach(ProductField).State = EntityState.Modified;
+            try
+            {
+                // Get original product field to check status
+                var originalProductField = await GetOriginalProductField(ProductField.ProductFieldId);
+                if (originalProductField == null)
+                {
+                    ModelState.AddModelError(string.Empty, "Product field not found");
+                    await LoadDropdownData();
+                    return Page();
+                }
 
-            //try
-            //{
-            //    await _context.SaveChangesAsync();
-            //}
-            //catch (DbUpdateConcurrencyException)
-            //{
-            //    if (!ProductFieldExists(ProductField.ProductFieldId))
-            //    {
-            //        return NotFound();
-            //    }
-            //    else
-            //    {
-            //        throw;
-            //    }
-            //}
+                // Validate EndDate > StartDate
+                if (ProductField.EndDate <= ProductField.StartDate)
+                {
+                    ModelState.AddModelError(string.Empty, "End Date must be greater than Start Date");
+                    await LoadDropdownData();
+                    return Page();
+                }
 
-            return RedirectToPage("./Index");
+                // Check if trying to update Productivity or ProductivityUnit
+                if ((ProductField.Productivity != originalProductField.Productivity ||
+                     ProductField.ProductivityUnit != originalProductField.ProductivityUnit) &&
+                    ProductField.ProductFieldStatus != ProductFieldStatus.READYTOHARVEST)
+                {
+                    ModelState.AddModelError(string.Empty, 
+                        "Productivity and ProductivityUnit can only be updated when the status is READYTOHARVEST");
+                    await LoadDropdownData();
+                    return Page();
+                }
+
+                var updateData = new
+                {
+                    productivity = ProductField.Productivity,
+                    productivityUnit = ProductField.ProductivityUnit ?? "",
+                    startDate = ProductField.StartDate.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
+                    endDate = ProductField.EndDate.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
+                    productFieldStatus = (int)ProductField.ProductFieldStatus,
+                    productId = ProductField.Product?.ProductId.ToString() ?? "",
+                    fieldId = ProductField.Field?.FieldId.ToString() ?? ""
+                };
+
+                var apiUrl = $"odata/ProductField/{ProductField.ProductFieldId}";
+                var updateResponse = await _httpClient.PutAsJsonAsync(apiUrl, updateData);
+
+                if (updateResponse.IsSuccessStatusCode)
+                {
+                    return RedirectToPage("./Index");
+                }
+
+                var error = await updateResponse.Content.ReadAsStringAsync();
+                try
+                {
+                    var errorDetails = JsonSerializer.Deserialize<ErrorResponse>(error, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+                    ModelState.AddModelError(string.Empty, errorDetails.Message ?? error);
+                }
+                catch
+                {
+                    ModelState.AddModelError(string.Empty, error);
+                }
+                
+                await LoadDropdownData();
+                return Page();
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, $"An error occurred: {ex.Message}");
+                await LoadDropdownData();
+                return Page();
+            }
         }
 
-        private bool ProductFieldExists(Guid id)
+        private async Task<ProductFieldResponse> GetOriginalProductField(Guid id)
         {
-            return true;
+            // Using direct endpoint
+            var response = await _httpClient.GetAsync($"odata/ProductField/{id}?$expand=Product,Field");
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<ProductFieldResponse>(jsonResponse, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+            }
+            return null;
+        }
+
+        private async Task LoadDropdownData()
+        {
+            try
+            {
+                // Using configuration endpoint for Products and Fields
+                var productResponse = await _configHttpClient.GetAsync("odata/Product/get-all-product");
+                if (productResponse.IsSuccessStatusCode)
+                {
+                    var products = await productResponse.Content.ReadFromJsonAsync<List<ProductDTO>>();
+                    ViewData["ProductId"] = new SelectList(products, "ProductId", "ProductName", ProductField?.Product?.ProductId);
+                }
+
+                var fieldResponse = await _configHttpClient.GetAsync("odata/Field/get-all-field");
+                if (fieldResponse.IsSuccessStatusCode)
+                {
+                    var fields = await fieldResponse.Content.ReadFromJsonAsync<List<FieldDTO>>();
+                    ViewData["FieldId"] = new SelectList(fields, "FieldId", "FieldName", ProductField?.Field?.FieldId);
+                }
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, $"Error loading dropdown data: {ex.Message}");
+            }
+        }
+
+        private class ErrorResponse
+        {
+            public string Message { get; set; }
         }
     }
 }

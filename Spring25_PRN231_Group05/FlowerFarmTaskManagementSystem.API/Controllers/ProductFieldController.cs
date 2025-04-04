@@ -135,23 +135,23 @@
         //    }
         //}
 
-        //[HttpPut("update-productfield-by-id")]
-        //public async Task<ActionResult<ProductFieldRequest>> UpdateProductFieldAsync(Guid id, [FromBody] ProductFieldRequest productFieldDto)
-        //{
-        //    try
-        //    {
-        //        var productField = await _productFieldService.UpdateProductFieldsAsync(id, productFieldDto);
-        //        return Ok(productFieldDto);
-        //    }
-        //    catch (KeyNotFoundException ex)
-        //    {
-        //        return NotFound(ex.Message);
-        //    }
-        //    catch (ArgumentException ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
-        //}
+        [HttpPut("update-productfield-by-id")]
+        public async Task<ActionResult<ProductFieldRequest>> UpdateProductFieldAsync(Guid id, [FromBody] ProductFieldUpdateDTO productFieldDto)
+        {
+            try
+            {
+                var productField = await _productFieldService.UpdateProductFieldsAsync(id, productFieldDto);
+                return Ok(productFieldDto);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
 //    }
 //}

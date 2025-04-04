@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.Serialization;
 
 namespace FlowerFarmTaskManagementSystem.BusinessObject.Models
 {
@@ -18,7 +19,8 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Models
         public DateTime EndDate { get; set; }
         public DateTime CreateDate { get; set; }
         public DateTime UpdateDate { get; set; }
-        public string Status { get; set; }
+        public bool Status { get; set; }
+        public ProductFieldStatus ProductFieldStatus { get; set; }
 
         public Guid ProductId { get; set; }
         [ForeignKey(nameof(ProductId))]
@@ -27,5 +29,16 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Models
         public Guid FieldId { get; set; }
         [ForeignKey(nameof(FieldId))]
         public Field? Field { get; set; }
+    }
+    public enum ProductFieldStatus
+    { 
+        [EnumMember(Value = "Growing")]
+        GROWING,
+        [EnumMember(Value = "ReadyToHarvest")]
+        READYTOHARVEST,
+        [EnumMember(Value = "Harvested")]
+        HARVESTED,
+        [EnumMember(Value = "Overdue")]
+        OVERDUE
     }
 }

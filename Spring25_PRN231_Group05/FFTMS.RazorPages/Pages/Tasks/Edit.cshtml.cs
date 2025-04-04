@@ -7,6 +7,7 @@ using FFTMS.RazorPages.Helpers;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using FlowerFarmTaskManagementSystem.BusinessObject.Models;
 
 namespace FFTMS.RazorPages.Pages.Tasks
 {
@@ -25,7 +26,7 @@ namespace FFTMS.RazorPages.Pages.Tasks
         public SelectList ProductFieldList { get; set; }
         public string ErrorMessage { get; set; }
         public Guid TaskId { get; set; }
-        public List<ProductFieldRequest> ProductFieldsData { get; set; }
+        public List<ProductFieldResponse> ProductFieldsData { get; set; }
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
@@ -54,6 +55,13 @@ namespace FFTMS.RazorPages.Pages.Tasks
                     {
                         PropertyNameCaseInsensitive = true
                     });
+                    
+                    // Check if task is already completed, if so redirect to details page
+                    if (taskResponse.TaskStatus == TaskProgressStatus.COMPLETED)
+                    {
+                        TempData["ErrorMessage"] = "Cannot edit a completed task.";
+                        return RedirectToPage("./Details", new { id = TaskId });
+                    }
 
                     Task = new TaskRequestDTO
                     {
@@ -118,11 +126,11 @@ namespace FFTMS.RazorPages.Pages.Tasks
         {
             try
             {
-                var response = await _httpClient.GetAsync("http://localhost:5281/odata/ProductFields/get-all-productField");
+                var response = await _httpClient.GetAsync("http://localhost:5281/odata/ProductField");
                 if (response.IsSuccessStatusCode)
                 {
                     var jsonResponse = await response.Content.ReadAsStringAsync();
-                    var productFields = JsonSerializer.Deserialize<List<ProductFieldRequest>>(jsonResponse, new JsonSerializerOptions
+                    var productFields = JsonSerializer.Deserialize<List<ProductFieldResponse>>(jsonResponse, new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
                     });

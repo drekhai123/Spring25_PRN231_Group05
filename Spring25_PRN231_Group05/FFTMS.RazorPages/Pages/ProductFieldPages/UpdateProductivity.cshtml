@@ -1,8 +1,7 @@
 ﻿@page
-@model FFTMS.RazorPages.Pages.ProductFieldPages.DetailsModel
-
+@model FFTMS.RazorPages.Pages.ProductFieldPages.UpdateProductivityModel
 @{
-    ViewData["Title"] = "Product Field Details";
+    ViewData["Title"] = "Product Field Productivity";
     Layout = "_Layout";
 }
 
@@ -33,7 +32,7 @@
                                     <dl class="row">
                                         <dt class="col-sm-4">Status</dt>
                                         <dd class="col-sm-8">
-                                            <span class="badge @(Model.ProductField.ProductFieldStatus == FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.READYTOHARVEST ? "bg-success" : 
+                                            <span class="badge @(Model.ProductField.ProductFieldStatus == FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.READYTOHARVEST ? "bg-success" :
                                                                Model.ProductField.ProductFieldStatus == FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.GROWING ? "bg-info" :
                                                                Model.ProductField.ProductFieldStatus == FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.HARVESTED ? "bg-secondary" : "bg-warning")">
                                                 @Model.ProductField.ProductFieldStatus
@@ -56,6 +55,33 @@
                                         <dd class="col-sm-8">@Model.ProductField.UpdateDate.ToString("dd/MM/yyyy HH:mm")</dd>
                                     </dl>
                                 </div>
+                            </div>
+
+                            <div class="card-body">
+                                <form method="post">
+                                    <input type="hidden" asp-for="ProductField.ProductFieldId" />
+                                    <div class="mb-3">
+                                        <label class="form-label">Unit</label>
+                                        <select asp-for="Unit" class="form-control" required>
+                                            <option value="">-- Select Unit --</option>
+                                            <option value="Bloom">Bloom</option>
+                                            <option value="Bundle">Bundle</option>
+                                            <option value="Pot">Pot</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Productivity</label>
+                                        <input type="number" asp-for="Quantity" class="form-control" step="0" min="0" required />
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="fa fa-save"></i> Save
+                                        </button>
+                                        <a asp-page="./Index" class="btn btn-secondary ms-2">
+                                            <i class="fas fa-list me-1"></i> Back to List
+                                        </a>
+                                    </div>
+                                </form>
                             </div>
                         </div>
 
@@ -115,14 +141,6 @@
                         </div>
                     </div>
 
-                    <div class="mt-4 text-center">
-                        <a asp-page="./Edit" asp-route-id="@Model.ProductField.ProductFieldId" class="btn btn-primary">
-                            <i class="fas fa-edit me-1"></i> Edit
-                        </a>
-                        <a asp-page="./Index" class="btn btn-secondary ms-2">
-                            <i class="fas fa-list me-1"></i> Back to List
-                        </a>
-                    </div>
                 }
             </div>
         </div>

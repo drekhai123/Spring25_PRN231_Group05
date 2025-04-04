@@ -4,6 +4,7 @@ using FlowerFarmTaskManagementSystem.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FlowerFarmTaskManagementSystem.DataAccess.Migrations
 {
     [DbContext(typeof(FlowerFarmTaskManagementSystemDbContext))]
-    partial class FlowerFarmTaskManagementSystemDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250401081252_TaskStatus")]
+    partial class TaskStatus
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -262,9 +265,6 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.Migrations
                     b.Property<Guid>("FieldId")
                         .HasColumnType("char(36)");
 
-                    b.Property<int>("ProductFieldStatus")
-                        .HasColumnType("int");
-
                     b.Property<Guid>("ProductId")
                         .HasColumnType("char(36)");
 
@@ -277,8 +277,9 @@ namespace FlowerFarmTaskManagementSystem.DataAccess.Migrations
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<bool>("Status")
-                        .HasColumnType("tinyint(1)");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<DateTime>("UpdateDate")
                         .HasColumnType("datetime(6)");

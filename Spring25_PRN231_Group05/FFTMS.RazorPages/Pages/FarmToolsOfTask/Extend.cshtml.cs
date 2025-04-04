@@ -74,7 +74,7 @@ namespace FFTMS.RazorPages.Pages.FarmToolsOfTask
                 if (!response.IsSuccessStatusCode)
                 {
                     var errorMessage = await response.Content.ReadAsStringAsync();
-                    ModelState.AddModelError(string.Empty, $"Error updating data: {errorMessage}");
+                    TempData["ErrorMessage"] = errorMessage;
                     return Page();
                 }
 

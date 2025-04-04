@@ -2,193 +2,105 @@
 @model FFTMS.RazorPages.Pages.ProductFieldPages.IndexModel
 
 @{
-    ViewData["Title"] = "Product Field Index";
+    ViewData["Title"] = "Product Fields";
     Layout = "_Layout";
 }
 
-<div class="main-container">
-    <h1>Product Field History</h1>
-
-    @if (TempData["ErrorMessage"] != null)
-    {
-        <div class="alert alert-danger">
-            @TempData["ErrorMessage"]
+<div class="container-fluid py-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h3 class="mb-0"><i class="fas fa-list me-2"></i>Product Fields</h3>
+            <a asp-page="Create" class="btn btn-light fw-bold">
+                <i class="fas fa-plus me-1"></i> Create New
+            </a>
         </div>
-    }
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert alert-success">
-            @TempData["SuccessMessage"]
-        </div>
-    }
-    <p>
-        <a asp-page="Create">Create New</a>
-    </p>
 
-    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
-
-    <table class="table" id="productFieldTable">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.ProductField[0].Productivity)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.ProductField[0].ProductivityUnit)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.ProductField[0].StartDate)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.ProductField[0].EndDate)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.ProductField[0].CreateDate)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.ProductField[0].UpdateDate)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.ProductField[0].Status)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.ProductField[0].Product)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.ProductField[0].Field)
-                </th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.ProductField)
+        <div class="card-body">
+            @if (Model.ProductField == null || !Model.ProductField.Any())
             {
-                <tr productfield-id="@item.ProductFieldId">
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Productivity)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.ProductivityUnit)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.StartDate)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.EndDate)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.CreateDate)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.UpdateDate)
-                    </td>
-                    <td>
-                        <span class="badge
-            @(item.Status == "Pending" ? "badge-warning" :
-             item.Status == "Extend" ? "badge-info" :
-             item.Status == "Pending Return" ? "badge-primary" :
-             item.Status == "Returned" ? "badge-success" :
-             item.Status == "Damaged" ? "badge-danger" : "badge-secondary")">
-                            @(item.Status == "Pending" ? "Pending" :
-                                item.Status == "Extend" ? "Extend" :
-                                item.Status == "Pending Return" ? "Pending Return" :
-                                item.Status == "Returned" ? "Returned" :
-                                item.Status == "Damaged" ? "Damaged" : "Unknown")
-                        </span>
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Product.Description)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Field.Description)
-                    </td>
-                    <td>
-                        <div class="dropdown">
-                            <a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle" href="#" role="button" data-toggle="dropdown">
-                                <i class="dw dw-more"></i>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
-                                <a class="dropdown-item" asp-page="./Details" asp-route-id="@item.ProductFieldId">
-                                    <i class="dw dw-eye"></i> View
-                                </a>
-                                <a class="dropdown-item" asp-page="./Edit" asp-route-id="@item.ProductFieldId">
-                                    <i class="dw dw-edit2"></i> Edit
-                                </a>
-                                <a class="dropdown-item" asp-page="./Delete" asp-route-id="@item.ProductFieldId">
-                                    <i class="dw dw-delete-3"></i> Delete
-                                </a>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
+                <div class="alert alert-warning text-center" role="alert">
+                    <i class="fas fa-exclamation-circle me-2"></i> No Product Fields found.
+                </div>
             }
-        </tbody>
-    </table>
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Product</th>
+                                <th>Field</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Created</th>
+                                <th>Updated</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.ProductField)
+                            {
+                                <tr>
+                                    <td>@(item.Product?.ProductName ?? "N/A")</td>
+                                    <td>@(item.Field?.FieldName ?? "N/A")</td>
+                                    <td>@item.StartDate.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                                    <td>@item.EndDate.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                                    <td>@item.CreateDate.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                                    <td>@item.UpdateDate.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                                    <td>
+                                        <span class="badge @(item.ProductFieldStatus.ToString() == "in progress" ? "bg-warning text-dark" : "bg-secondary")">
+                                            @item.ProductFieldStatus
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a asp-page="./Edit" asp-route-id="@item.ProductFieldId" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-edit me-1"></i> Edit
+                                            </a>
+                                            @if(item.ProductFieldStatus == FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.READYTOHARVEST){
+                                                <a asp-page="./UpdateProductivity" asp-route-id="@item.ProductFieldId" class="btn btn-sm btn-outline-warning">
+                                                    <i class="fas fa-tasks me-1"></i> Productivity
+                                                </a>
+                                            }
+                                            <a asp-page="./Details" asp-route-id="@item.ProductFieldId" class="btn btn-sm btn-outline-info">
+                                                <i class="fas fa-eye me-1"></i> Details
+                                            </a>
+                                            <a asp-page="./Delete" asp-route-id="@item.ProductFieldId" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash me-1"></i> Delete
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
 </div>
 
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-    <script>
-        $(document).ready(function () {
-            if ($.fn.DataTable.isDataTable("#productFieldTable")) {
-                $("#productFieldTable").DataTable().destroy();
-            }
-
-            $("#productFieldTable").DataTable({
-                "paging": true,
-                "ordering": true,
-                "info": true,
-                "searching": true,
-                "lengthMenu": [5, 10, 25, 50, 100],
-                "order": [[0, "asc"]],
-                "language": {
-                    "lengthMenu": "Hiển thị _MENU_ dòng mỗi trang",
-                    "zeroRecords": "Không tìm thấy",
-                    "info": "Trang _PAGE_ / _PAGES_",
-                    "infoEmpty": "Không có dữ liệu",
-                    "search": "Tìm kiếm:",
-                    "paginate": {
-                        "first": "Đầu tiên",
-                        "last": "Cuối cùng",
-                        "next": "Tiếp theo",
-                        "previous": "Trước đó"
-                    }
-                }
-            });
-        });
-    </script>
-}
-
 <style>
-    .main-container {
-        margin-left: 0px;
+    .table th, .table td {
+        text-align: center;
+        vertical-align: middle;
     }
 
-    .create-new {
-        margin-top: 40px;
-        font-size: 20px;
+    .btn-group .btn {
+        transition: all 0.3s ease-in-out;
     }
 
-    .table-container {
-        margin-left: 250px;
-    }
-
-        .table-container p {
-            font-size: 18px;
+        .btn-group .btn:hover {
+            filter: brightness(1.2);
         }
 
-    .dropdown-menu-right {
-        right: 0;
-    }
-
-    .dropdown-item {
-        cursor: pointer;
-    }
-
     .badge {
-        padding: 0.5rem;
-        font-size: 12px;
+        font-size: 0.85rem;
+        padding: 0.4em 0.75em;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fa;
     }
 </style>
