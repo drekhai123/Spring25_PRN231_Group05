@@ -1,4 +1,9 @@
 ﻿@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@using FFTMS.RazorPages.Helpers
+
+@{
+    var role = JwtHelper.GetRoleFromToken(Context.Request.Cookies["AuthToken"]);
+}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -46,34 +51,57 @@
 
     <title>@ViewData["Title"] - FFTMS.RazorPages</title>
 </head>
+    <body>
+        <!-- Your existing HTML content -->
+        <div class="header">
+            <div class="header-left">
+                <div class="menu-icon fas fa-bars"></div>
+            </div>
 
-<body>
-    <div class="header">
-        <div class="header-left">
-            <div class="menu-icon fas fa-bars"></div>
-        </div>
-        <div class="header-right">
-            <div class="user-info-dropdown">
-                <div class="dropdown">
-                    <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown">
-                        <span class="user-icon">
-                            <img src="/vendors/images/photo1.jpg" alt="">
-                        </span>
-                        <span class="user-name">@(HttpContextAccessor.HttpContext.Session.GetString("UserName") ?? "Guest")</span>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
-                        <a class="dropdown-item" asp-page="/Profile"><i class="fas fa-user"></i> Profile</a>
-                        <a class="dropdown-item" asp-page="/Auth/Logout"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+                <div class="header-right">
+
+                      @if (role == "Staff")
+                         {
+                    <div class="notification-dropdown">
+                        <a href="#" class="notification-icon" data-toggle="dropdown" id="notificationBell">
+                            <i class="fas fa-bell fa-lg"></i>
+                            <span class="badge badge-danger" style="display: none;">0</span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right notification-menu" style="min-width: 300px; max-height: 400px; overflow-y: auto;">
+                            <div class="dropdown-header">
+                                <h6 class="mb-0">Thông báo</h6>
+                                <a href="#" class="text-muted small" onclick="clearNotifications()">Xóa tất cả</a>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <div id="notificationList">
+                                <!-- Notifications will be added here -->
+                            </div>
+                        </div>
                     </div>
+                       
+                    }
+                    </<div>
+                <div class="user-info-dropdown">
+                    <div class="dropdown">
+                        <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown">
+                            <span class="user-icon">
+                                <img src="/vendors/images/photo1.jpg" alt="">
+                            </span>
+                            <span class="user-name">@(HttpContextAccessor.HttpContext.Session.GetString("UserName") ?? "Guest")</span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
+                            <a class="dropdown-item" asp-page="/Profile"><i class="fas fa-user"></i> Profile</a>
+                            <a class="dropdown-item" asp-page="/Auth/Logout"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+                        </div>
+                    </div>
+                     </div>
+                <div class="github-link">
+                    <a href="https://github.com/drekhai123/Spring25_PRN231_Group05" target="_blank">
+                        <i class="fab fa-github fa-lg"></i>
+                    </a>
                 </div>
             </div>
-            <div class="github-link">
-                <a href="https://github.com/drekhai123/Spring25_PRN231_Group05" target="_blank">
-                    <i class="fab fa-github fa-lg"></i>
-                </a>
-            </div>
         </div>
-    </div>
 
     <div class="left-side-bar">
         <div class="brand-logo">
@@ -91,27 +119,29 @@
                     <li>
                         <a asp-page="/Index" class="dropdown-toggle no-arrow">
                             <span class="micon fas fa-home"></span>
-                            <span class="mtext">Home</span>
+                            <span class="mtext">Trang chủ</span>
                         </a>
                     </li>
 
-                    @using FFTMS.RazorPages.Helpers
-                    @{
-                        var role = JwtHelper.GetRoleFromToken(Context.Request.Cookies["AuthToken"]);
-                    }
 
                     @if (role == "Admin")
                     {
                         <li>
                             <a asp-page="/Users/Index" class="dropdown-toggle no-arrow">
                                 <span class="micon fas fa-users-cog"></span>
-                                <span class="mtext">User Management</span>
+                                <span class="mtext">Người Dùng</span>
                             </a>
                         </li>
                         <li>
                             <a asp-page="/FarmToolCategories/Index" class="dropdown-toggle no-arrow">
                                 <span class="micon fas fa-tools"></span>
-                                <span class="mtext">Farm Tool Categories</span>
+                                <span class="mtext">Loại công cụ</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-page="/CategoryPages/ListCategory" class="dropdown-toggle no-arrow">
+                                <span class="micon fas fa-tools"></span>
+                                <span class="mtext">Loại hoa</span>
                             </a>
                         </li>
                     }
@@ -121,37 +151,37 @@
                         <li>
                             <a asp-page="/Tasks/Index" class="dropdown-toggle no-arrow">
                                 <span class="micon fas fa-tasks"></span>
-                                <span class="mtext">Tasks</span>
+                                <span class="mtext">Tạo công việc</span>
                             </a>
                         </li>
                         <li>
                             <a asp-page="/ProductPages/ListProduct" class="dropdown-toggle no-arrow">
                                 <span class="micon fas fa-box"></span>
-                                <span class="mtext">Product</span>
+                                <span class="mtext">Quản lí hoa</span>
                             </a>
                         </li>
                         <li>
                             <a asp-page="/FarmTools/ListFarmTools" class="dropdown-toggle no-arrow">
                                 <span class="micon fas fa-hammer"></span>
-                                <span class="mtext">Farm Tools</span>
+                                <span class="mtext">Công cụ trồng trọt</span>
                             </a>
                         </li>
                         <li>
                             <a asp-page="/FarmToolsOfTask/Index" class="dropdown-toggle no-arrow">
                                 <span class="micon fas fa-history"></span>
-                                <span class="mtext">History Of Tools</span>
+                                <span class="mtext">Lịch sử công cụ</span>
                             </a>
                         </li>
                         <li>
                             <a asp-page="/ProductFieldPages/Index" class="dropdown-toggle no-arrow">
                                 <span class="micon fas fa-seedling"></span>
-                                <span class="mtext">Product Field</span>
+                                <span class="mtext">Kế hoạch trồng hoa</span>
                             </a>
                         </li>
                         <li>
                             <a asp-page="/Field/ListField" class="dropdown-toggle no-arrow">
                                 <span class="micon fas fa-map-marker-alt"></span>
-                                <span class="mtext">Field</span>
+                                <span class="mtext">Khu trồng hoa</span>
                             </a>
                         </li>
                     }
@@ -160,7 +190,7 @@
                         <li>
                             <a asp-page="/UserTasks/Index" class="dropdown-toggle no-arrow">
                                 <span class="micon fas fa-list-check"></span>
-                                <span class="mtext">My Tasks</span>
+                                <span class="mtext">Việc của tôi</span>
                             </a>
                         </li>
                     }
@@ -192,6 +222,20 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JS -->
+    <script src="~/js/notification.js" asp-append-version="true"></script>
+    <script src="~/js/microsoft/signalr/dist/browser/signalr.min.js"></script>
+    <script src="~/js/microsoft/signalr/dist/browser/createTask.js"></script>
+    <script>
+        function clearNotifications() {
+            const notificationList = document.getElementById('notificationList');
+            if (notificationList) {
+                notificationList.innerHTML = '';
+                updateNotificationBadge();
+            }
+        }
+    </script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

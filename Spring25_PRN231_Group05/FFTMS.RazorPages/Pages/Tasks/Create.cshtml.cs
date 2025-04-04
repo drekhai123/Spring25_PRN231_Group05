@@ -6,16 +6,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Text.Json;
 using System.Security.Claims;
 using FFTMS.RazorPages.Helpers;
+using FlowerFarmTaskManagementSystem.BusinessLogic.Service;
+using Microsoft.AspNetCore.SignalR;
 
 namespace FFTMS.RazorPages.Pages.Tasks
 {
     public class CreateModel : PageModel
     {
         private readonly HttpClient _httpClient;
-
-        public CreateModel(HttpClient httpClient)
+        private readonly IHubContext<HubServices> _hubContext;
+        public CreateModel(HttpClient httpClient, IHubContext<HubServices> hubContext)
         {
             _httpClient = httpClient;
+            _hubContext = hubContext;
         }
 
         [BindProperty]
@@ -141,6 +144,9 @@ namespace FFTMS.RazorPages.Pages.Tasks
 
                 var response = await _httpClient.PostAsJsonAsync("https://localhost:7207/odata/Task", Task);
                 var responseContent = await response.Content.ReadAsStringAsync();
+                await _hubContext.Clients.All.SendAsync("ReceiveNotification", "Bạn vừa nhận được 1 công việc mới");
+                // In ra toàn bộ nội dung response để xem lỗi chi tiết
+                Console.WriteLine($"API Response: {responseContent}");
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -148,7 +154,7 @@ namespace FFTMS.RazorPages.Pages.Tasks
                 }
 
                 ErrorMessage = responseContent ?? "Error creating task";
-                
+
                 // Reload dropdown data when validation fails
                 // Fetch users for staff assignment dropdown
                 var userResponse = await _httpClient.GetAsync("https://localhost:7207/odata/User");

@@ -1,90 +1,114 @@
 ﻿@page
 @model FFTMS.RazorPages.Pages.CategoryPages.ListCategoryModel
 @{
-    ViewData["Title"] = "List Category";
+    ViewData["Title"] = "Category List";
     Layout = "_Layout";
 }
+
 <div class="main-container">
-	<div class="pd-ltr-20 xs-pd-20-10">
-		<div class="min-height-200px">
-			<div class="page-header">
-				<div class="row">
-					<div class="col-md-6 col-sm-12">
-						<div class="title">
-							<h4>List Category</h4>
-						</div>
-						<nav aria-label="breadcrumb" role="navigation">
-							<ol class="breadcrumb">
-								<li class="breadcrumb-item">Category</li>
-								<li class="breadcrumb-item active" aria-current="page">List Category</li>
-							</ol>
-						</nav>
-					</div>
-				</div>
-			</div>
-			<div class="d-flex justify-content-between align-items-center mb-3">
-				<a asp-page="CreateCategory" class="btn btn-success">+ Add Category</a>
-			</div>
-			<div class="d-flex justify-content-between align-items-center mb-3">
-				<a asp-page="ListProduct" class="btn btn-success">List Product</a>
-			</div>
-			<!-- Table -->
-			<div class="card-box mb-30">
-				<div class="pd-20">
-					<h4 class="text-blue h4">List Of Product</h4>
-				</div>
-				<div class="pb-20">
-					<table class="data-table table stripe hover nowrap">
-						<thead>
-							<tr>
-								<th>ID</th>
-								<th>Name</th>
-								<th>Description</th>
-								<th>Image</th>
-								<th>Create Date</th>
-								<th>Status</th>
-							</tr>
-						</thead>
-						<tbody>
-							@foreach (var product in Model.ListProduct)
-							{
-								<tr>
-									<td>@product.CategoryId</td>
-									<td>@product.CategoryName</td>
-									<td>@product.Description</td>
-									<td>@product.CategoryImageUrl</td>
-									<td>@product.CreateDate.ToString("dd-MM-yyyy")</td>
-									<td>@product.Status</td>
-									<td>
-										<div class="dropdown">
-											<button class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle"
-													type="button"
-													id="dropdownMenuButton"
-													data-bs-toggle="dropdown"
-													aria-expanded="false">
-												<i class="dw dw-more"></i>
-											</button>
-											<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-												<li>
-													<a class="dropdown-item" asp-page="UpdateCategory" asp-route-id="@product.CategoryId">
-														<i class="dw dw-edit"></i> Edit
-													</a>
-												</li>
-												<li>
-													<a class="dropdown-item" asp-page="#" asp-route-id="@product.CategoryId">
-														<i class="dw dw-delete"></i> Delete
-													</a>
-												</li>
-											</ul>
-										</div>
-									</td>
-								</tr>
-							}
-						</tbody>
-					</table>
-				</div>
-			</div>
-			<!-- Table End -->
-		</div>
-	</div>
+    <div class="pd-ltr-20 xs-pd-20-10">
+        <div class="min-height-200px">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="row align-items-center">
+                    <div class="col-md-6 col-sm-12">
+                        <h4 class="mb-0">Danh mục</h4>
+                        <nav aria-label="breadcrumb" role="navigation">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item">Danh mục</li>
+                                <li class="breadcrumb-item active" aria-current="page">Danh sách</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="mb-4">
+                <a asp-page="CreateCategory" class="btn btn-success me-2">
+                    <i class="icon-copy dw dw-add"></i> Thêm danh mục
+                </a>
+            </div>
+
+            <!-- Category Table -->
+            <div class="card-box mb-30">
+                <div class="pd-20">
+                    <h4 class="text-blue h4 mb-0">Danh mục</h4>
+                </div>
+                <div class="pb-20">
+                    <table class="data-table table table-striped table-hover nowrap">
+                        <thead class="table-dark">
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">Tên hoa</th>
+                                <th scope="col">Mô tả</th>
+                                <th scope="col">Hình Ảnh</th>
+                                <th scope="col">Ngày tạo</th>
+                                <th scope="col">Trạng thái</th>
+                                <th scope="col" class="text-center">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var category in Model.ListProduct)
+                            {
+                                <tr>
+                                    <td>@category.CategoryId</td>
+                                    <td>@category.CategoryName</td>
+                                    <td>@(category.Description?.Length > 50 ? category.Description.Substring(0, 50) + "..." : category.Description)</td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(category.CategoryImageUrl))
+                                        {
+                                            <img src="@category.CategoryImageUrl" alt="@category.CategoryName" class="img-thumbnail" style="max-width: 50px;" />
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Không có hình ảnh</span>
+                                        }
+                                    </td>
+                                    <td>@category.CreateDate.ToString("dd/MM/yyyy")</td>
+                                    <td>
+                                        <span class="badge @(category.Status ? "badge-success" : "badge-danger")">
+                                            @(category.Status ? "Hoạt động" : "Không hoạt động")
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="d-flex justify-content-center gap-2">
+                                            <a asp-page="DetailsCategory" asp-route-id="@category.CategoryId" class="btn btn-sm btn-info" title="Xem chi tiết">
+                                                <i class="dw dw-eye"></i>
+                                            </a>
+                                            <a asp-page="UpdateCategory" asp-route-id="@category.CategoryId" class="btn btn-sm btn-primary" title="Sửa">
+                                                <i class="dw dw-edit"></i>
+                                            </a>
+                                            <a asp-page="DeleteCategory" asp-route-id="@category.CategoryId" 
+                                               class="btn btn-sm btn-danger" title="Xóa"
+                                               onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này không?');">
+                                                <i class="dw dw-delete"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.data-table').DataTable({
+                responsive: true,
+                language: {
+                    search: "Tìm kiếm:",
+                    lengthMenu: "Hiển thị _MENU_ mục",
+                    info: "Hiển thị _START_ đến _END_ của _TOTAL_ mục",
+                    infoEmpty: "Hiển thị 0 đến 0 của 0 mục",
+                    infoFiltered: "(đã lọc từ _MAX_ mục tổng số)"
+                }
+            });
+        });
+    </script>
+}

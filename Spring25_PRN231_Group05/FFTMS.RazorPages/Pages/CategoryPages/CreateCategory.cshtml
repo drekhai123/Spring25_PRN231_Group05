@@ -1,47 +1,327 @@
 ﻿@page
 @model FFTMS.RazorPages.Pages.CategoryPages.CreateCategoryModel
 @{
-    ViewData["Title"] = "Create category";
+    ViewData["Title"] = "Create Category";
     Layout = "_Layout";
 }
-<div class="main-container">
-    <h1>Create</h1>
 
-    <h4>Category</h4>
-    <hr />
-    <div class="row">
-        <div class="col-md-4">
-            <form method="post">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="form-group">
-                    <label asp-for="Cate.CategoryName" class="control-label"></label>
-                    <input asp-for="Cate.CategoryName" class="form-control" />
-                    <span asp-validation-for="Cate.CategoryName" class="text-danger"></span>
+<div class="main-container">
+    <div class="pd-ltr-20 xs-pd-20-10">
+        <div class="min-height-200px">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="row align-items-center">
+                    <div class="col-md-6 col-sm-12">
+                        <h4 class="mb-0">Tạo danh mục</h4>
+                        <nav aria-label="breadcrumb" role="navigation">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a asp-page="ListCategory">Danh mục</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Tạo</li>
+                            </ol>
+                        </nav>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label asp-for="Cate.Description" class="control-label"></label>
-                    <input asp-for="Cate.Description" class="form-control" />
-                    <span asp-validation-for="Cate.Description" class="text-danger"></span>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>Lỗi!</strong> @Model.ErrorMessage
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
-                <div class="form-group">
-                    <label asp-for="Cate.CategoryImageUrl" class="control-label"></label>
-                    <input asp-for="Cate.CategoryImageUrl" class="form-control" />
-                    <span asp-validation-for="Cate.CategoryImageUrl" class="text-danger"></span>
+            }
+
+            @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <strong>Thành công!</strong> @Model.SuccessMessage
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
-                <div class="form-group">
-                    <input type="submit" value="Save" class="btn btn-primary" />
+            }
+
+            <!-- Category Create Form -->
+            <div class="card-box mb-30">
+                <div class="pd-20">
+                    <h4 class="text-blue h4 mb-3">Thông tin danh mục</h4>
+                    <form method="post" class="needs-validation" novalidate>
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input type="hidden" asp-for="Input.CategoryImageUrl" id="categoryImageUrl" />
+                        
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Input.CategoryName" class="form-label"></label>
+                                    <input asp-for="Input.CategoryName" class="form-control" />
+                                    <span asp-validation-for="Input.CategoryName" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="Input.Description" class="form-label"></label>
+                                    <textarea asp-for="Input.Description" class="form-control" rows="4"></textarea>
+                                    <span asp-validation-for="Input.Description" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <div class="custom-control custom-checkbox">
+                                        <input asp-for="Input.Status" class="custom-control-input" />
+                                        <label asp-for="Input.Status" class="custom-control-label"></label>
+                                    </div>
+                                    <span asp-validation-for="Input.Status" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <!-- Image Upload Area -->
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Hình ảnh danh mục</label>
+                                    <div id="dropArea" class="border rounded p-3 text-center cursor-pointer">
+                                        <input type="file" id="imageUpload" accept="image/*" class="d-none" />
+                                        <i class="icon-copy dw dw-upload1 fa-2x mb-2"></i>
+                                        <p class="mb-0">Kéo và thả hình ảnh vào đây hoặc nhấp để chọn</p>
+                                        <small class="text-muted">Định dạng hỗ trợ: JPG, JPEG, PNG (tối đa 5MB)</small>
+                                    </div>
+                                    <span asp-validation-for="Input.CategoryImageUrl" class="text-danger"></span>
+                                </div>
+
+                                <!-- Upload Progress -->
+                                <div id="uploadProgress" class="progress mb-3 d-none">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                         role="progressbar" style="width: 0%">0%</div>
+                                </div>
+
+                                <!-- Image Preview -->
+                                <div id="imagePreviewContainer" class="text-center mt-3 d-none">
+                                    <img id="imagePreview" src="#" 
+                                         alt="Category image preview" class="img-fluid rounded mb-2" style="max-height: 200px;" />
+                                    <button type="button" id="removeImageBtn" class="btn btn-danger btn-sm">
+                                        <i class="icon-copy dw dw-delete-3"></i> Xóa hình ảnh
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="icon-copy dw dw-save"></i> Tạo danh mục
+                            </button>
+                            <a asp-page="ListCategory" class="btn btn-secondary">
+                                <i class="icon-copy dw dw-cancel"></i> Hủy bỏ
+                            </a>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
-
-    <div>
-        <a asp-page="ListCategory">Back to List</a>
-    </div>
-
-    @section Scripts {
-        @{
-            await Html.RenderPartialAsync("_ValidationScriptsPartial");
-        }
-    }
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-storage.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBrhzHppn0MSFRv8Y70pL--IjAqE_dqYP8",
+            authDomain: "farm-task-management-1b5e2.firebaseapp.com",
+            projectId: "farm-task-management-1b5e2",
+            storageBucket: "farm-task-management-1b5e2.firebasestorage.app",
+            messagingSenderId: "523429271962",
+            appId: "1:523429271962:web:a5025d2fb87bdb7b75c223"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const storage = getStorage(app);
+
+        // DOM Elements
+        const dropArea = document.getElementById('dropArea');
+        const fileInput = document.getElementById('imageUpload');
+        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+        const imagePreview = document.getElementById('imagePreview');
+        const removeImageBtn = document.getElementById('removeImageBtn');
+        const categoryImageUrl = document.getElementById('categoryImageUrl');
+        const progressBar = document.querySelector('#uploadProgress .progress-bar');
+        const progressContainer = document.getElementById('uploadProgress');
+
+        // Drag and drop functionality
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight() {
+            dropArea.classList.add('bg-light');
+        }
+
+        function unhighlight() {
+            dropArea.classList.remove('bg-light');
+        }
+
+        // Handle file drop
+        dropArea.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const file = dt.files[0];
+
+            if (file && file.type.startsWith('image/')) {
+                fileInput.files = dt.files;
+                uploadFile(file);
+            } else {
+                showToast('Vui lòng chọn một tệp hình ảnh', 'error');
+            }
+        }
+
+        // Click to select file
+        dropArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // Handle file selection
+        fileInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                uploadFile(this.files[0]);
+            }
+        });
+
+        // Remove image
+        removeImageBtn.addEventListener('click', function() {
+            categoryImageUrl.value = '';
+            imagePreviewContainer.classList.add('d-none');
+            showToast('Hình ảnh đã được xóa', 'success');
+        });
+
+        // Upload file function
+        async function uploadFile(file) {
+            if (!file) return;
+
+            try {
+                // Show progress bar
+                progressContainer.classList.remove('d-none');
+                progressBar.style.width = '0%';
+                progressBar.textContent = '0%';
+
+                // Validate file size (max 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    showToast('Kích thước tệp không được vượt quá 5MB', 'error');
+                    progressContainer.classList.add('d-none');
+                    return;
+                }
+
+                // Generate unique filename
+                const timestamp = new Date().getTime();
+                const fileName = `category_${timestamp}_${file.name}`;
+                const filePath = `category_images/${fileName}`;
+                const storageRef = ref(storage, filePath);
+
+                // Start upload
+                const uploadTask = uploadBytesResumable(storageRef, file);
+
+                // Monitor upload progress
+                uploadTask.on('state_changed',
+                    (snapshot) => {
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        progressBar.style.width = progress + '%';
+                        progressBar.textContent = Math.round(progress) + '%';
+                    },
+                    (error) => {
+                        console.error('Upload failed:', error);
+                        showToast('Upload failed: ' + error.message, 'error');
+                        progressContainer.classList.add('d-none');
+                    },
+                    async () => {
+                        try {
+                            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                            
+                            // Update UI
+                            categoryImageUrl.value = downloadURL;
+                            imagePreview.src = downloadURL;
+                            imagePreviewContainer.classList.remove('d-none');
+                            progressContainer.classList.add('d-none');
+                            
+                            showToast('Hình ảnh đã được tải lên thành công', 'success');
+                        } catch (error) {
+                            console.error('Lỗi khi lấy URL tải xuống:', error);
+                            showToast('Lỗi khi lấy URL tải xuống', 'error');
+                        }
+                    }
+                );
+            } catch (error) {
+                console.error('Lỗi khi thiết lập tải lên:', error);
+                showToast('Lỗi khi thiết lập tải lên', 'error');
+            }
+        }
+
+        // Toast notification function
+        function showToast(message, type = 'info') {
+            // Create toast container if it doesn't exist
+            let toastContainer = document.getElementById('toast-container');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.id = 'toast-container';
+                toastContainer.className = 'position-fixed bottom-0 end-0 p-3';
+                document.body.appendChild(toastContainer);
+            }
+
+            // Create toast element
+            const toastId = 'toast-' + Date.now();
+            const bgClass = type === 'error' ? 'bg-danger' :
+                          type === 'success' ? 'bg-success' : 'bg-info';
+
+            const toastHtml = `
+                <div id="${toastId}" class="toast align-items-center ${bgClass} text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            ${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            `;
+
+            toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+
+            // Initialize and show toast
+            const toastElement = document.getElementById(toastId);
+            const toast = new bootstrap.Toast(toastElement, { delay: 3000 });
+            toast.show();
+
+            // Remove toast after it's hidden
+            toastElement.addEventListener('hidden.bs.toast', function () {
+                toastElement.remove();
+            });
+        }
+
+        // Form validation
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity() || !categoryImageUrl.value) {
+                event.preventDefault();
+                event.stopPropagation();
+                if (!categoryImageUrl.value) {
+                    showToast('Vui lòng tải lên một hình ảnh', 'error');
+                } else {
+                    showToast('Vui lòng điền đầy đủ các trường bắt buộc chính xác', 'error');
+                }
+            }
+            form.classList.add('was-validated');
+        });
+    </script>
+}
