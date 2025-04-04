@@ -108,6 +108,32 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
                 return BadRequest(new { Message = ex.Message });
             }
         }
+        [HttpPut("update-product-field-productivity")]
+        public async Task<ActionResult<ProductFieldResponse>> UpdateProductFieldProductivity(string id, double Productivity, string ProductivityUnit)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var updatedProductField = await _productFieldService.UpdateProductFieldProductivity(id, Productivity, ProductivityUnit);
+                return Ok(updatedProductField);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { Message = ex.Message });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
+        }
 
         // DELETE: odata/ProductField/{id}
         [HttpDelete("{id}")]

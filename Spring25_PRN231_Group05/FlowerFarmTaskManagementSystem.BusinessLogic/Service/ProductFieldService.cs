@@ -97,24 +97,40 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
                 throw new ArgumentException("ProductivityUnit is required.");
             }
 
-            // Validate EndDate must be greater than StartDate
             if (productFieldRequest.EndDate <= productFieldRequest.StartDate)
             {
                 throw new ArgumentException("EndDate must be greater than StartDate.");
             }
+            var fieldExists = await _unitOfWork.FieldRepository.GetByIdAsync(productFieldRequest.FieldId);
+            if (fieldExists == null)
+            {
+                throw new KeyNotFoundException($"Field with ID {productFieldRequest.FieldId} not found.");
+            }
 
-            // Kiểm tra ProductId và FieldId
+            bool isDateChanged = productField.StartDate != productFieldRequest.StartDate || productField.EndDate != productFieldRequest.EndDate;
+
+            if (isDateChanged)
+            {
+                var existingProductFields = await _unitOfWork.ProductFieldRepository
+      .FindAsync(pf => pf.FieldId == fieldExists.FieldId &&
+                       pf.ProductFieldId != id && 
+                       pf.Status == true && 
+                       ((pf.StartDate < productFieldRequest.EndDate && pf.EndDate > productFieldRequest.StartDate)));
+
+                if (existingProductFields.Any())
+                {
+                    var overlappingField = existingProductFields.First();
+                    throw new InvalidOperationException(
+                        $"Cannot update ProductField. The field with ID {fieldExists.FieldName} is already in use from {overlappingField.StartDate:dd/MM/yyyy} to {overlappingField.EndDate:dd/MM/yyyy}.");
+                }
+            }
             var productExists = await _unitOfWork.ProductRepository.GetByIdAsync(productFieldRequest.ProductId);
             if (productExists == null)
             {
                 throw new KeyNotFoundException($"Product with ID {productFieldRequest.ProductId} not found.");
             }
 
-            var fieldExists = await _unitOfWork.FieldRepository.GetByIdAsync(productFieldRequest.FieldId);
-            if (fieldExists == null)
-            {
-                throw new KeyNotFoundException($"Field with ID {productFieldRequest.FieldId} not found.");
-            }
+
 
             // Check ProductFieldStatus only for Productivity and ProductivityUnit updates
             if (productField.Productivity != productFieldRequest.Productivity || 
@@ -128,6 +144,29 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 
             _mapper.Map(productFieldRequest, productField);
 
+            _unitOfWork.ProductFieldRepository.Update(productField);
+            await _unitOfWork.SaveChangesAsync();
+
+            var result = _mapper.Map<ProductFieldResponse>(productField);
+
+            return result;
+        }
+        public async Task<ProductFieldResponse> UpdateProductFieldProductivity(string id, double Productivity, string ProductivityUnit)
+        {
+            if (id == null)
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+            var Id = Guid.Parse(id);
+            var productField = await _unitOfWork.ProductFieldRepository.GetByIdAsync(Id);
+            if (productField == null)
+            {
+                throw new KeyNotFoundException("ProductField not found.");
+            }
+            productField.Productivity = Productivity;
+            productField.ProductivityUnit = ProductivityUnit;
+            productField.ProductFieldStatus = ProductFieldStatus.HARVESTED;
+           
             _unitOfWork.ProductFieldRepository.Update(productField);
             await _unitOfWork.SaveChangesAsync();
 
