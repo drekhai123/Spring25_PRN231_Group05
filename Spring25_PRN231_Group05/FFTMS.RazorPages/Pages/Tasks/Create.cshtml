@@ -18,7 +18,7 @@
                         <nav aria-label="breadcrumb" role="navigation">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item"><a asp-page="/Index">Trang chủ</a></li>
-                                <li class="breadcrumb-item"><a asp-page="/Tasks/Index">Công việc</a></li>
+                                <li class="breadcrumb-item"><a asp-page="/Tasks/Index">Danh sách công việc</a></li>
                                 <li class="breadcrumb-item active">Tạo mới</li>
                             </ol>
                         </nav>
@@ -26,100 +26,159 @@
                 </div>
             </div>
 
-            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
-            {
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="fas fa-exclamation-circle me-2"></i>
-                    @Model.ErrorMessage
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            }
-
             <div class="pd-20 card-box mb-30">
+                @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                {
+                    <div class="alert alert-danger" style="white-space: pre-line">
+                        @Model.ErrorMessage
+                    </div>
+                }
+
                 <form method="post" class="needs-validation" novalidate>
-                    <div class="form-group">
-                        <label asp-for="Task.JobTitle">Tên công việc</label>
-                        <input asp-for="Task.JobTitle" class="form-control" required />
-                        <div class="invalid-feedback">Vui lòng nhập tên công việc</div>
-                    </div>
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <input type="hidden" asp-for="Task.AssignedBy" />
 
                     <div class="form-group">
-                        <label asp-for="Task.Description">Mô tả công việc</label>
-                        <textarea asp-for="Task.Description" class="form-control" rows="3" required></textarea>
-                        <div class="invalid-feedback">Vui lòng nhập mô tả công việc</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label asp-for="Task.ProductFieldId">Sản phẩm - Ruộng</label>
-                        <select asp-for="Task.ProductFieldId" asp-items="Model.ProductFieldList" class="form-control"
-                            required>
-                            <option value="">-- Chọn sản phẩm và ruộng --</option>
+                        <label asp-for="Task.JobTitle" class="control-label">Tiêu đề công việc</label>
+                        <select asp-for="Task.JobTitle" class="form-control" required>
+                            <option value="">-- Chọn tiêu đề công việc --</option>
+                            <option value="Chăm sóc và tưới nước cho hoa">Chăm sóc và tưới nước cho hoa</option>
+                            <option value="Thu hoạch và phân loại hoa">Thu hoạch và phân loại hoa</option>
+                            <option value="Kiểm tra và xử lý sâu bệnh">Kiểm tra và xử lý sâu bệnh</option>
+                            <option value="Bón phân và cải tạo đất">Bón phân và cải tạo đất</option>
+                            <option value="Chuẩn bị và gieo trồng hoa mới">Chuẩn bị và gieo trồng hoa mới</option>
                         </select>
-                        <div class="invalid-feedback">Vui lòng chọn sản phẩm và ruộng</div>
+                        <span asp-validation-for="Task.JobTitle" class="text-danger"></span>
                     </div>
 
                     <div class="form-group">
-                        <label asp-for="Task.StartDate">Ngày và giờ bắt đầu</label>
-                        <input asp-for="Task.StartDate" type="datetime-local" class="form-control" id="startDate"
-                            value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" required />
-                        <div class="invalid-feedback">Vui lòng chọn ngày và giờ bắt đầu</div>
+                        <label asp-for="Task.Description" class="control-label">Mô tả</label>
+                        <textarea asp-for="Task.Description" class="form-control" required></textarea>
+                        <span asp-validation-for="Task.Description" class="text-danger"></span>
                     </div>
 
                     <div class="form-group">
-                        <label asp-for="Task.EndDate">Ngày và giờ kết thúc</label>
-                        <input asp-for="Task.EndDate" type="datetime-local" class="form-control" id="endDate"
-                            value="@DateTime.Now.AddHours(2).ToString("yyyy-MM-ddTHH:mm")" required
-                            min="@DateTime.Now.AddHours(2).ToString("yyyy-MM-ddTHH:mm")" />
-                        <div class="invalid-feedback">Thời gian kết thúc phải sau thời gian bắt đầu ít nhất 2 giờ</div>
+                        <label asp-for="Task.ProductFieldId">Ruộng hoa</label>
+                        <select asp-for="Task.ProductFieldId" class="form-control" id="productFieldSelect"
+                            asp-items="Model.ProductFieldList" required>
+                            <option value="">-- Chọn ruộng hoa --</option>
+                        </select>
+                        <span asp-validation-for="Task.ProductFieldId" class="text-danger"></span>
                     </div>
 
-                    <div class="form-group">
-                        <label>Phân công nhân viên</label>
-                        <div id="staffAssignments">
-                            <div class="staff-assignment mb-3">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <select name="Task.UserTasks[0].AssignedTo" class="form-control staff-select"
-                                            required>
-                                            <option value="">-- Chọn nhân viên --</option>
-                                            @foreach (var user in Model.UserList)
-                                            {
-                                                <option value="@user.Value">@user.Text</option>
-                                            }
-                                        </select>
-                                        <div class="invalid-feedback">Vui lòng chọn nhân viên</div>
+                    <div id="productFieldDetails" class="card mt-3 d-none">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">Thông tin chi tiết vùng trồng</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <h6 class="text-primary">Thông tin vùng trồng</h6>
+                                        <p><strong>Tên vùng:</strong> <span id="fieldName"></span></p>
+                                        <p><strong>Kích thước:</strong> <span id="fieldSize"></span></p>
+                                        <p><strong>Trạng thái:</strong> <span id="fieldStatus" class="badge"></span></p>
+                                        <p><strong>Mô tả:</strong> <span id="fieldDescription"></span></p>
                                     </div>
-                                    <div class="col-md-5">
-                                        <input type="text" name="Task.UserTasks[0].UserTaskDescription"
-                                            class="form-control" placeholder="Mô tả công việc cho nhân viên" required />
-                                        <div class="invalid-feedback">Vui lòng nhập mô tả công việc cho nhân viên</div>
+                                    <div class="mb-3">
+                                        <h6 class="text-primary">Thời gian canh tác</h6>
+                                        <p><strong>Ngày bắt đầu:</strong> <span id="startDate"></span></p>
+                                        <p><strong>Ngày kết thúc:</strong> <span id="endDate"></span></p>
+                                        <p><strong>Trạng thái canh tác:</strong> <span id="productFieldStatus"
+                                                class="badge"></span></p>
                                     </div>
-                                    <div class="col-md-1">
-                                        <button type="button" class="btn btn-danger remove-staff"
-                                            style="display: none;">
-                                            <i class="fas fa-times"></i>
-                                        </button>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <h6 class="text-primary">Thông tin sản phẩm</h6>
+                                        <p><strong>Tên sản phẩm:</strong> <span id="productName"></span></p>
+                                        <p><strong>Loại sản phẩm:</strong> <span id="category"></span></p>
+                                        <p><strong>Mô tả:</strong> <span id="productDesc"></span></p>
+                                        <p><strong>Ghi chú:</strong> <span id="productNote"></span></p>
+                                    </div>
+                                    <div class="mb-3">
+                                        <h6 class="text-primary">Năng suất</h6>
+                                        <p><strong>Số lượng:</strong> <span id="productivity"></span></p>
+                                        <p><strong>Đơn vị:</strong> <span id="productivityUnit"></span></p>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <button type="button" id="addStaff" class="btn btn-secondary mt-2">
-                            <i class="fas fa-plus me-1"></i>Thêm nhân viên
-                        </button>
                     </div>
 
-                    <div class="form-group mt-4">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-1"></i>Lưu công việc
-                        </button>
-                        <a asp-page="./Index" class="btn btn-secondary">
-                            <i class="fas fa-times me-1"></i>Hủy bỏ
-                        </a>
+                    <div class="form-group">
+                        <label>Phân công nhân viên <span class="text-danger">*</span></label>
+                        <div id="staffAssignments">
+                            <div class="staff-assignment">
+                                <select name="Task.UserTasks[0].AssignedTo" class="form-control mb-2 staff-select"
+                                    required>
+                                    <option value="">-- Chọn nhân viên --</option>
+                                    @foreach (var item in Model.UserList)
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                </select>
+                                <div class="invalid-feedback">Vui lòng chọn nhân viên</div>
+                                <div class="staff-tasks-info mb-2 d-none">
+                                    <div class="alert alert-info p-2">
+                                        <h6 class="mb-1"><i class="fas fa-info-circle me-2"></i>Công việc hiện tại</h6>
+                                        <div class="staff-current-tasks">
+                                            <div class="text-center py-2">
+                                                <div class="spinner-border spinner-border-sm text-primary"
+                                                    role="status">
+                                                    <span class="visually-hidden">Đang tải...</span>
+                                                </div>
+                                                <span class="ms-2">Đang tải công việc...</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <textarea name="Task.UserTasks[0].UserTaskDescription" class="form-control mb-2"
+                                    required placeholder="Mô tả công việc cho nhân viên này"></textarea>
+                                <div class="invalid-feedback">Vui lòng nhập mô tả công việc</div>
+                            </div>
+                        </div>
+                        <button type="button" id="addStaff" class="btn btn-info mt-2">Thêm nhân viên</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Task.StartDate" class="control-label">Ngày giờ bắt đầu</label>
+                        <input asp-for="Task.StartDate" type="datetime-local" class="form-control" id="startDate"
+                            value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" required />
+                        <div class="invalid-feedback">Vui lòng chọn ngày giờ bắt đầu</div>
+                        <span asp-validation-for="Task.StartDate" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Task.EndDate" class="control-label">Ngày giờ kết thúc</label>
+                        <input asp-for="Task.EndDate" type="datetime-local" class="form-control" id="endDate"
+                            value="@DateTime.Now.AddDays(1).ToString("yyyy-MM-ddTHH:mm")" required
+                            min="@DateTime.Now.AddHours(2).ToString("yyyy-MM-ddTHH:mm")" />
+                        <div class="invalid-feedback">Thời gian kết thúc phải sau thời gian bắt đầu ít nhất 2 giờ</div>
+                        <span asp-validation-for="Task.EndDate" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Tạo mới</button>
+                        <a asp-page="Index" class="btn btn-secondary">Hủy bỏ</a>
                     </div>
                 </form>
             </div>
         </div>
     </div>
+</div>
+
+@* Debug info *@
+<div class="d-none">
+    <p>Debug Info:</p>
+    <p>UserList is null: @(Model.UserList == null)</p>
+    @if (Model.UserList != null)
+    {
+        <p>UserList count: @Model.UserList.Count()</p>
+        foreach (var item in Model.UserList)
+        {
+            <p>Item: @item.Text (@item.Value)</p>
+        }
+    }
 </div>
 
 @section Scripts {
@@ -165,7 +224,7 @@
 
                 container.removeClass('d-none');
                 const tasksContainer = container.find('.staff-current-tasks');
-                tasksContainer.html('<div class="text-center py-2"><div class="spinner-border spinner-border-sm text-primary" role="status"></div><span class="ms-2">Loading tasks...</span></div>');
+                tasksContainer.html('<div class="text-center py-2"><div class="spinner-border spinner-border-sm text-primary" role="status"></div><span class="ms-2">Đang tải công việc...</span></div>');
 
                 // Call API to get user tasks
                 $.ajax({
@@ -179,43 +238,43 @@
                                 const endDate = new Date(task.endDate);
                                 const statusClass = task.status === 0 ? 'text-danger' :
                                     task.status === 1 ? 'text-warning' : 'text-success';
-                                const statusText = task.status === 0 ? 'Waiting' :
-                                    task.status === 1 ? 'Processing' : 'Completed';
+                                const statusText = task.status === 0 ? 'Chờ xử lý' :
+                                    task.status === 1 ? 'Đang xử lý' : 'Hoàn thành';
 
                                 // TaskStatus (0 = InProgress, 1 = Completed)
                                 const taskStatusClass = task.taskStatus === 0 ? 'bg-warning' : 'bg-success';
-                                const taskStatusText = task.taskStatus === 0 ? 'In Progress' : 'Completed';
+                                const taskStatusText = task.taskStatus === 0 ? 'Đang thực hiện' : 'Hoàn thành';
 
                                 tasksHtml += `
-                                                                                                                <div class="list-group-item p-2 border-0">
-                                                                                                                    <h6 class="mb-1">${task.jobTitle}</h6>
-                                                                                                                    <p class="mb-1 small text-truncate">${task.description}</p>
-                                                                                                                    <div class="d-flex justify-content-between align-items-center">
-                                                                                                                        <small class="text-muted">
-                                                                                                                            ${startDate.toLocaleDateString()} ${startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - 
-                                                                                                                            ${endDate.toLocaleDateString()} ${endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                                                                                        </small>
-                                                                                                                        <div>
-                                                                                                                            <span class="badge ${statusClass === 'text-danger' ? 'bg-danger' :
+                                                                                                                    <div class="list-group-item p-2 border-0">
+                                                                                                                        <h6 class="mb-1">${task.jobTitle}</h6>
+                                                                                                                        <p class="mb-1 small text-truncate">${task.description}</p>
+                                                                                                                        <div class="d-flex justify-content-between align-items-center">
+                                                                                                                            <small class="text-muted">
+                                                                                                                                ${startDate.toLocaleDateString()} ${startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - 
+                                                                                                                                ${endDate.toLocaleDateString()} ${endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                                                                                            </small>
+                                                                                                                            <div>
+                                                                                                                                <span class="badge ${statusClass === 'text-danger' ? 'bg-danger' :
                                         statusClass === 'text-warning' ? 'bg-warning' : 'bg-success'} me-1">
-                                                                                                                                ${statusText}
-                                                                                                                            </span>
-                                                                                                                            <span class="badge ${taskStatusClass}">
-                                                                                                                                ${taskStatusText}
-                                                                                                                            </span>
+                                                                                                                                    ${statusText}
+                                                                                                                                </span>
+                                                                                                                                <span class="badge ${taskStatusClass}">
+                                                                                                                                    ${taskStatusText}
+                                                                                                                                </span>
+                                                                                                                            </div>
                                                                                                                         </div>
                                                                                                                     </div>
-                                                                                                                </div>
-                                                                                                            `;
+                                                                                                                `;
                             });
                             tasksHtml += '</div>';
                             tasksContainer.html(tasksHtml);
                         } else {
-                            tasksContainer.html('<div class="text-center p-2"><i class="fas fa-check-circle text-success me-2"></i>No active tasks assigned</div>');
+                            tasksContainer.html('<div class="text-center p-2"><i class="fas fa-check-circle text-success me-2"></i>Không có công việc nào được giao</div>');
                         }
                     },
                     error: function () {
-                        tasksContainer.html('<div class="text-center p-2 text-danger"><i class="fas fa-exclamation-circle me-2"></i>Error loading tasks</div>');
+                        tasksContainer.html('<div class="text-center p-2 text-danger"><i class="fas fa-exclamation-circle me-2"></i>Lỗi khi tải công việc</div>');
                     }
                 });
             }
@@ -246,8 +305,8 @@
                     let currentValue = currentSelect.val();
 
                     // Lưu các option hiện tại
-                    let options = '<option value="">-- Select Staff --</option>';
-                                                                                                                @foreach (var item in Model.UserList)
+                    let options = '<option value="">-- Chọn nhân viên --</option>';
+                                                                                                                    @foreach (var item in Model.UserList)
                         {
                             @:if (!selectedStaff.has('@item.Value') || '@item.Value' === currentValue) {
                                 @:options += `<option value="@item.Value" ${('@item.Value' === currentValue ? 'selected' : '')}> @item.Text</option>`;
@@ -261,31 +320,31 @@
             $('#addStaff').click(function () {
                 if (staffCount < 5) {
                     const newStaff = `
-                                                                                                                    <div class="staff-assignment">
-                                                                                                                        <select name="Task.UserTasks[${staffCount}].AssignedTo" 
-                                                                                                                            class="form-control mb-2 staff-select" required>
-                                                                                                                            <option value="">-- Select Staff --</option>
-                                                                                                                        </select>
-                                                                                                                        <div class="invalid-feedback">Please select a staff member</div>
-                                                                                                                        <div class="staff-tasks-info mb-2 d-none">
-                                                                                                                            <div class="alert alert-info p-2">
-                                                                                                                                <h6 class="mb-1"><i class="fas fa-info-circle me-2"></i>Current Tasks</h6>
-                                                                                                                                <div class="staff-current-tasks">
-                                                                                                                                    <div class="text-center py-2">
-                                                                                                                                        <div class="spinner-border spinner-border-sm text-primary" role="status">
-                                                                                                                                            <span class="visually-hidden">Loading...</span>
+                                                                                                                        <div class="staff-assignment">
+                                                                                                                            <select name="Task.UserTasks[${staffCount}].AssignedTo" 
+                                                                                                                                class="form-control mb-2 staff-select" required>
+                                                                                                                                <option value="">-- Chọn nhân viên --</option>
+                                                                                                                            </select>
+                                                                                                                            <div class="invalid-feedback">Vui lòng chọn nhân viên</div>
+                                                                                                                            <div class="staff-tasks-info mb-2 d-none">
+                                                                                                                                <div class="alert alert-info p-2">
+                                                                                                                                    <h6 class="mb-1"><i class="fas fa-info-circle me-2"></i>Công việc hiện tại</h6>
+                                                                                                                                    <div class="staff-current-tasks">
+                                                                                                                                        <div class="text-center py-2">
+                                                                                                                                            <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                                                                                                                                <span class="visually-hidden">Đang tải...</span>
+                                                                                                                                            </div>
+                                                                                                                                            <span class="ms-2">Đang tải công việc...</span>
                                                                                                                                         </div>
-                                                                                                                                        <span class="ms-2">Loading tasks...</span>
                                                                                                                                     </div>
                                                                                                                                 </div>
                                                                                                                             </div>
-                                                                                                                        </div>
-                                                                                                                        <textarea name="Task.UserTasks[${staffCount}].UserTaskDescription" 
-                                                                                                                            class="form-control mb-2" required
-                                                                                                                            placeholder="Task description for this staff"></textarea>
-                                                                                                                        <div class="invalid-feedback">Please provide a task description</div>
-                                                                                                                        <button type="button" class="btn btn-danger mb-3 remove-staff">Remove</button>
-                                                                                                                    </div>`;
+                                                                                                                            <textarea name="Task.UserTasks[${staffCount}].UserTaskDescription" 
+                                                                                                                                class="form-control mb-2" required
+                                                                                                                                placeholder="Mô tả công việc cho nhân viên này"></textarea>
+                                                                                                                            <div class="invalid-feedback">Vui lòng nhập mô tả công việc</div>
+                                                                                                                            <button type="button" class="btn btn-danger mb-3 remove-staff">Xóa</button>
+                                                                                                                        </div>`;
                     $('#staffAssignments').append(newStaff);
                     updateAvailableStaff();
                     staffCount++;
@@ -391,7 +450,7 @@
                 (endDate.getFullYear() === startDate.getFullYear() && endDate.getMonth() < startDate.getMonth()) ||
                 (endDate.getFullYear() === startDate.getFullYear() && endDate.getMonth() === startDate.getMonth() && endDate.getDate() < startDate.getDate())) {
                 endDateInput.addClass('is-invalid');
-                endDateInput.siblings('.invalid-feedback').text('End date must be after start date');
+                endDateInput.siblings('.invalid-feedback').text('Ngày kết thúc phải sau ngày bắt đầu');
                 return false;
             }
 
@@ -412,7 +471,7 @@
                 endDateInput.attr('min', `${year}-${month}-${day}T${hours}:${minutes}`);
                 endDateInput.val(`${year}-${month}-${day}T${hours}:${minutes}`);
                 endDateInput.addClass('is-invalid');
-                endDateInput.siblings('.invalid-feedback').text('End time must be at least 2 hours after start time');
+                endDateInput.siblings('.invalid-feedback').text('Thời gian kết thúc phải sau thời gian bắt đầu ít nhất 2 giờ');
                 return false;
             }
 
