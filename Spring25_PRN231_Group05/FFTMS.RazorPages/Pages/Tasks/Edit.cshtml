@@ -5,193 +5,188 @@
     Layout = "_Layout";
 }
 
-<div class="main-container">
-    <div class="pd-ltr-20 xs-pd-20-10">
-        <div class="min-height-200px">
-            <div class="page-header">
-                <div class="row">
-                    <div class="col-md-6 col-sm-12">
-                        <div class="title">
-                            <h4>Chỉnh sửa công việc</h4>
-                        </div>
-                        <nav aria-label="breadcrumb" role="navigation">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a asp-page="/Index">Trang chủ</a></li>
-                                <li class="breadcrumb-item"><a asp-page="/Tasks/Index">Danh sách công việc</a></li>
-                                <li class="breadcrumb-item active">Chỉnh sửa</li>
-                            </ol>
-                        </nav>
-                    </div>
-                </div>
+<div class="page-header">
+    <div class="row">
+        <div class="col-md-6 col-sm-12">
+            <div class="title">
+                <h4>Chỉnh sửa công việc</h4>
+            </div>
+            <nav aria-label="breadcrumb" role="navigation">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-page="/Index">Trang chủ</a></li>
+                    <li class="breadcrumb-item"><a asp-page="/Tasks/Index">Danh sách công việc</a></li>
+                    <li class="breadcrumb-item active">Chỉnh sửa</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger" style="white-space: pre-line">
+        @Model.ErrorMessage
+    </div>
+}
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body p-4">
+        <form method="post" class="needs-validation" novalidate>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="TaskId" />
+            <input type="hidden" asp-for="Task.AssignedBy" />
+
+            <div class="form-group mb-3">
+                <label asp-for="Task.JobTitle">Tiêu đề công việc</label>
+                <select asp-for="Task.JobTitle" class="form-control" required>
+                    <option value="">-- Chọn tiêu đề công việc --</option>
+                    <option value="Chăm sóc và tưới nước cho hoa">Chăm sóc và tưới nước cho hoa</option>
+                    <option value="Thu hoạch và phân loại hoa">Thu hoạch và phân loại hoa</option>
+                    <option value="Kiểm tra và xử lý sâu bệnh">Kiểm tra và xử lý sâu bệnh</option>
+                    <option value="Bón phân và cải tạo đất">Bón phân và cải tạo đất</option>
+                    <option value="Chuẩn bị và gieo trồng hoa mới">Chuẩn bị và gieo trồng hoa mới</option>
+                </select>
+                <div class="invalid-feedback">Vui lòng nhập tiêu đề công việc</div>
             </div>
 
-            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
-            {
-                <div class="alert alert-danger" style="white-space: pre-line">
-                    @Model.ErrorMessage
-                </div>
-            }
+            <div class="form-group mb-3">
+                <label asp-for="Task.Description">Mô tả</label>
+                <textarea asp-for="Task.Description" class="form-control" required></textarea>
+                <div class="invalid-feedback">Vui lòng nhập mô tả</div>
+            </div>
 
-            <div class="pd-20 card-box mb-30">
-                <form method="post" class="needs-validation" novalidate>
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    <input type="hidden" asp-for="TaskId" />
-                    <input type="hidden" asp-for="Task.AssignedBy" />
+            <div class="form-group mb-3">
+                <label asp-for="Task.ProductFieldId">Ruộng hoa</label>
+                <select asp-for="Task.ProductFieldId" asp-items="@Model.ProductFieldList" class="form-control"
+                    id="productFieldSelect" required>
+                    <option value="">-- Chọn ruộng hoa --</option>
+                </select>
+                <div class="invalid-feedback">Vui lòng chọn ruộng hoa</div>
+            </div>
 
-                    <div class="form-group">
-                        <label asp-for="Task.JobTitle">Tiêu đề công việc</label>
-                        <select asp-for="Task.JobTitle" class="form-control" required>
-                            <option value="">-- Chọn tiêu đề công việc --</option>
-                            <option value="Chăm sóc và tưới nước cho hoa">Chăm sóc và tưới nước cho hoa</option>
-                            <option value="Thu hoạch và phân loại hoa">Thu hoạch và phân loại hoa</option>
-                            <option value="Kiểm tra và xử lý sâu bệnh">Kiểm tra và xử lý sâu bệnh</option>
-                            <option value="Bón phân và cải tạo đất">Bón phân và cải tạo đất</option>
-                            <option value="Chuẩn bị và gieo trồng hoa mới">Chuẩn bị và gieo trồng hoa mới</option>
-                        </select>
-                        <div class="invalid-feedback">Vui lòng nhập tiêu đề công việc</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label asp-for="Task.Description">Mô tả</label>
-                        <textarea asp-for="Task.Description" class="form-control" required></textarea>
-                        <div class="invalid-feedback">Vui lòng nhập mô tả</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label asp-for="Task.ProductFieldId">Ruộng hoa</label>
-                        <select asp-for="Task.ProductFieldId" asp-items="@Model.ProductFieldList" class="form-control"
-                            id="productFieldSelect" required>
-                            <option value="">-- Chọn ruộng hoa --</option>
-                        </select>
-                        <div class="invalid-feedback">Vui lòng chọn ruộng hoa</div>
-                    </div>
-
-                    <div id="productFieldDetails" class="card mt-3 d-none">
-                        <div class="card-body">
-                            <h5 class="card-title mb-3">Thông tin chi tiết vùng trồng</h5>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <h6 class="text-primary">Thông tin vùng trồng</h6>
-                                        <p><strong>Tên vùng:</strong> <span id="fieldName"></span></p>
-                                        <p><strong>Kích thước:</strong> <span id="fieldSize"></span></p>
-                                        <p><strong>Trạng thái:</strong> <span id="fieldStatus" class="badge"></span></p>
-                                        <p><strong>Mô tả:</strong> <span id="fieldDescription"></span></p>
-                                    </div>
-                                    <div class="mb-3">
-                                        <h6 class="text-primary">Thời gian canh tác</h6>
-                                        <p><strong>Ngày bắt đầu:</strong> <span id="startDate"></span></p>
-                                        <p><strong>Ngày kết thúc:</strong> <span id="endDate"></span></p>
-                                        <p><strong>Trạng thái canh tác:</strong> <span id="productFieldStatus"
-                                                class="badge"></span></p>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <h6 class="text-primary">Thông tin sản phẩm</h6>
-                                        <p><strong>Tên sản phẩm:</strong> <span id="productName"></span></p>
-                                        <p><strong>Loại sản phẩm:</strong> <span id="category"></span></p>
-                                        <p><strong>Mô tả:</strong> <span id="productDesc"></span></p>
-                                        <p><strong>Ghi chú:</strong> <span id="productNote"></span></p>
-                                    </div>
-                                    <div class="mb-3">
-                                        <h6 class="text-primary">Năng suất</h6>
-                                        <p><strong>Số lượng:</strong> <span id="productivity"></span></p>
-                                        <p><strong>Đơn vị:</strong> <span id="productivityUnit"></span></p>
-                                    </div>
-                                </div>
+            <div id="productFieldDetails" class="card mt-3 mb-3 d-none">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Thông tin chi tiết vùng trồng</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <h6 class="text-primary">Thông tin vùng trồng</h6>
+                                <p><strong>Tên vùng:</strong> <span id="fieldName"></span></p>
+                                <p><strong>Kích thước:</strong> <span id="fieldSize"></span></p>
+                                <p><strong>Trạng thái:</strong> <span id="fieldStatus" class="badge"></span></p>
+                                <p><strong>Mô tả:</strong> <span id="fieldDescription"></span></p>
+                            </div>
+                            <div class="mb-3">
+                                <h6 class="text-primary">Thời gian canh tác</h6>
+                                <p><strong>Ngày bắt đầu:</strong> <span id="startDate"></span></p>
+                                <p><strong>Ngày kết thúc:</strong> <span id="endDate"></span></p>
+                                <p><strong>Trạng thái canh tác:</strong> <span id="productFieldStatus"
+                                        class="badge"></span></p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <h6 class="text-primary">Thông tin sản phẩm</h6>
+                                <p><strong>Tên sản phẩm:</strong> <span id="productName"></span></p>
+                                <p><strong>Loại sản phẩm:</strong> <span id="category"></span></p>
+                                <p><strong>Mô tả:</strong> <span id="productDesc"></span></p>
+                                <p><strong>Ghi chú:</strong> <span id="productNote"></span></p>
+                            </div>
+                            <div class="mb-3">
+                                <h6 class="text-primary">Năng suất</h6>
+                                <p><strong>Số lượng:</strong> <span id="productivity"></span></p>
+                                <p><strong>Đơn vị:</strong> <span id="productivityUnit"></span></p>
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <div class="form-group">
-                        <label class="control-label">Phân công nhân viên <span class="text-danger">*</span></label>
-                        <div id="staffAssignments">
-                            @for (var i = 0; i < Model.Task.UserTasks.Count; i++)
-                            {
-                                <div class="staff-assignment">
-                                    <select name="Task.UserTasks[@i].AssignedTo" class="form-control mb-2 staff-select"
-                                        data-previous="@Model.Task.UserTasks[i].AssignedTo" required>
-                                        <option value="">-- Chọn nhân viên --</option>
-                                    </select>
-                                    <div class="invalid-feedback">Vui lòng chọn nhân viên</div>
-                                    <div class="staff-tasks-info mb-2 d-none">
-                                        <div class="alert alert-info p-2">
-                                            <h6 class="mb-1"><i class="fas fa-info-circle me-2"></i>Công việc hiện tại</h6>
-                                            <div class="staff-current-tasks">
-                                                <div class="text-center py-2">
-                                                    <div class="spinner-border spinner-border-sm text-primary"
-                                                        role="status">
-                                                        <span class="visually-hidden">Đang tải...</span>
-                                                    </div>
-                                                    <span class="ms-2">Đang tải công việc...</span>
-                                                </div>
+            <div class="form-group mb-3">
+                <label class="control-label">Phân công nhân viên <span class="text-danger">*</span></label>
+                <div id="staffAssignments">
+                    @for (var i = 0; i < Model.Task.UserTasks.Count; i++)
+                    {
+                        <div class="staff-assignment">
+                            <select name="Task.UserTasks[@i].AssignedTo" class="form-control mb-2 staff-select"
+                                data-previous="@Model.Task.UserTasks[i].AssignedTo" required>
+                                <option value="">-- Chọn nhân viên --</option>
+                            </select>
+                            <div class="invalid-feedback">Vui lòng chọn nhân viên</div>
+                            <div class="staff-tasks-info mb-2 d-none">
+                                <div class="alert alert-info p-2">
+                                    <h6 class="mb-1"><i class="fas fa-info-circle me-2"></i>Công việc hiện tại</h6>
+                                    <div class="staff-current-tasks">
+                                        <div class="text-center py-2">
+                                            <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                                <span class="visually-hidden">Đang tải...</span>
                                             </div>
+                                            <span class="ms-2">Đang tải công việc...</span>
                                         </div>
                                     </div>
-                                    <textarea name="Task.UserTasks[@i].UserTaskDescription" class="form-control mb-2"
-                                        placeholder="Mô tả công việc cho nhân viên này"
-                                        required>@Model.Task.UserTasks[i].UserTaskDescription</textarea>
-                                    <div class="invalid-feedback">Vui lòng nhập mô tả công việc</div>
-                                    @if (i > 0)
-                                    {
-                                        <button type="button" class="btn btn-danger mb-3 remove-staff">Xóa</button>
-                                    }
                                 </div>
+                            </div>
+                            <textarea name="Task.UserTasks[@i].UserTaskDescription" class="form-control mb-2"
+                                placeholder="Mô tả công việc cho nhân viên này"
+                                required>@Model.Task.UserTasks[i].UserTaskDescription</textarea>
+                            <div class="invalid-feedback">Vui lòng nhập mô tả công việc</div>
+                            @if (i > 0)
+                            {
+                                <button type="button" class="btn btn-danger mb-3 remove-staff">Xóa</button>
                             }
                         </div>
-                        <button type="button" id="addStaff" class="btn btn-secondary mt-2">Thêm nhân viên</button>
-                    </div>
-
-                    <div class="form-group">
-                        <label asp-for="Task.StartDate">Ngày giờ bắt đầu</label>
-                        <input asp-for="Task.StartDate" type="datetime-local" class="form-control" id="startDate"
-                            value="@Model.Task.StartDate.ToString("yyyy-MM-ddTHH:mm")" required />
-                        <div class="invalid-feedback">Vui lòng chọn ngày giờ bắt đầu</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label asp-for="Task.EndDate">Ngày giờ kết thúc</label>
-                        <input asp-for="Task.EndDate" type="datetime-local" class="form-control" id="endDate"
-                            value="@Model.Task.EndDate.ToString("yyyy-MM-ddTHH:mm")" required
-                            min="@DateTime.Now.AddHours(2).ToString("yyyy-MM-ddTHH:mm")" />
-                        <div class="invalid-feedback">Thời gian kết thúc phải sau thời gian bắt đầu ít nhất 2 giờ</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label asp-for="Task.Status">Trạng thái</label>
-                        <select class="form-control" disabled>
-                            <option value="true" selected="@Model.Task.Status">Hoạt động</option>
-                            <option value="false" selected="@(!Model.Task.Status)">Không hoạt động</option>
-                        </select>
-                        <input type="hidden" asp-for="Task.Status" />
-                        <small class="text-muted">Trạng thái công việc được hệ thống quản lý tự động</small>
-                    </div>
-
-                    <div class="form-group">
-                        <label asp-for="Task.TaskStatus">Tiến độ công việc</label>
-                        <select class="form-control" disabled>
-                            <option
-                                value="@((int)FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskProgressStatus.INPROGRESS)"
-                                selected="@(Model.Task.TaskStatus == FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskProgressStatus.INPROGRESS)">
-                                Đang thực hiện</option>
-                            <option
-                                value="@((int)FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskProgressStatus.COMPLETED)"
-                                selected="@(Model.Task.TaskStatus == FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskProgressStatus.COMPLETED)">
-                                Hoàn thành</option>
-                        </select>
-                        <input type="hidden" asp-for="Task.TaskStatus" />
-                        <small class="text-muted">Tiến độ công việc được cập nhật tự động dựa trên phân công nhân
-                            viên</small>
-                    </div>
-
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
-                        <a asp-page="Index" class="btn btn-secondary">Hủy bỏ</a>
-                    </div>
-                </form>
+                    }
+                </div>
+                <button type="button" id="addStaff" class="btn btn-secondary mt-2">Thêm nhân viên</button>
             </div>
-        </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Task.StartDate">Ngày giờ bắt đầu</label>
+                <input asp-for="Task.StartDate" type="datetime-local" class="form-control" id="startDate"
+                    value="@Model.Task.StartDate.ToString("yyyy-MM-ddTHH:mm")" required />
+                <div class="invalid-feedback">Vui lòng chọn ngày giờ bắt đầu</div>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Task.EndDate">Ngày giờ kết thúc</label>
+                <input asp-for="Task.EndDate" type="datetime-local" class="form-control" id="endDate"
+                    value="@Model.Task.EndDate.ToString("yyyy-MM-ddTHH:mm")" required
+                    min="@DateTime.Now.AddHours(2).ToString("yyyy-MM-ddTHH:mm")" />
+                <div class="invalid-feedback">Thời gian kết thúc phải sau thời gian bắt đầu ít nhất 2 giờ</div>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Task.Status">Trạng thái</label>
+                <select class="form-control" disabled>
+                    <option value="true" selected="@Model.Task.Status">Hoạt động</option>
+                    <option value="false" selected="@(!Model.Task.Status)">Không hoạt động</option>
+                </select>
+                <input type="hidden" asp-for="Task.Status" />
+                <small class="text-muted">Trạng thái công việc được hệ thống quản lý tự động</small>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Task.TaskStatus">Tiến độ công việc</label>
+                <select class="form-control" disabled>
+                    <option
+                        value="@((int)FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskProgressStatus.INPROGRESS)"
+                        selected="@(Model.Task.TaskStatus == FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskProgressStatus.INPROGRESS)">
+                        Đang thực hiện</option>
+                    <option
+                        value="@((int)FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskProgressStatus.COMPLETED)"
+                        selected="@(Model.Task.TaskStatus == FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskProgressStatus.COMPLETED)">
+                        Hoàn thành</option>
+                </select>
+                <input type="hidden" asp-for="Task.TaskStatus" />
+                <small class="text-muted">Tiến độ công việc được cập nhật tự động dựa trên phân công nhân
+                    viên</small>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                <a asp-page="Index" class="btn btn-secondary">Hủy bỏ</a>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -271,26 +266,26 @@
                                 const taskStatusText = task.taskStatus === 0 ? 'Đang thực hiện' : 'Hoàn thành';
 
                                 tasksHtml += `
-                                        <div class="list-group-item p-2 border-0">
-                                            <h6 class="mb-1">${task.jobTitle}</h6>
-                                            <p class="mb-1 small text-truncate">${task.description}</p>
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <small class="text-muted">
-                                                    ${startDate.toLocaleDateString()} ${startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - 
-                                                    ${endDate.toLocaleDateString()} ${endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                </small>
-                                                <div>
-                                                    <span class="badge ${statusClass === 'text-danger' ? 'bg-danger' :
+                                                <div class="list-group-item p-2 border-0">
+                                                    <h6 class="mb-1">${task.jobTitle}</h6>
+                                                    <p class="mb-1 small text-truncate">${task.description}</p>
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <small class="text-muted">
+                                                            ${startDate.toLocaleDateString()} ${startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - 
+                                                            ${endDate.toLocaleDateString()} ${endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                        </small>
+                                                        <div>
+                                                            <span class="badge ${statusClass === 'text-danger' ? 'bg-danger' :
                                         statusClass === 'text-warning' ? 'bg-warning' : 'bg-success'} me-1">
-                                                        ${statusText}
-                                                    </span>
-                                                    <span class="badge ${taskStatusClass}">
-                                                        ${taskStatusText}
-                                                    </span>
+                                                                ${statusText}
+                                                            </span>
+                                                            <span class="badge ${taskStatusClass}">
+                                                                ${taskStatusText}
+                                                            </span>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                        `;
+                                                `;
                             });
                             tasksHtml += '</div>';
                             tasksContainer.html(tasksHtml);
@@ -311,7 +306,7 @@
                     let currentValue = currentSelect.data('previous');
 
                     let options = '<option value="">-- Chọn nhân viên --</option>';
-                            @foreach (var item in Model.UserList)
+                                    @foreach (var item in Model.UserList)
                         {
                             @:if (!selectedStaff.has('@item.Value') || '@item.Value' === currentValue) {
                                 @:options += `<option value="@item.Value" ${('@item.Value' === currentValue ? 'selected' : '')}> @item.Text</option>`;
@@ -344,29 +339,29 @@
             $('#addStaff').click(function () {
                 if (staffCount < 5) {
                     const newStaff = `
-                                <div class="staff-assignment">
-                                    <select name="Task.UserTasks[${staffCount}].AssignedTo" 
-                                        class="form-control mb-2 staff-select">
-                                        <option value="">-- Chọn nhân viên --</option>
-                                    </select>
-                                    <div class="staff-tasks-info mb-2 d-none">
-                                        <div class="alert alert-info p-2">
-                                            <h6 class="mb-1"><i class="fas fa-info-circle me-2"></i>Công việc hiện tại</h6>
-                                            <div class="staff-current-tasks">
-                                                <div class="text-center py-2">
-                                                    <div class="spinner-border spinner-border-sm text-primary" role="status">
-                                                        <span class="visually-hidden">Đang tải...</span>
+                                        <div class="staff-assignment">
+                                            <select name="Task.UserTasks[${staffCount}].AssignedTo" 
+                                                class="form-control mb-2 staff-select">
+                                                <option value="">-- Chọn nhân viên --</option>
+                                            </select>
+                                            <div class="staff-tasks-info mb-2 d-none">
+                                                <div class="alert alert-info p-2">
+                                                    <h6 class="mb-1"><i class="fas fa-info-circle me-2"></i>Công việc hiện tại</h6>
+                                                    <div class="staff-current-tasks">
+                                                        <div class="text-center py-2">
+                                                            <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                                                <span class="visually-hidden">Đang tải...</span>
+                                                            </div>
+                                                            <span class="ms-2">Đang tải công việc...</span>
+                                                        </div>
                                                     </div>
-                                                    <span class="ms-2">Đang tải công việc...</span>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                    <textarea name="Task.UserTasks[${staffCount}].UserTaskDescription" 
-                                        class="form-control mb-2" 
-                                        placeholder="Mô tả công việc cho nhân viên này"></textarea>
-                                    <button type="button" class="btn btn-danger mb-3 remove-staff">Xóa</button>
-                                </div>`;
+                                            <textarea name="Task.UserTasks[${staffCount}].UserTaskDescription" 
+                                                class="form-control mb-2" 
+                                                placeholder="Mô tả công việc cho nhân viên này"></textarea>
+                                            <button type="button" class="btn btn-danger mb-3 remove-staff">Xóa</button>
+                                        </div>`;
                     $('#staffAssignments').append(newStaff);
                     updateAvailableStaff();
                     staffCount++;
