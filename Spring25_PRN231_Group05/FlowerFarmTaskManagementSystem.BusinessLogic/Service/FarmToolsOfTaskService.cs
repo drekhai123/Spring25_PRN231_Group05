@@ -248,6 +248,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 
             farmToolsOfTask.UpdateDate = DateTime.UtcNow;
             farmToolsOfTask.Status = 4;
+            farmToolsOfTask.Note = "Đã sửa";
          
             var farmToolsId = farmToolsOfTask.FarmToolsId;
             var farmTools = await _unitOfWork.FarmToolsRepository.GetByIdAsync(farmToolsId);
