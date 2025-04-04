@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using System;
 using System.Collections.Generic;
@@ -111,8 +111,8 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
                 };
 
                 var updatedUserTask = await _userTaskService.UpdateUserTaskAsync(id, userTaskRequest);
-                
-                // Get the parent task to check if all user tasks are completed
+
+                // Get the parent task to check if all user tasks are completed or processing
                 var userTask = await _userTaskService.GetUserTaskByIdAsync(id);
                 if (userTask != null && userTask.TaskWorkId != Guid.Empty)
                 {
@@ -121,34 +121,11 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
                     var taskService = HttpContext.RequestServices.GetService<ITaskService>();
                     if (taskService != null)
                     {
+                        // Lấy task hiện tại để kiểm tra trạng thái
                         var task = await taskService.GetTaskByIdAsync(taskId);
-                        
-                        // If all user tasks are completed, update task status to COMPLETED
-                        if (task != null && task.UserTasks != null && task.UserTasks.Count > 0 && 
-                            task.UserTasks.All(ut => Convert.ToInt32(ut.Status) == 2) && 
-                            task.TaskStatus != FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskProgressStatus.COMPLETED)
-                        {
-                            // Update task status to COMPLETED
-                            var taskRequest = new TaskRequestDTO
-                            {
-                                JobTitle = task.JobTitle,
-                                Description = task.Description,
-                                AssignedBy = task.AssignedBy,
-                                StartDate = task.StartDate,
-                                EndDate = task.EndDate,
-                                Status = task.Status,
-                                ImageUrl = task.ImageUrl,
-                                ProductFieldId = task.ProductFieldId,
-                                TaskStatus = FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskProgressStatus.COMPLETED,
-                                UserTasks = task.UserTasks.Select(ut => new UserTaskRequest
-                                {
-                                    AssignedTo = ut.UserId.ToString(),
-                                    UserTaskDescription = ut.UserTaskDescription
-                                }).ToList()
-                            };
-                            
-                            await taskService.UpdateTaskAsync(taskId, taskRequest);
-                        }
+
+                        // Đoạn này sẽ được xử lý trong GetTaskByIdAsync nên không cần code thêm ở đây
+                        // GetTaskByIdAsync sẽ gọi CheckAndUpdateTaskCompletionStatus để cập nhật trạng thái của task và productField
                     }
                 }
 
@@ -159,10 +136,10 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
                 return StatusCode(500, new { Message = $"Error updating task status: {ex.Message}" });
             }
         }
-    }
 
-    public class UpdateStatusDTO
-    {
-        public int Status { get; set; }
+        public class UpdateStatusDTO
+        {
+            public int Status { get; set; }
+        }
     }
 }
