@@ -45,5 +45,5 @@ app.UseAuthorization();
 //});
 
 app.MapRazorPages();
-app.MapHub<ProductFieldHub>("/productFieldHub");
+app.MapHub<HubServices>("/hub");
 app.Run();
