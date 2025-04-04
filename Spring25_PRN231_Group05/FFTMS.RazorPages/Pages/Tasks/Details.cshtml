@@ -2,7 +2,7 @@
 @using FlowerFarmTaskManagementSystem.BusinessObject.Models
 @model FFTMS.RazorPages.Pages.Tasks.DetailsModel
 @{
-    ViewData["Title"] = "Task Details";
+    ViewData["Title"] = "Chi tiết công việc";
     Layout = "_Layout";
 }
 
@@ -13,13 +13,13 @@
                 <div class="row">
                     <div class="col-md-6 col-sm-12">
                         <div class="title">
-                            <h4>Task Details</h4>
+                            <h4>Chi tiết công việc</h4>
                         </div>
                         <nav aria-label="breadcrumb" role="navigation">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
-                                <li class="breadcrumb-item"><a asp-page="./Index">Tasks</a></li>
-                                <li class="breadcrumb-item active">Details</li>
+                                <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                                <li class="breadcrumb-item"><a asp-page="./Index">Danh sách công việc</a></li>
+                                <li class="breadcrumb-item active">Chi tiết</li>
                             </ol>
                         </nav>
                     </div>
@@ -27,11 +27,11 @@
                         @if (Model.Task.TaskStatus != FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskProgressStatus.COMPLETED)
                         {
                             <a asp-page="./Edit" asp-route-id="@Model.Task.TaskWorkId" class="btn btn-primary">
-                                <i class="icon-copy dw dw-edit2"></i> Edit Task
+                                <i class="icon-copy dw dw-edit2"></i> Chỉnh sửa
                             </a>
                         }
                         <a asp-page="./Index" class="btn btn-secondary">
-                            <i class="icon-copy dw dw-list"></i> Back to List
+                            <i class="icon-copy dw dw-list"></i> Quay lại danh sách
                         </a>
                     </div>
                 </div>
@@ -58,48 +58,48 @@
                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-30">
                     <div class="pd-20 card-box h-100">
                         <div class="profile-info">
-                            <h5 class="mb-20 h5 text-blue">Task Information</h5>
+                            <h5 class="mb-20 h5 text-blue">Thông tin công việc</h5>
                             <ul>
                                 <li>
-                                    <span>Job Title:</span>
+                                    <span>Tiêu đề công việc:</span>
                                     @Model.Task.JobTitle
                                 </li>
                                 <li>
-                                    <span>Description:</span>
+                                    <span>Mô tả:</span>
                                     @Model.Task.Description
                                 </li>
                                 <li>
-                                    <span>Status:</span>
+                                    <span>Trạng thái:</span>
                                     <span
                                         class="badge text-white @(Convert.ToInt32(Model.Task.Status) == 1 ? "bg-success" : "bg-danger")">
-                                        @(Convert.ToInt32(Model.Task.Status) == 1 ? "Active" : "Inactive")
+                                        @(Convert.ToInt32(Model.Task.Status) == 1 ? "Hoạt động" : "Không hoạt động")
                                     </span>
                                 </li>
                                 <li>
-                                    <span>Task Progress:</span>
+                                    <span>Tiến độ công việc:</span>
                                     <span
                                         class="badge text-white @(Model.Task.TaskStatus == FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskProgressStatus.INPROGRESS ? "bg-warning" : "bg-success")">
                                         @(Model.Task.TaskStatus ==
                                                                                 FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskProgressStatus.INPROGRESS
-                                                                                ? "In Progress" : "Completed")
+                                                                                ? "Đang thực hiện" : "Hoàn thành")
                                     </span>
                                 </li>
                                 <li>
-                                    <span>Start Date:</span>
+                                    <span>Ngày bắt đầu:</span>
                                     @Model.Task.StartDate.ToString("dd/MM/yyyy HH:mm")
                                 </li>
                                 <li>
-                                    <span>End Date:</span>
+                                    <span>Ngày kết thúc:</span>
                                     @Model.Task.EndDate.ToString("dd/MM/yyyy HH:mm")
                                 </li>
                                 <li>
-                                    <span>Created:</span>
+                                    <span>Ngày tạo:</span>
                                     @Model.Task.CreateDate.ToString("dd/MM/yyyy HH:mm")
                                 </li>
                                 <li>
-                                    <span>Last Updated:</span>
+                                    <span>Cập nhật lần cuối:</span>
                                     @(Model.Task.UpdateDate != default(DateTime) ?
-                                                                        Model.Task.UpdateDate.ToString("dd/MM/yyyy HH:mm") : "Not updated")
+                                                                        Model.Task.UpdateDate.ToString("dd/MM/yyyy HH:mm") : "Chưa cập nhật")
                                 </li>
                             </ul>
                         </div>
@@ -109,34 +109,34 @@
                 <!-- Product Field Info -->
                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-30">
                     <div class="pd-20 card-box h-100">
-                        <h5 class="mb-20 h5 text-blue">Product Field Details</h5>
+                        <h5 class="mb-20 h5 text-blue">Chi tiết ruộng hoa</h5>
                         <div class="profile-info">
                             <ul>
                                 <li>
-                                    <span>Product Name:</span>
+                                    <span>Tên sản phẩm:</span>
                                     @(Model.Task.Product != null ? Model.Task.Product.ProductName : "N/A")
                                 </li>
                                 <li>
-                                    <span>Category:</span>
+                                    <span>Loại sản phẩm:</span>
                                     @(Model.Task.Product != null && Model.Task.Product.Category != null ?
                                                                         Model.Task.Product.Category.CategoryName : "N/A")
                                 </li>
                                 <li>
-                                    <span>Field Name:</span>
+                                    <span>Tên ruộng:</span>
                                     @(Model.Task.Field != null ? Model.Task.Field.FieldName : "N/A")
                                 </li>
                                 <li>
-                                    <span>Productivity:</span>
+                                    <span>Năng suất:</span>
                                     @(Model.Task.Productivity > 0 ? $"{Model.Task.Productivity} {(string.IsNullOrEmpty(Model.Task.ProductivityUnit) ? "N/A" : Model.Task.ProductivityUnit)}" : $"0 {(string.IsNullOrEmpty(Model.Task.ProductivityUnit) ? "N/A" : Model.Task.ProductivityUnit)}")
                                 </li>
                                 @if (Model.ProductField != null)
                                 {
                                     <li>
-                                        <span>Area:</span>
+                                        <span>Diện tích:</span>
                                         @(Model.ProductField.Field != null ? $"{Model.ProductField.Field.Length} x {Model.ProductField.Field.Width} m²" : "N/A")
                                     </li>
                                     <li>
-                                        <span>Status:</span>
+                                        <span>Trạng thái:</span>
                                         <span class="badge text-white @(Model.ProductField.ProductFieldStatus switch {
                                             ProductFieldStatus.READYTOPLANT => "bg-info",
                                             ProductFieldStatus.GROWING => "bg-primary",
@@ -156,13 +156,13 @@
                                         </span>
                                     </li>
                                     <li>
-                                        <span>Created:</span>
+                                        <span>Ngày tạo:</span>
                                         @Model.ProductField.CreateDate.ToString("dd/MM/yyyy HH:mm")
                                     </li>
                                     @if (Model.ProductField.UpdateDate != default(DateTime))
                                     {
                                         <li>
-                                            <span>Last Updated:</span>
+                                            <span>Cập nhật lần cuối:</span>
                                             @Model.ProductField.UpdateDate.ToString("dd/MM/yyyy HH:mm")
                                         </li>
                                     }
@@ -170,8 +170,8 @@
                                 @if (!string.IsNullOrEmpty(Model.Task.ImageUrl))
                                 {
                                     <li>
-                                        <span>Image:</span>
-                                        <img src="@Model.Task.ImageUrl" alt="Task Image" class="img-fluid mt-2 rounded" />
+                                        <span>Hình ảnh:</span>
+                                        <img src="@Model.Task.ImageUrl" alt="Hình ảnh công việc" class="img-fluid mt-2 rounded" />
                                     </li>
                                 }
                             </ul>
@@ -182,7 +182,7 @@
                 <!-- Staff Assignments -->
                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-30">
                     <div class="pd-20 card-box h-100">
-                        <h5 class="mb-20 h5 text-blue">Staff Assignments</h5>
+                        <h5 class="mb-20 h5 text-blue">Phân công nhân viên</h5>
                         @if (Model.Task.UserTasks != null && Model.Task.UserTasks.Any())
                         {
                             foreach (var userTask in Model.Task.UserTasks)
@@ -193,8 +193,8 @@
                                         <span
                                             class="badge text-white @(Convert.ToInt32(userTask.Status) == 0 ? "bg-danger" : 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    Convert.ToInt32(userTask.Status) == 1 ? "bg-warning" : "bg-success")">
-                                            @(Convert.ToInt32(userTask.Status) == 0 ? "Waiting" :
-                                                                                Convert.ToInt32(userTask.Status) == 1 ? "Processing" : "Completed")
+                                            @(Convert.ToInt32(userTask.Status) == 0 ? "Chờ xử lý" :
+                                                                                Convert.ToInt32(userTask.Status) == 1 ? "Đang xử lý" : "Hoàn thành")
                                 </span>
                             </div>
                             <p class="mb-0 text-muted">@userTask.UserTaskDescription</p>
@@ -203,9 +203,9 @@
                                     {
                                         <div class="mt-3">
                                             <p class="mb-2 fw-bold text-success">
-                                                <i class="fas fa-check-circle me-1"></i> Completion Evidence
+                                                <i class="fas fa-check-circle me-1"></i> Bằng chứng hoàn thành
                                             </p>
-                                            <img src="@userTask.ImageUrl" alt="Task completion image"
+                                            <img src="@userTask.ImageUrl" alt="Hình ảnh hoàn thành công việc"
                                                 class="img-fluid rounded shadow-sm" style="max-height: 200px;" />
                                         </div>
                                     }
@@ -214,7 +214,7 @@
                         }
                         else
                         {
-                            <p class="text-muted">No staff assignments</p>
+                            <p class="text-muted">Không có nhân viên được phân công</p>
                         }
                     </div>
                 </div>
