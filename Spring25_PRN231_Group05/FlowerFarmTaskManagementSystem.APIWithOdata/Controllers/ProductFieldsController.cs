@@ -55,7 +55,7 @@ namespace FlowerFarmTaskManagementSystem.API.Controllers
 
         // POST: odata/ProductField
         [HttpPost]
-        public async Task<ActionResult<ProductFieldResponse>> CreateProductField([FromBody] ProductFieldRequest newProductField)
+        public async Task<ActionResult<ProductFieldResponse>> CreateProductField([FromBody] ProductFieldAdd newProductField)
         {
             if (!ModelState.IsValid)
             {
