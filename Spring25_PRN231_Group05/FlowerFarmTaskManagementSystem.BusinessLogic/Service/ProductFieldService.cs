@@ -17,7 +17,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             _mapper = mapper;
         }
 
-        public async Task<ProductFieldResponse> CreateProductFieldsAsync(ProductFieldRequest newProductField)
+        public async Task<ProductFieldResponse> CreateProductFieldsAsync(ProductFieldAdd newProductField)
         {
             if (newProductField == null)
                 throw new ArgumentNullException(nameof(newProductField));
@@ -27,8 +27,8 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
                 throw new ArgumentException("ProductId is required.");
             if (newProductField.FieldId == Guid.Empty)
                 throw new ArgumentException("FieldId is required.");
-            if (string.IsNullOrEmpty(newProductField.ProductivityUnit))
-                throw new ArgumentException("ProductivityUnit is required.");
+            //if (string.IsNullOrEmpty(newProductField.ProductivityUnit))
+            //    throw new ArgumentException("ProductivityUnit is required.");
             if (newProductField.CreateDate == default)
                 throw new ArgumentException("CreateDate is required.");
 
@@ -40,7 +40,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 
             // Check for overlapping ProductFields in the same time period
             var existingProductFields = await _unitOfWork.ProductFieldRepository
-                .FindAsync(pf => pf.Status && 
+                .FindAsync(pf => pf.Status &&
                                 pf.FieldId == newProductField.FieldId &&
                                 ((pf.StartDate <= newProductField.EndDate && pf.EndDate >= newProductField.StartDate)));
 
@@ -113,8 +113,8 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             {
                 var existingProductFields = await _unitOfWork.ProductFieldRepository
       .FindAsync(pf => pf.FieldId == fieldExists.FieldId &&
-                       pf.ProductFieldId != id && 
-                       pf.Status == true && 
+                       pf.ProductFieldId != id &&
+                       pf.Status == true &&
                        ((pf.StartDate < productFieldRequest.EndDate && pf.EndDate > productFieldRequest.StartDate)));
 
                 if (existingProductFields.Any())
@@ -166,7 +166,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             productField.Productivity = Productivity;
             productField.ProductivityUnit = ProductivityUnit;
             productField.ProductFieldStatus = ProductFieldStatus.HARVESTED;
-           
+
             _unitOfWork.ProductFieldRepository.Update(productField);
             await _unitOfWork.SaveChangesAsync();
 
@@ -225,72 +225,6 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 
             var productFields = query.ToList();
             return _mapper.Map<IEnumerable<ProductFieldResponse>>(productFields);
-        }
-
-        public async Task<ProductFieldResponse> UpdateProductFieldStatus(Guid id, ProductFieldStatus newStatus)
-        {
-            if (id == Guid.Empty)
-            {
-                throw new ArgumentException("ProductField ID is required.");
-            }
-
-            var productField = await _unitOfWork.ProductFieldRepository.GetByIdAsync(id);
-            if (productField == null)
-            {
-                throw new KeyNotFoundException("ProductField not found.");
-            }
-
-            // Validate status transition
-            if (!IsValidStatusTransition(productField.ProductFieldStatus, newStatus))
-            {
-                throw new InvalidOperationException($"Invalid status transition from {productField.ProductFieldStatus} to {newStatus}");
-            }
-
-            productField.ProductFieldStatus = newStatus;
-            productField.UpdateDate = DateTime.UtcNow;
-
-            _unitOfWork.ProductFieldRepository.Update(productField);
-            await _unitOfWork.SaveChangesAsync();
-
-            return _mapper.Map<ProductFieldResponse>(productField);
-        }
-
-        private bool IsValidStatusTransition(ProductFieldStatus currentStatus, ProductFieldStatus newStatus)
-        {
-            // Check if the new status is exactly one step higher than the current status
-            // and that we haven't reached the maximum status (HARVESTED)
-            return currentStatus < ProductFieldStatus.HARVESTED && 
-                   (int)newStatus == (int)currentStatus + 1;
-        }
-
-        public async Task<ProductFieldResponse> IncrementProductFieldStatus(Guid id)
-        {
-            var productField = await _unitOfWork.ProductFieldRepository.GetByIdAsync(id);
-            if (productField == null)
-            {
-                throw new KeyNotFoundException($"Product Field with ID {id} not found.");
-            }
-
-            // Increment the status based on current status
-            switch (productField.ProductFieldStatus)
-            {
-                case ProductFieldStatus.READYTOPLANT:
-                    productField.ProductFieldStatus = ProductFieldStatus.GROWING;
-                    break;
-                case ProductFieldStatus.GROWING:
-                    productField.ProductFieldStatus = ProductFieldStatus.READYTOHARVEST;
-                    break;
-                case ProductFieldStatus.READYTOHARVEST:
-                    productField.ProductFieldStatus = ProductFieldStatus.HARVESTED;
-                    break;
-                default:
-                    throw new InvalidOperationException($"Cannot increment status from {productField.ProductFieldStatus}");
-            }
-
-            _unitOfWork.ProductFieldRepository.Update(productField);
-            await _unitOfWork.SaveChangesAsync();
-
-            return _mapper.Map<ProductFieldResponse>(productField);
         }
     }
 }

@@ -32,17 +32,17 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Models
     }
     public enum ProductFieldStatus
     { 
-        [EnumMember(Value = "ReadyToPlant")]
+        [EnumMember(Value = "Chuẩn bị trồng")]
         READYTOPLANT,
-        [EnumMember(Value = "Growing")]
+        [EnumMember(Value = "Đang phát triển")]
         GROWING,
-        [EnumMember(Value = "ReadyToHarvest")]
+        [EnumMember(Value = "Chuẩn bị thu hoạch")]
         READYTOHARVEST,
-        [EnumMember(Value = "Harvesting")]
+        [EnumMember(Value = "Đang thu hoạch")]
         HARVESTING,
-        [EnumMember(Value = "Harvested")]
+        [EnumMember(Value = "Đã thu hoạch")]
         HARVESTED,
-        [EnumMember(Value = "Overdue")]
+        [EnumMember(Value = "Quá hạn")]
         OVERDUE
     }
 }
