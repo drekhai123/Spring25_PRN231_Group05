@@ -12,12 +12,12 @@
 				<div class="row">
 					<div class="col-md-6 col-sm-12">
 						<div class="title">
-							<h4>List Farm Tools</h4>
+							<h4>Danh sách dụng cụ</h4>
 						</div>
 						<nav aria-label="breadcrumb" role="navigation">
 							<ol class="breadcrumb">
-								<li class="breadcrumb-item">FarmTools</li>
-								<li class="breadcrumb-item active" aria-current="page">List Farm Tools</li>
+								<li class="breadcrumb-item">Dụng cụ</li>
+								<li class="breadcrumb-item active" aria-current="page">Danh sách dụng cụ</li>
 							</ol>
 						</nav>
 					</div>
@@ -27,22 +27,21 @@
 			<!-- Table -->
 			<div class="card-box mb-30">
 				<div class="pd-20">
-					<h4 class="text-blue h4">List Of Farm Tools</h4>
+					<h4 class="text-blue h4">Danh sách dụng cụ</h4>
 				</div>
 				<a asp-page="./CreateFarmTools" class="btn btn-success btn-sm">
-					<i class="dw dw-add"></i> Add Farm Tool
+					<i class="dw dw-add"></i> Thêm dụng cụ
 				</a>
 				<div class="pb-20">
 					<table class="data-table table stripe hover nowrap" id="farmToolsTable">
 						<thead>
 							<tr>
 								<th class="table-plus datatable-nosort">ID</th>
-								<th>Name</th>
-								<th>Quantity</th>
-								<th>Unit</th>
-								<th>Status</th>
-								<th>Create Date</th>
-								<th>Update Date</th>
+								<th>Tên</th>
+								<th>Số lượng</th>
+								<th>Đơn vị</th>
+								<th>Trạng thái</th>
+								<th>Ngày tạo</th>
 								<th class="datatable-nosort">Action</th>
 							</tr>
 						</thead>
@@ -61,7 +60,6 @@
 									<td>@tool.FarmToolsUnit</td>
 									<td>@(tool.Status ? "Active" : "Inactive")</td>
 									<td>@tool.CreateDate.ToString("dd-MM-yyyy")</td>
-									<td>@tool.UpdateDate.ToString("dd-MM-yyyy")</td>
 									<td>
 										<div class="dropdown">
 											<a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle" href="#" role="button" data-toggle="dropdown">
@@ -93,27 +91,27 @@
 				$("#farmToolsTable").DataTable().destroy();
 			}
 
-			 $("#farmToolsTable").DataTable({
-                "paging": true,
-                "ordering": true,
-                "info": true,
-                "searching": true,
-                "lengthMenu": [5, 10, 25, 50, 100],
-                "order": [[0, "asc"]],
-                "language": {
-                    "lengthMenu": "Show _MENU_ ",
-                    "zeroRecords": "Not found",
-                    "info": "Pages _PAGE_ / _PAGES_",
-                    "infoEmpty": "No data",
-                    "search": "Find:",
-                    "paginate": {
-                        "first": "First",
-                        "last": "Last",
-                        "next": "Next",
-                        "previous": "Previous"
-                    }
-                }
-            });
+			$("#farmToolsTable").DataTable({
+				"paging": true,
+				"ordering": true,
+				"info": true,
+				"searching": true,
+				"lengthMenu": [5, 10, 25, 50, 100],
+				"order": [[0, "asc"]],
+				"language": {
+					"lengthMenu": "Hiện _MENU_ ",
+					"zeroRecords": "Không tìm thấy",
+					"info": "Trang _PAGE_ / _PAGES_",
+					"infoEmpty": "Không dữ liệu",
+					"search": "Tìm:",
+					"paginate": {
+						"first": "Đầu",
+						"last": "Cuối",
+						"next": "Sau",
+						"previous": "Trước"
+					}
+				}
+			});
 		});
 	</script>
 }

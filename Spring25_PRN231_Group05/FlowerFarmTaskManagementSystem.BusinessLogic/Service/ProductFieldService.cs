@@ -48,7 +48,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             {
                 var overlappingField = existingProductFields.First();
                 throw new InvalidOperationException(
-                    $"Cannot create new ProductField. Field is already in use from {overlappingField.StartDate:dd/MM/yyyy} to {overlappingField.EndDate:dd/MM/yyyy}");
+                    $"Không thể tạo Kế hoạch trồng mới. Khu vực trồng đã được sử dụng từ {overlappingField.StartDate:dd/MM/yyyy} đến {overlappingField.EndDate:dd/MM/yyyy}");
             }
 
             var productField = _mapper.Map<ProductField>(newProductField);
@@ -121,7 +121,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
                 {
                     var overlappingField = existingProductFields.First();
                     throw new InvalidOperationException(
-                        $"Cannot update ProductField. The field with ID {fieldExists.FieldName} is already in use from {overlappingField.StartDate:dd/MM/yyyy} to {overlappingField.EndDate:dd/MM/yyyy}.");
+                        $"Không thể cập nhật Kế hoạch. Khu có Tên {fieldExists.FieldName} đã được sử dụng từ {overlappingField.StartDate:dd/MM/yyyy} đến {overlappingField.EndDate:dd/MM/yyyy}.");
                 }
             }
             var productExists = await _unitOfWork.ProductRepository.GetByIdAsync(productFieldRequest.ProductId);
@@ -136,9 +136,9 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             if (productField.Productivity != productFieldRequest.Productivity ||
                 productField.ProductivityUnit != productFieldRequest.ProductivityUnit)
             {
-                if (productField.ProductFieldStatus != ProductFieldStatus.READYTOHARVEST)
+                if (productField.ProductFieldStatus != ProductFieldStatus.HARVESTED)
                 {
-                    throw new InvalidOperationException("Cannot update Productivity and ProductivityUnit. ProductField must be in READYTOHARVEST status.");
+                    throw new InvalidOperationException("Không thể cập nhật Năng suất và Đơn vị năng suất. Kế hoạch phải ở trạng thái ĐÃ THU HOẠCH.");
                 }
             }
 

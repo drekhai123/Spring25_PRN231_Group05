@@ -1,4 +1,4 @@
-using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
+﻿using FlowerFarmTaskManagementSystem.BusinessObject.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Text.Json;
@@ -59,14 +59,14 @@ namespace FFTMS.RazorPages.Pages.FarmToolsOfTask
                     ModelState.AddModelError(string.Empty, "Invalid request data.");
                     return Page();
                 }
-                if (!string.IsNullOrWhiteSpace(NoteInf) && (Quantity == null || Quantity <= 0))
-                {
-                    TempData["ErrorMessage"] = "Quantity must be greater than 0 when Note is provided.";
-                    return RedirectToPage("/FarmToolsOfTask/Index");
-                }
+                if (!string.IsNullOrWhiteSpace(NoteInf) && (Quantity == null || Quantity < 0))
+                    {
+                        TempData["ErrorMessage"] = "Số lượng không hư phải lớn hơn hoặc bằng 0 khi ghi chú.";
+                        return RedirectToPage("/FarmToolsOfTask/Index");
+                    }
                 if (Quantity > 0 && string.IsNullOrWhiteSpace(NoteInf))
                 {
-                    TempData["ErrorMessage"] = "Note is required when Quantity is provided.";
+                    TempData["ErrorMessage"] = "Cần ghi chú khi cung cấp Số lượng.";
                     return RedirectToPage("/FarmToolsOfTask/Index");
                 }
 
@@ -81,7 +81,7 @@ namespace FFTMS.RazorPages.Pages.FarmToolsOfTask
                     return RedirectToPage("/FarmToolsOfTask/Index");
                 }
 
-                TempData["SuccessMessage"] = "Farm tool task marked as finished successfully.";
+                TempData["SuccessMessage"] = "Nhiệm vụ công cụ nông trại được đánh dấu là đã hoàn thành thành công.";
                 return RedirectToPage("/FarmToolsOfTask/Index");
             }
             catch (Exception ex)

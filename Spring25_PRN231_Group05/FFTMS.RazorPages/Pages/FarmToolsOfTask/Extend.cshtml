@@ -5,12 +5,12 @@
     ViewData["Title"] = "Extend";
     Layout = "_Layout";
 }
-<div class="main-container">
+<div class="container-fluid px-4">
     <div class="pd-ltr-20 xs-pd-20-10">
         <div class="min-height-200px">
             <div class="page-header">
                 <div class="text-center">
-                    <h2>Extend Farm Tools Task</h2>
+                    <h2>Gia hạn dùng nông cụ</h2>
                 </div>
             </div>
             @if (TempData["ErrorMessage"] != null)
@@ -27,29 +27,29 @@
 
 
                     <div class="mb-3">
-                        <label asp-for="FarmToolsOfTaskRequest.EndDate" class="form-label fw-bold">End Date</label>
+                        <label asp-for="FarmToolsOfTaskRequest.EndDate" class="form-label fw-bold">Ngày kết thúc:</label>
                         <input asp-for="FarmToolsOfTaskRequest.EndDate" class="form-control border-primary" type="date" />
                         <span asp-validation-for="FarmToolsOfTaskRequest.EndDate" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="FarmToolsOfTaskRequest.FarmToolOfTaskQuantity" class="form-label fw-bold">Quantity</label>
+                        <label asp-for="FarmToolsOfTaskRequest.FarmToolOfTaskQuantity" class="form-label fw-bold">Số lượng:</label>
                         <input asp-for="FarmToolsOfTaskRequest.FarmToolOfTaskQuantity" class="form-control border-primary" type="number" min="1" />
                         <span asp-validation-for="FarmToolsOfTaskRequest.FarmToolOfTaskQuantity" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="FarmToolsOfTaskRequest.FarmToolOfTaskUnit" class="form-label fw-bold">Unit</label>
+                        <label asp-for="FarmToolsOfTaskRequest.FarmToolOfTaskUnit" class="form-label fw-bold">Đơn vị:</label>
                         <input asp-for="FarmToolsOfTaskRequest.FarmToolOfTaskUnit" class="form-control bg-light" readonly />
                         <span asp-validation-for="FarmToolsOfTaskRequest.FarmToolOfTaskUnit" class="text-danger"></span>
                     </div>
 
                     <div class="d-flex justify-content-between">
                         <a asp-page="/UserTasks/Index" class="btn btn-secondary">
-                            <i class="fa fa-arrow-left"></i> Back to List
+                            <i class="fa fa-arrow-left"></i> Quay lại danh sách
                         </a>
                         <button type="submit" class="btn btn-success">
-                            <i class="fa fa-save"></i> Save
+                            <i class="fa fa-save"></i> Lưu
                         </button>
                     </div>
                 </form>

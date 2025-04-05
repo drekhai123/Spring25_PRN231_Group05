@@ -5,22 +5,15 @@
     Layout = "_Layout";
 }
 
-<div class="main-container">
+<div class="container-fluid px-4">
     <div class="pd-ltr-20">
         <div class="min-height-200px">
             <div class="page-header">
                 <div class="row">
                     <div class="col-md-6 col-sm-12">
                         <div class="title">
-                            <h4>Add Farm Tools to Task</h4>
+                            <h4>Chọn dụng cụ để làm nhiệm vụ</h4>
                         </div>
-                        <nav aria-label="breadcrumb" role="navigation">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
-                                <li class="breadcrumb-item"><a asp-page="/UserTasks/Index">My Tasks</a></li>
-                                <li class="breadcrumb-item active">Add Farm Tools</li>
-                            </ol>
-                        </nav>
                     </div>
                 </div>
             </div>
@@ -41,7 +34,7 @@
 
             <div class="card-box mb-30">
                 <div class="pd-20">
-                    <h4 class="text-blue h4">Add Farm Tools</h4>
+                    <h4 class="text-blue h4">Chọn dụng cụ</h4>
                 </div>
                 <div class="pd-20">
                     <form method="post">
@@ -51,7 +44,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label asp-for="FarmToolsOfTask.StartDate">Start Date</label>
+                                    <label asp-for="FarmToolsOfTask.StartDate">Ngày bắt đầu:</label>
                                     <input asp-for="FarmToolsOfTask.StartDate" class="form-control"
                                         type="datetime-local" required
                                         min="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
@@ -60,7 +53,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label asp-for="FarmToolsOfTask.EndDate">End Date</label>
+                                    <label asp-for="FarmToolsOfTask.EndDate">Ngày kết thúc:</label>
                                     <input asp-for="FarmToolsOfTask.EndDate" class="form-control" type="datetime-local"
                                         required min="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
                                     <span asp-validation-for="FarmToolsOfTask.EndDate" class="text-danger"></span>
@@ -69,16 +62,16 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Farm Tools</label>
+                            <label>Dụng cụ:</label>
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <select id="farmToolSelect" class="form-control">
-                                        <option value="">-- Select Farm Tool --</option>
+                                        <option value="">-- Chọn dụng cụ --</option>
                                         @foreach (var tool in Model.AvailableTools)
                                         {
                                             <option value="@tool.FarmToolsId" data-name="@tool.FarmToolsName"
                                                 data-quantity="@tool.FarmToolsQuantity">
-                                                @tool.FarmToolsName (Available: @tool.FarmToolsQuantity)
+                                                @tool.FarmToolsName (Còn: @tool.FarmToolsQuantity)
                                             </option>
                                         }
                                     </select>
@@ -89,7 +82,7 @@
                                 </div>
                                 <div class="col-md-3">
                                     <button type="button" id="addTool" class="btn btn-primary">
-                                        <i class="fa fa-plus"></i> Add Tool
+                                        <i class="fa fa-plus"></i> Thêm dụng cụ
                                     </button>
                                 </div>
                             </div>
@@ -98,9 +91,9 @@
                                 <table class="table table-bordered">
                                     <thead>
                                         <tr>
-                                            <th>Tool Name</th>
-                                            <th>Quantity</th>
-                                            <th>Actions</th>
+                                            <th>Tên dụng cụ</th>
+                                            <th>Số lượng</th>
+                                            <th>Hành động</th>
                                         </tr>
                                     </thead>
                                     <tbody id="selectedToolsTable">
@@ -111,8 +104,8 @@
                         </div>
 
                         <div class="form-group text-right">
-                            <a asp-page="/UserTasks/Index" class="btn btn-secondary">Cancel</a>
-                            <button type="submit" class="btn btn-primary">Save</button>
+                            <a asp-page="/UserTasks/Index" class="btn btn-secondary">Hủy</a>
+                            <button type="submit" class="btn btn-primary">Lưu</button>
                         </div>
 
                         <input type="hidden" id="selectedToolsJson" name="selectedToolsJson" />
@@ -137,18 +130,18 @@
                 const availableQuantity = parseInt($("#farmToolSelect option:selected").data("quantity") || 0);
 
                 if (!toolId) {
-                    alert("Please select a farm tool");
+                    alert("Hãy chọn 1 dụng cụ.");
                     return;
                 }
 
                 if (!quantity || quantity < 1) {
-                    alert("Please enter a valid quantity");
+                    alert("Vui lòng nhập số lượng hợp lệ");
                     return;
                 }
 
                 // Kiểm tra số lượng có vượt quá tồn kho không
                 if (quantity > availableQuantity) {
-                    alert(`The quantity exceeds available stock (${availableQuantity}). Please enter a smaller quantity.`);
+                    alert(`Số lượng vượt quá số lượng có sẵn (${availableQuantity}). Vui lòng nhập số lượng nhỏ hơn.`);
                     return;
                 }
 
@@ -157,11 +150,11 @@
                 if (existingTool) {
                     // Kiểm tra tổng số lượng
                     if (existingTool.Quantity + quantity > availableQuantity) {
-                        alert(`Total quantity (${existingTool.Quantity + quantity}) would exceed available stock (${availableQuantity}).`);
+                        alert(`Tổng số lượng (${existingTool.Quantity + quantity}) sẽ vượt quá số lượng hàng có sẵn (${availableQuantity}).`);
                         return;
                     }
 
-                    alert("This tool is already added. Please edit the quantity instead.");
+                    alert("Công cụ này đã được thêm vào. Vui lòng chỉnh sửa số lượng.");
                     return;
                 }
 
@@ -226,7 +219,7 @@
                     const availableQuantity = parseInt($(`#farmToolSelect option[value='${toolId}']`).data("quantity") || 0);
 
                     if (newQuantity > availableQuantity) {
-                        alert(`The quantity exceeds available stock (${availableQuantity}). Please enter a smaller quantity.`);
+                        alert(`Số lượng vượt quá số lượng có sẵn (${availableQuantity}). Vui lòng nhập số lượng nhỏ hơn.`);
                         // Reset về giá trị cũ
                         $(`.tool-quantity[data-id='${toolId}']`).val(tool.Quantity);
                         return;

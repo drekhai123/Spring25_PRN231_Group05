@@ -43,7 +43,7 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
                     if (string.IsNullOrEmpty(jsonResponse))
                     {
                         Console.WriteLine("OnGetAsync: API returned an empty response.");
-                        ErrorMessage = "API returned an empty response.";
+                        ErrorMessage = "API trả về phản hồi trống.";
                         return Page();
                     }
 

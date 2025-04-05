@@ -5,33 +5,33 @@
     ViewData["Title"] = "Details";
     Layout = "_Layout";
 }
-<div class="main-container">
+<div class="container-fluid px-4">
     <div class="container mt-4">
         <div class="card">
             <div class="card-header bg-primary text-white">
-                <h4>Farm Tool Task Details</h4>
+                <h4>Chi tiết sử dụng</h4>
             </div>
             <div class="card-body">
                 <dl class="row">
-                    <dt class="col-sm-3">Start Date:</dt>
+                    <dt class="col-sm-3">Ngày bắt đầu:</dt>
                     <dd class="col-sm-9">@Model.FarmToolsOfTask.StartDate.ToString("dd/MM/yyyy")</dd>
 
-                    <dt class="col-sm-3">End Date:</dt>
+                    <dt class="col-sm-3">Ngày kết thúc:</dt>
                     <dd class="col-sm-9">@Model.FarmToolsOfTask.EndDate.ToString("dd/MM/yyyy")</dd>
 
-                    <dt class="col-sm-3">Create Date:</dt>
+                    <dt class="col-sm-3">Ngày tạo:</dt>
                     <dd class="col-sm-9">@Model.FarmToolsOfTask.CreateDate.ToString("dd/MM/yyyy")</dd>
 
-                    <dt class="col-sm-3">Update Date:</dt>
+                    <dt class="col-sm-3">Ngyaf chỉnh sửa:</dt>
                     <dd class="col-sm-9">@Model.FarmToolsOfTask.UpdateDate.ToString("dd/MM/yyyy")</dd>
 
-                    <dt class="col-sm-3">Quantity:</dt>
+                    <dt class="col-sm-3">Số lượng:</dt>
                     <dd class="col-sm-9">@Model.FarmToolsOfTask.FarmToolOfTaskQuantity</dd>
 
-                    <dt class="col-sm-3">Unit:</dt>
+                    <dt class="col-sm-3">Dơn vị:</dt>
                     <dd class="col-sm-9">@Model.FarmToolsOfTask.FarmToolOfTaskUnit</dd>
 
-                    <dt class="col-sm-3">Note:</dt>
+                    <dt class="col-sm-3">Lưu ý:</dt>
                     <dd class="col-sm-9">
                         @(string.IsNullOrWhiteSpace(Model.FarmToolsOfTask?.Note) ? "Normal" : Model.FarmToolsOfTask.Note)
                     </dd>
@@ -43,30 +43,30 @@
                                         Model.FarmToolsOfTask.Status == 3 ? "badge-primary" :
                                         Model.FarmToolsOfTask.Status == 4 ? "badge-success" :
                                         Model.FarmToolsOfTask.Status == 5 ? "badge-danger" : "badge-secondary")">
-                            @(Model.FarmToolsOfTask.Status == 1 ? "Pending" :
-                                Model.FarmToolsOfTask.Status == 2 ? "Extend" :
-                                Model.FarmToolsOfTask.Status == 3 ? "Pending Return" :
-                                Model.FarmToolsOfTask.Status == 4 ? "Returned" :
-                                Model.FarmToolsOfTask.Status == 5 ? "Damaged" : "Unknown")
+                            @(Model.FarmToolsOfTask.Status == 1 ? "Đang dùng" :
+                                Model.FarmToolsOfTask.Status == 2 ? "Gia hạn" :
+                                Model.FarmToolsOfTask.Status == 3 ? "Đang trả" :
+                                Model.FarmToolsOfTask.Status == 4 ? "Đã trả" :
+                                Model.FarmToolsOfTask.Status == 5 ? "Hư hại" : "Unknown")
                         </span>
                     </dd>
 
-                    <dt class="col-sm-3">Farm Tool:</dt>
+                    <dt class="col-sm-3">Tên dụng cụ:</dt>
                     <dd class="col-sm-9">@Model.FarmToolsOfTask.FarmTools.FarmToolsName</dd>
 
-                    <dt class="col-sm-3">User Task:</dt>
+                    <dt class="col-sm-3">Mô tả nhiệm vụ:</dt>
                     <dd class="col-sm-9">@Model.FarmToolsOfTask.UserTask.UserTaskDescription</dd>
                 </dl>
             </div>
             <div class="card-footer">
                 <a asp-page="./Index" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left"></i> Back to List
+                    <i class="fas fa-arrow-left"></i> Quay lại danh sách
                 </a>
 
                 @if (Model.FarmToolsOfTask.Status == 5)
                 {
                     <button id="fixButton" class="btn btn-success" onclick="markAsFixed('@Model.FarmToolsOfTask.FarmToolsOfTaskId')">
-                        <i class="fas fa-check"></i>Fixed
+                        <i class="fas fa-check"></i>Đã sửa
                     </button>
                 }
             </div>
@@ -78,17 +78,17 @@
 @section Scripts {
     <script>
         function markAsFixed(farmToolsOfTaskId) {
-            if (!confirm("Confirm repair completed?")) return;
+            if (!confirm("Xác nhận sửa chữa đã hoàn tất?")) return;
 
             fetch(`https://localhost:7207/api/FarmToolsOfTasks/update-farm-tools-of-task-status-completed?FarmToolsOfTaskId=${farmToolsOfTaskId}`, {
                 method: "PUT"
             })
                 .then(response => {
                     if (response.ok) {
-                        alert("Status updated successfully!");
+                        alert("Trạng thái đã được cập nhật thành công!");
                         location.reload();
                     } else {
-                        alert("Error updating status.");
+                        alert("Lỗi khi cập nhật trạng thái.");
                     }
                 })
                 .catch(error => {

@@ -7,11 +7,11 @@
 }
 
 <div class="container-fluid px-4">
-    <h1 class="mt-4">Edit Product Field</h1>
+    <h1 class="mt-4">Chỉnh sửa kế hoạch trồng</h1>
     <div class="card mb-4">
         <div class="card-header">
             <i class="fas fa-edit me-1"></i>
-            Edit Product Field Information
+            Chỉnh sửa thông tin kế hoạch trồng hoa
         </div>
         <div class="card-body">
             @if (!string.IsNullOrEmpty(Model.ErrorMessage))
@@ -28,35 +28,38 @@
                         <div class="card">
                             <div class="card-header bg-primary text-white">
                                 <i class="fas fa-info-circle me-1"></i>
-                                Product Field Information
+                               Chi tiết kế hoạch
                             </div>
                             <div class="card-body">
                                 <div class="mb-3">
-                                    <label asp-for="ProductField.StartDate" class="form-label">Start Date</label>
+                                    <label asp-for="ProductField.StartDate" class="form-label">Ngày bắt đầu:</label>
                                     <input asp-for="ProductField.StartDate" class="form-control" type="date" />
                                     <span asp-validation-for="ProductField.StartDate" class="text-danger"></span>
                                 </div>
                                 <div class="mb-3">
-                                    <label asp-for="ProductField.EndDate" class="form-label">End Date</label>
+                                    <label asp-for="ProductField.EndDate" class="form-label">Ngày kết thúc:</label>
                                     <input asp-for="ProductField.EndDate" class="form-control" type="date" />
                                     <span asp-validation-for="ProductField.EndDate" class="text-danger"></span>
                                 </div>
                                 <div class="mb-3">
-                                    <label asp-for="ProductField.ProductFieldStatus" class="form-label">Status</label>
+                                    <label asp-for="ProductField.ProductFieldStatus" class="form-label">Trạng thái:</label>
                                     <select asp-for="ProductField.ProductFieldStatus" class="form-select" asp-items="Html.GetEnumSelectList<FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus>()">
                                     </select>
                                     <span asp-validation-for="ProductField.ProductFieldStatus" class="text-danger"></span>
                                 </div>
-                                <div class="mb-3">
-                                    <label asp-for="ProductField.Productivity" class="form-label">Productivity</label>
-                                    <input asp-for="ProductField.Productivity" class="form-control" type="number" step="0.01" />
-                                    <span asp-validation-for="ProductField.Productivity" class="text-danger"></span>
-                                </div>
-                                <div class="mb-3">
-                                    <label asp-for="ProductField.ProductivityUnit" class="form-label">Productivity Unit</label>
-                                    <input asp-for="ProductField.ProductivityUnit" class="form-control" />
-                                    <span asp-validation-for="ProductField.ProductivityUnit" class="text-danger"></span>
-                                </div>
+                                 @if (Model.ProductField.ProductFieldStatus == FlowerFarmTaskManagementSystem.BusinessObject.Models.ProductFieldStatus.HARVESTED)
+                                {
+                                    <div class="mb-3">
+                                        <label asp-for="ProductField.Productivity" class="form-label">Năng suất:</label>
+                                        <input asp-for="ProductField.Productivity" class="form-control" type="number" step="0.01" />
+                                        <span asp-validation-for="ProductField.Productivity" class="text-danger"></span>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label asp-for="ProductField.ProductivityUnit" class="form-label">Đơn vị:</label>
+                                        <input asp-for="ProductField.ProductivityUnit" class="form-control" />
+                                        <span asp-validation-for="ProductField.ProductivityUnit" class="text-danger"></span>
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -64,13 +67,13 @@
                         <div class="card mb-3">
                             <div class="card-header bg-warning text-dark">
                                 <i class="fas fa-seedling me-1"></i>
-                                Product Information
+                                Thông tin hoa
                             </div>
                             <div class="card-body">
                                 <div class="mb-3">
                                     <label class="form-label">Product</label>
                                     <select asp-for="ProductField.Product.ProductId" class="form-select" asp-items="ViewBag.ProductId">
-                                        <option value="">-- Select Product --</option>
+                                        <option value="">-- Chọn loại hoa --</option>
                                     </select>
                                     <span asp-validation-for="ProductField.Product.ProductId" class="text-danger"></span>
                                 </div>
@@ -80,13 +83,13 @@
                         <div class="card">
                             <div class="card-header bg-success text-white">
                                 <i class="fas fa-map-marker-alt me-1"></i>
-                                Field Information
+                                Thông tin khu vực
                             </div>
                             <div class="card-body">
                                 <div class="mb-3">
                                     <label class="form-label">Field</label>
                                     <select asp-for="ProductField.Field.FieldId" class="form-select" asp-items="ViewBag.FieldId">
-                                        <option value="">-- Select Field --</option>
+                                        <option value="">-- Chọn khu vực --</option>
                                     </select>
                                     <span asp-validation-for="ProductField.Field.FieldId" class="text-danger"></span>
                                 </div>
@@ -97,10 +100,10 @@
 
                 <div class="mt-4 text-center">
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save me-1"></i> Save Changes
+                        <i class="fas fa-save me-1"></i> Lưu
                     </button>
                     <a asp-page="./Index" class="btn btn-secondary ms-2">
-                        <i class="fas fa-times me-1"></i> Cancel
+                        <i class="fas fa-times me-1"></i> Hủy
                     </a>
                 </div>
             </form>

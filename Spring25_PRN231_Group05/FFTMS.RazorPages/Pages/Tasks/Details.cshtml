@@ -6,209 +6,217 @@
     Layout = "_Layout";
 }
 
-<div class="main-container">
-    <div class="pd-ltr-20">
-        <div class="min-height-200px">
-            <div class="page-header">
-                <div class="row">
-                    <div class="col-md-6 col-sm-12">
-                        <div class="title">
-                            <h4>Chi tiết công việc</h4>
-                        </div>
-                        <nav aria-label="breadcrumb" role="navigation">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
-                                <li class="breadcrumb-item"><a asp-page="./Index">Công việc</a></li>
-                                <li class="breadcrumb-item active">Chi tiết</li>
-                            </ol>
-                        </nav>
-                    </div>
-                    <div class="col-md-6 col-sm-12 text-end">
-                        @if (Model.Task.TaskStatus != FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskProgressStatus.COMPLETED)
-                        {
-                            <a asp-page="./Edit" asp-route-id="@Model.Task.TaskWorkId" class="btn btn-primary">
-                                <i class="icon-copy dw dw-edit2"></i> Chỉnh sửa
-                            </a>
-                        }
-                        <a asp-page="./Index" class="btn btn-secondary">
-                            <i class="icon-copy dw dw-list"></i> Quay lại danh sách
-                        </a>
-                    </div>
+<div class="page-header">
+    <div class="row">
+        <div class="col-md-6 col-sm-12">
+            <div class="title">
+                <h4>Chi tiết công việc</h4>
+            </div>
+            <nav aria-label="breadcrumb" role="navigation">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                    <li class="breadcrumb-item"><a asp-page="./Index">Danh sách công việc</a></li>
+                    <li class="breadcrumb-item active">Chi tiết</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="col-md-6 col-sm-12 text-end">
+            @if (Model.Task.TaskStatus != FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskProgressStatus.COMPLETED)
+            {
+                <a asp-page="./Edit" asp-route-id="@Model.Task.TaskWorkId" class="btn btn-primary">
+                    <i class="icon-copy dw dw-edit2"></i> Chỉnh sửa
+                </a>
+            }
+            <a asp-page="./Index" class="btn btn-secondary">
+                <i class="icon-copy dw dw-list"></i> Quay lại danh sách
+            </a>
+        </div>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger">
+        @Model.ErrorMessage
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i>
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="row">
+    <!-- Task Basic Info -->
+    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body p-4">
+                <div class="profile-info">
+                    <h5 class="mb-4 text-primary">Thông tin công việc</h5>
+                    <ul>
+                        <li>
+                            <span>Tiêu đề công việc:</span>
+                            @Model.Task.JobTitle
+                        </li>
+                        <li>
+                            <span>Mô tả:</span>
+                            @Model.Task.Description
+                        </li>
+                        <li>
+                            <span>Trạng thái:</span>
+                            <span
+                                class="badge text-white @(Convert.ToInt32(Model.Task.Status) == 1 ? "bg-success" : "bg-danger")">
+                                @(Convert.ToInt32(Model.Task.Status) == 1 ? "Hoạt động" : "Không hoạt động")
+                            </span>
+                        </li>
+                        <li>
+                            <span>Tiến độ công việc:</span>
+                            <span
+                                class="badge text-white @(Model.Task.TaskStatus == FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskProgressStatus.INPROGRESS ? "bg-warning" : "bg-success")">
+                                @(Model.Task.TaskStatus == FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskProgressStatus.INPROGRESS
+                                    ? "Đang thực hiện" : "Hoàn thành")
+                            </span>
+                        </li>
+                        <li>
+                            <span>Ngày bắt đầu:</span>
+                            @Model.Task.StartDate.ToString("dd/MM/yyyy HH:mm")
+                        </li>
+                        <li>
+                            <span>Ngày kết thúc:</span>
+                            @Model.Task.EndDate.ToString("dd/MM/yyyy HH:mm")
+                        </li>
+                        <li>
+                            <span>Ngày tạo:</span>
+                            @Model.Task.CreateDate.ToString("dd/MM/yyyy HH:mm")
+                        </li>
+                        <li>
+                            <span>Cập nhật lần cuối:</span>
+                            @(Model.Task.UpdateDate != default(DateTime) ?
+                                Model.Task.UpdateDate.ToString("dd/MM/yyyy HH:mm") : "Chưa cập nhật")
+                        </li>
+                    </ul>
                 </div>
             </div>
+        </div>
+    </div>
 
-            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
-            {
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="fas fa-exclamation-circle me-2"></i>
-                    @Model.ErrorMessage
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            }
-            
-            @if (TempData["ErrorMessage"] != null)
-            {
-                <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                    <i class="fas fa-exclamation-circle me-2"></i>
-                    @TempData["ErrorMessage"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            }
-
-            <div class="row">
-                <!-- Task Basic Info -->
-                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-30">
-                    <div class="pd-20 card-box h-100">
-                        <div class="profile-info">
-                            <h5 class="mb-20 h5 text-blue">Thông tin công việc</h5>
-                            <ul>
-                                <li>
-                                    <span>Tên công việc:</span>
-                                    @Model.Task.JobTitle
-                                </li>
-                                <li>
-                                    <span>Mô tả:</span>
-                                    @Model.Task.Description
-                                </li>
-                                <li>
-                                    <span>Trạng thái:</span>
-                                    <span class="badge text-white @(Convert.ToInt32(Model.Task.Status) == 1 ? "bg-success" : "bg-danger")">
-                                        @(Convert.ToInt32(Model.Task.Status) == 1 ? "Hoạt động" : "Không hoạt động")
-                                    </span>
-                                </li>
-                                <li>
-                                    <span>Tiến độ:</span>
-                                    <span class="badge text-white @(Model.Task.TaskStatus == FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskProgressStatus.INPROGRESS ? "bg-warning" : "bg-success")">
-                                        @(Model.Task.TaskStatus == FlowerFarmTaskManagementSystem.BusinessObject.Models.TaskProgressStatus.INPROGRESS ? "Đang thực hiện" : "Hoàn thành")
-                                    </span>
-                                </li>
-                                <li>
-                                    <span>Ngày bắt đầu:</span>
-                                    @Model.Task.StartDate.ToString("dd/MM/yyyy HH:mm")
-                                </li>
-                                <li>
-                                    <span>Ngày kết thúc:</span>
-                                    @Model.Task.EndDate.ToString("dd/MM/yyyy HH:mm")
-                                </li>
-                                <li>
-                                    <span>Ngày tạo:</span>
-                                    @Model.Task.CreateDate.ToString("dd/MM/yyyy HH:mm")
-                                </li>
+    <!-- Product Field Info -->
+    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body p-4">
+                <h5 class="mb-4 text-primary">Chi tiết ruộng hoa</h5>
+                <div class="profile-info">
+                    <ul>
+                        <li>
+                            <span>Tên sản phẩm:</span>
+                            @(Model.Task.Product != null ? Model.Task.Product.ProductName : "N/A")
+                        </li>
+                        <li>
+                            <span>Loại sản phẩm:</span>
+                            @(Model.Task.Product != null && Model.Task.Product.Category != null ?
+                                Model.Task.Product.Category.CategoryName : "N/A")
+                        </li>
+                        <li>
+                            <span>Tên ruộng:</span>
+                            @(Model.Task.Field != null ? Model.Task.Field.FieldName : "N/A")
+                        </li>
+                        <li>
+                            <span>Năng suất:</span>
+                            @(Model.Task.Productivity > 0 ? $"{Model.Task.Productivity} {(string.IsNullOrEmpty(Model.Task.ProductivityUnit) ? "N/A" : Model.Task.ProductivityUnit)}" : $"0 {(string.IsNullOrEmpty(Model.Task.ProductivityUnit) ? "N/A" : Model.Task.ProductivityUnit)}")
+                        </li>
+                        @if (Model.ProductField != null)
+                        {
+                            <li>
+                                <span>Diện tích:</span>
+                                @(Model.ProductField.Field != null ? $"{Model.ProductField.Field.Length} x {Model.ProductField.Field.Width} m²" : "N/A")
+                            </li>
+                            <li>
+                                <span>Trạng thái:</span>
+                                <span class="badge text-white @(Model.ProductField.ProductFieldStatus switch {
+                                    ProductFieldStatus.READYTOPLANT => "bg-info",
+                                    ProductFieldStatus.GROWING => "bg-primary",
+                                    ProductFieldStatus.READYTOHARVEST => "bg-warning",
+                                    ProductFieldStatus.HARVESTING => "bg-info",
+                                    ProductFieldStatus.HARVESTED => "bg-success",
+                                    _ => "bg-secondary"
+                                })">
+                                    @(Model.ProductField.ProductFieldStatus switch {
+                                        ProductFieldStatus.READYTOPLANT => "Sẵn sàng trồng",
+                                        ProductFieldStatus.GROWING => "Đang phát triển",
+                                        ProductFieldStatus.READYTOHARVEST => "Sẵn sàng thu hoạch",
+                                        ProductFieldStatus.HARVESTING => "Đang thu hoạch",
+                                        ProductFieldStatus.HARVESTED => "Đã thu hoạch",
+                                        _ => "Không xác định"
+                                    })
+                                </span>
+                            </li>
+                            <li>
+                                <span>Ngày tạo:</span>
+                                @Model.ProductField.CreateDate.ToString("dd/MM/yyyy HH:mm")
+                            </li>
+                            @if (Model.ProductField.UpdateDate != default(DateTime))
+                            {
                                 <li>
                                     <span>Cập nhật lần cuối:</span>
-                                    @(Model.Task.UpdateDate != default(DateTime) ? Model.Task.UpdateDate.ToString("dd/MM/yyyy HH:mm") : "Chưa cập nhật")
+                                    @Model.ProductField.UpdateDate.ToString("dd/MM/yyyy HH:mm")
                                 </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Product Field Info -->
-                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-30">
-                    <div class="pd-20 card-box h-100">
-                        <h5 class="mb-20 h5 text-blue">Thông tin ruộng trồng</h5>
-                        <div class="profile-info">
-                            <ul>
-                                <li>
-                                    <span>Tên sản phẩm:</span>
-                                    @(Model.Task.Product != null ? Model.Task.Product.ProductName : "N/A")
-                                </li>
-                                <li>
-                                    <span>Loại sản phẩm:</span>
-                                    @(Model.Task.Product?.Category?.CategoryName ?? "N/A")
-                                </li>
-                                <li>
-                                    <span>Tên ruộng:</span>
-                                    @(Model.Task.Field?.FieldName ?? "N/A")
-                                </li>
-                                <li>
-                                    <span>Năng suất:</span>
-                                    @(Model.Task.Productivity > 0 ? $"{Model.Task.Productivity} {Model.Task.ProductivityUnit ?? "N/A"}" : $"0 {Model.Task.ProductivityUnit ?? "N/A"}")
-                                </li>
-                                @if (Model.ProductField != null)
-                                {
-                                    <li>
-                                        <span>Diện tích:</span>
-                                        @(Model.ProductField.Field != null ? $"{Model.ProductField.Field.Length} x {Model.ProductField.Field.Width} m²" : "N/A")
-                                    </li>
-                                    <li>
-                                        <span>Trạng thái:</span>
-                                        <span class="badge text-white @(Model.ProductField.ProductFieldStatus switch {
-                                            ProductFieldStatus.READYTOPLANT => "bg-info",
-                                            ProductFieldStatus.GROWING => "bg-primary",
-                                            ProductFieldStatus.READYTOHARVEST => "bg-warning",
-                                            ProductFieldStatus.HARVESTED => "bg-success",
-                                            _ => "bg-secondary"
-                                        })">
-                                            @(Model.ProductField.ProductFieldStatus switch {
-                                                ProductFieldStatus.READYTOPLANT => "Sẵn sàng trồng",
-                                                ProductFieldStatus.GROWING => "Đang phát triển",
-                                                ProductFieldStatus.READYTOHARVEST => "Sẵn sàng thu hoạch",
-                                                ProductFieldStatus.HARVESTED => "Đã thu hoạch",
-                                                _ => "Không xác định"
-                                            })
-                                        </span>
-                                    </li>
-                                    <li>
-                                        <span>Ngày tạo:</span>
-                                        @Model.ProductField.CreateDate.ToString("dd/MM/yyyy HH:mm")
-                                    </li>
-                                    @if (Model.ProductField.UpdateDate != default(DateTime))
-                                    {
-                                        <li>
-                                            <span>Cập nhật lần cuối:</span>
-                                            @Model.ProductField.UpdateDate.ToString("dd/MM/yyyy HH:mm")
-                                        </li>
-                                    }
-                                }
-                                @if (!string.IsNullOrEmpty(Model.Task.ImageUrl))
-                                {
-                                    <li>
-                                        <span>Hình ảnh:</span>
-                                        <img src="@Model.Task.ImageUrl" alt="Hình ảnh công việc" class="img-fluid mt-2 rounded" />
-                                    </li>
-                                }
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Staff Assignments -->
-                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-30">
-                    <div class="pd-20 card-box h-100">
-                        <h5 class="mb-20 h5 text-blue">Phân công nhân viên</h5>
-                        @if (Model.Task.UserTasks != null && Model.Task.UserTasks.Any())
-                        {
-                            foreach (var userTask in Model.Task.UserTasks)
-                            {
-                                <div class="staff-card mb-3">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <h6 class="mb-0">@userTask.UserName</h6>
-                                        <span class="badge text-white @(Convert.ToInt32(userTask.Status) == 0 ? "bg-danger" : Convert.ToInt32(userTask.Status) == 1 ? "bg-warning" : "bg-success")">
-                                            @(Convert.ToInt32(userTask.Status) == 0 ? "Chờ thực hiện" : Convert.ToInt32(userTask.Status) == 1 ? "Đang thực hiện" : "Hoàn thành")
-                                        </span>
-                                    </div>
-                                    <p class="mb-0 text-muted">@userTask.UserTaskDescription</p>
-
-                                    @if (Convert.ToInt32(userTask.Status) == 2 && !string.IsNullOrEmpty(userTask.ImageUrl))
-                                    {
-                                        <div class="mt-3">
-                                            <p class="mb-2 fw-bold text-success">
-                                                <i class="fas fa-check-circle me-1"></i> Bằng chứng hoàn thành
-                                            </p>
-                                            <img src="@userTask.ImageUrl" alt="Hình ảnh hoàn thành công việc"
-                                                class="img-fluid rounded shadow-sm" style="max-height: 200px;" />
-                                        </div>
-                                    }
-                                </div>
                             }
                         }
-                        else
+                        @if (!string.IsNullOrEmpty(Model.Task.ImageUrl))
                         {
-                            <p class="text-muted">Chưa có nhân viên được phân công</p>
+                            <li>
+                                <span>Hình ảnh:</span>
+                                <img src="@Model.Task.ImageUrl" alt="Hình ảnh công việc" class="img-fluid mt-2 rounded" />
+                            </li>
                         }
-                    </div>
+                    </ul>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Staff Assignments -->
+    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body p-4">
+                <h5 class="mb-4 text-primary">Phân công nhân viên</h5>
+                @if (Model.Task.UserTasks != null && Model.Task.UserTasks.Any())
+                {
+                    foreach (var userTask in Model.Task.UserTasks)
+                    {
+                        <div class="staff-card mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="mb-0">@userTask.UserName</h6>
+                                <span
+                                    class="badge text-white @(Convert.ToInt32(userTask.Status) == 0 ? "bg-danger" : 
+                                                        Convert.ToInt32(userTask.Status) == 1 ? "bg-warning" : "bg-success")">
+                                    @(Convert.ToInt32(userTask.Status) == 0 ? "Chờ xử lý" :
+                                        Convert.ToInt32(userTask.Status) == 1 ? "Đang xử lý" : "Hoàn thành")
+                                </span>
+                            </div>
+                            <p class="mb-0 text-muted">@userTask.UserTaskDescription</p>
+
+                            @if (Convert.ToInt32(userTask.Status) == 2 && !string.IsNullOrEmpty(userTask.ImageUrl))
+                            {
+                                <div class="mt-3">
+                                    <p class="mb-2 fw-bold text-success">
+                                        <i class="fas fa-check-circle me-1"></i> Bằng chứng hoàn thành
+                                    </p>
+                                    <img src="@userTask.ImageUrl" alt="Hình ảnh hoàn thành công việc"
+                                        class="img-fluid rounded shadow-sm" style="max-height: 200px;" />
+                                </div>
+                            }
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p class="text-muted">Không có nhân viên được phân công</p>
+                }
             </div>
         </div>
     </div>
@@ -252,13 +260,13 @@
         color: white !important;
     }
 
-    .card-box {
+    .card {
         background-color: #ffffff;
         border-radius: 10px;
         box-shadow: 0 0 28px 0 rgb(0 0 0 / 8%);
     }
 
-    .text-blue {
+    .text-primary {
         color: #1b00ff;
     }
 

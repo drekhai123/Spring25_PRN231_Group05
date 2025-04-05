@@ -224,6 +224,9 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 
                     await _unitOfWork.SaveChangesAsync();
 
+                    // Kiểm tra và cập nhật trạng thái ProductField dựa trên UserTask status
+                    await UpdateProductFieldBasedOnUserTasks(task);
+
                     // Load lại task với đầy đủ thông tin
                     var updatedTask = await Task.FromResult(_unitOfWork.TaskWorkRepository.Get(
                         filter: t => t.TaskWorkId == task.TaskWorkId,
@@ -405,6 +408,58 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             }
         }
 
+        // Phương thức mới để cập nhật trạng thái ProductField dựa trên UserTask status
+        private async Task UpdateProductFieldBasedOnUserTasks(TaskWork task)
+        {
+            if (task.ProductFieldId.HasValue && task.ProductFieldId.Value != Guid.Empty)
+            {
+                var productField = await _unitOfWork.ProductFieldRepository.GetByIdAsync(task.ProductFieldId.Value);
+                if (productField != null)
+                {
+                    // Kiểm tra trạng thái UserTask
+                    var userTasks = _unitOfWork.UserTaskRepository.Get(
+                        filter: ut => ut.TaskWorkId == task.TaskWorkId
+                    ).ToList();
+
+                    bool isHarvestTask = task.JobTitle.Contains("Thu hoạch", StringComparison.OrdinalIgnoreCase);
+                    bool hasProcessingTask = userTasks.Any(ut => ut.Status == (int)UserTaskStatus.Processing);
+                    bool allTasksCompleted = userTasks.Count > 0 && userTasks.All(ut => ut.Status == (int)UserTaskStatus.Completed);
+
+                    // Cập nhật trạng thái ProductField
+                    if (isHarvestTask)
+                    {
+                        if (hasProcessingTask && productField.ProductFieldStatus == ProductFieldStatus.READYTOHARVEST)
+                        {
+                            productField.ProductFieldStatus = ProductFieldStatus.HARVESTING;
+                            _unitOfWork.ProductFieldRepository.Update(productField);
+                            await _unitOfWork.SaveChangesAsync();
+                        }
+                        else if (allTasksCompleted && productField.ProductFieldStatus == ProductFieldStatus.HARVESTING)
+                        {
+                            productField.ProductFieldStatus = ProductFieldStatus.HARVESTED;
+                            _unitOfWork.ProductFieldRepository.Update(productField);
+                            await _unitOfWork.SaveChangesAsync();
+                        }
+                    }
+                    else // Planting task
+                    {
+                        if (hasProcessingTask && productField.ProductFieldStatus == ProductFieldStatus.READYTOPLANT)
+                        {
+                            productField.ProductFieldStatus = ProductFieldStatus.GROWING;
+                            _unitOfWork.ProductFieldRepository.Update(productField);
+                            await _unitOfWork.SaveChangesAsync();
+                        }
+                        else if (allTasksCompleted && productField.ProductFieldStatus == ProductFieldStatus.GROWING)
+                        {
+                            productField.ProductFieldStatus = ProductFieldStatus.READYTOHARVEST;
+                            _unitOfWork.ProductFieldRepository.Update(productField);
+                            await _unitOfWork.SaveChangesAsync();
+                        }
+                    }
+                }
+            }
+        }
+
         // Method to check and update task completion status
         private async Task CheckAndUpdateTaskCompletionStatus(TaskWork task)
         {
@@ -413,12 +468,13 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             {
                 if (task.UserTasks != null && task.UserTasks.Any())
                 {
-                    // Check if any UserTask is in PROCESSING status
-                    bool hasAllProcessingTasks = task.UserTasks.All(ut => ut.Status == (int)UserTaskStatus.Processing);
+                    // Check if all UserTasks are completed
                     bool allTasksCompleted = task.UserTasks.All(ut => ut.Status == (int)UserTaskStatus.Completed);
+                    
+                    // Check if any UserTask is in PROCESSING status
+                    bool hasProcessingTask = task.UserTasks.Any(ut => ut.Status == (int)UserTaskStatus.Processing);
 
-                    // If all tasks are processing, update ProductField status based on current status
-                    if (hasAllProcessingTasks && task.ProductFieldId.HasValue && task.ProductFieldId.Value != Guid.Empty)
+                    if (hasProcessingTask && task.ProductFieldId.HasValue && task.ProductFieldId.Value != Guid.Empty)
                     {
                         task.TaskStatus = TaskProgressStatus.INPROGRESS;
                         _unitOfWork.TaskWorkRepository.Update(task);
@@ -433,14 +489,14 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
                             {
                                 productField.ProductFieldStatus = ProductFieldStatus.HARVESTING;
                                 _unitOfWork.ProductFieldRepository.Update(productField);
+                                await _unitOfWork.SaveChangesAsync();
                             }
                             else if (!isHarvestTask && productField.ProductFieldStatus == ProductFieldStatus.READYTOPLANT)
                             {
                                 productField.ProductFieldStatus = ProductFieldStatus.GROWING;
                                 _unitOfWork.ProductFieldRepository.Update(productField);
+                                await _unitOfWork.SaveChangesAsync();
                             }
-
-                            await _unitOfWork.SaveChangesAsync();
                         }
                     }
 

@@ -3,12 +3,12 @@
 @{
     ViewData["Title"] = "ReturnTool";
 }
-<div class="main-container">
+<div class="container-fluid px-4">
     <div class="pd-ltr-20 xs-pd-20-10">
         <div class="min-height-200px">
             <div class="page-header">
                 <div class="text-center">
-                    <h2>Extend Farm Tools Task</h2>
+                    <h2>Dụng cụ được trả</h2>
                 </div>
             </div>
             @if (TempData["ErrorMessage"] != null)
@@ -22,30 +22,32 @@
 
                     <input type="hidden" asp-for="FarmToolsOfTaskRequest.FarmToolsOfTaskId" />
 
-                <dt class="col-sm-3">Farm Tool:</dt>
+                <dt class="col-sm-3">Dụng cụ:</dt>
                 <dd class="col-sm-9">@Model.FarmToolsOfTaskRequest.FarmTools.FarmToolsName</dd>
 
-                <dt class="col-sm-3">User Task:</dt>
+                <dt class="col-sm-3">Nhiệm vụ:</dt>
                 <dd class="col-sm-9">@Model.FarmToolsOfTaskRequest.UserTask.UserTaskDescription</dd>
+                <dt class="col-sm-3">Số lượng:</dt>
+                <dd class="col-sm-9">@Model.FarmToolsOfTaskRequest.FarmToolOfTaskQuantity @Model.FarmToolsOfTaskRequest.FarmToolOfTaskUnit</dd>
                     <div class="form-group">
                         <button type="button" class="btn btn-info mb-2" id="toggleNoteButton">
-                            Add Note
-                        </button>
+                        Thêm Ghi chú
+                    </button>
 
                         <div id="noteContainer" style="display: none;">
-                        <label for="NoteInf">Corrupted information:</label>
+                        <label for="NoteInf">Thông tin bị hỏng:</label>
                             <textarea id="NoteInf" name="NoteInf" class="form-control"></textarea>
-                        <label for="Quantity">Quantity not damaged:</label>
+                        <label for="Quantity">Số lượng không bị hư hỏng:</label>
                             <input type="number" min="0" id="Quantity" name="Quantity" class="form-control" />
                         </div>
                     </div>
 
                     <div class="d-flex justify-content-between">
                         <a asp-page="/FarmToolsOfTask/Index" class="btn btn-secondary">
-                            <i class="fa fa-arrow-left"></i> Back to List
+                            <i class="fa fa-arrow-left"></i> Quay lại danh sách
                         </a>
                         <button type="submit" class="btn btn-success">
-                            <i class="fa fa-save"></i> Save
+                            <i class="fa fa-save"></i> Lưu
                         </button>
                     </div>
                 </form>
@@ -82,9 +84,9 @@
                 const quantityValue = quantityInput.value.trim();
                 const quantityNumber = parseInt(quantityValue, 10);
 
-                if (noteValue !== "" && (isNaN(quantityNumber) || quantityNumber <= 0)) {
+                if (noteValue !== "" && (isNaN(quantityNumber) || quantityNumber < 0)) {
                     event.preventDefault();
-                    alert("Please enter a valid quantity (> 0) if you have provided a note.");
+                    alert("Vui lòng nhập số lượng hợp lệ (> 0) nếu bạn đã cung cấp ghi chú.");
                     quantityInput.focus();
                 }
             });

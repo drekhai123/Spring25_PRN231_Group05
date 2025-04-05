@@ -16,6 +16,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.DTO
         public DateTime CreateDate { get; set; }
         public DateTime UpdateDate { get; set; }
         public string? ImageUrl { get; set; }
+        public TaskProgressStatus TaskStatus { get; set; }
 
         // Bỏ List<UserTaskResponseDTO> để tránh vòng lặp
 

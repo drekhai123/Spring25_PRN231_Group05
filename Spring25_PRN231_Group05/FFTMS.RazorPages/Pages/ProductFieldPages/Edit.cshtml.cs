@@ -48,7 +48,7 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
                 var response = await _httpClient.GetAsync($"odata/ProductField/{id}?$expand=Product,Field");
                 if (!response.IsSuccessStatusCode)
                 {
-                    ErrorMessage = "Failed to retrieve product field.";
+                    ErrorMessage = "Không thể truy xuất kế hoạch.";
                     return Page();
                 }
 
@@ -87,7 +87,7 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
                 var originalProductField = await GetOriginalProductField(ProductField.ProductFieldId);
                 if (originalProductField == null)
                 {
-                    ModelState.AddModelError(string.Empty, "Product field not found");
+                    ModelState.AddModelError(string.Empty, "Không tìm thấy kế hoạch.");
                     await LoadDropdownData();
                     return Page();
                 }
@@ -95,7 +95,7 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
                 // Validate EndDate > StartDate
                 if (ProductField.EndDate <= ProductField.StartDate)
                 {
-                    ModelState.AddModelError(string.Empty, "End Date must be greater than Start Date");
+                    ModelState.AddModelError(string.Empty, "Ngày kết thúc phải lớn hơn Ngày bắt đầu.");
                     await LoadDropdownData();
                     return Page();
                 }
@@ -103,10 +103,10 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
                 // Check if trying to update Productivity or ProductivityUnit
                 if ((ProductField.Productivity != originalProductField.Productivity ||
                      ProductField.ProductivityUnit != originalProductField.ProductivityUnit) &&
-                    ProductField.ProductFieldStatus != ProductFieldStatus.READYTOHARVEST)
+                    ProductField.ProductFieldStatus != ProductFieldStatus.HARVESTED)
                 {
-                    ModelState.AddModelError(string.Empty, 
-                        "Productivity and ProductivityUnit can only be updated when the status is READYTOHARVEST");
+                    ModelState.AddModelError(string.Empty,
+                        "Năng suất và Đơn vị năng suất chỉ có thể được cập nhật khi trạng thái là ĐÃ THU HOẠCH");
                     await LoadDropdownData();
                     return Page();
                 }
@@ -114,7 +114,7 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
                 var updateData = new
                 {
                     productivity = ProductField.Productivity,
-                    productivityUnit = ProductField.ProductivityUnit ?? "",
+                    productivityUnit = ProductField.ProductivityUnit ?? "null",
                     startDate = ProductField.StartDate.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
                     endDate = ProductField.EndDate.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
                     productFieldStatus = (int)ProductField.ProductFieldStatus,
@@ -149,7 +149,7 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(string.Empty, $"An error occurred: {ex.Message}");
+                ModelState.AddModelError(string.Empty, $"Đã xảy ra lỗi: {ex.Message}");
                 await LoadDropdownData();
                 return Page();
             }
@@ -191,7 +191,7 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(string.Empty, $"Error loading dropdown data: {ex.Message}");
+                ModelState.AddModelError(string.Empty, $"Lỗi khi tải dữ liệu thả xuống: {ex.Message}");
             }
         }
 
