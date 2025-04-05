@@ -176,7 +176,7 @@
 </style>
 
 <div class="profile-container">
-    <h2 class="profile-header">User Profile</h2>
+    <h2 class="profile-header">Thông tin người dùng</h2>
 
     @if (TempData["SuccessMessage"] != null)
     {
@@ -203,13 +203,13 @@
                     <div class="profile-col">
                         <p><strong>User ID:</strong> <span>@Model.UserProfile.UserId</span></p>
                         <p><strong>Email:</strong> <span>@Model.UserProfile.Email</span></p>
-                        <p><strong>Phone:</strong> <span>@Model.UserProfile.Phone</span></p>
-                        <p><strong>Address:</strong> <span>@Model.UserProfile.Address</span></p>
+                        <p><strong>Điện thoại:</strong> <span>@Model.UserProfile.Phone</span></p>
+                        <p><strong>Địa chỉ:</strong> <span>@Model.UserProfile.Address</span></p>
                         <p><strong>Role:</strong> <span>@Model.UserProfile.Role</span></p>
                     </div>
                     <div class="profile-col">
                         <p>
-                            <strong>Date of Birth:</strong>
+                            <strong>Ngày sinh:</strong>
                             <span>
                                 @(Model.UserProfile.DateOfBirth != null && DateTime.TryParse(Model.UserProfile.DateOfBirth, out var dob)
                                     ? dob.ToString("dd/MM/yyyy")
@@ -217,22 +217,22 @@
                             </span>
                         </p>
                         <p>
-                            <strong>Created Date:</strong>
+                            <strong>Ngày tạo:</strong>
                             <span>
                                 @(Model.UserProfile.CreateDate != null && DateTime.TryParse(Model.UserProfile.CreateDate, out var createDate) && createDate != DateTime.MinValue
                                     ? createDate.ToString("dd/MM/yyyy")
                                     : "N/A")
                             </span>
                         </p>
-                        <p><strong>Active:</strong> <span>@(Model.UserProfile.IsActive ? "Yes" : "No")</span></p>
-                        <p><strong>Work Position:</strong> <span>@(Model.UserProfile.WorkPosition ?? "N/A")</span></p>
-                        <p><strong>Experience:</strong> <span>@(Model.UserProfile.Experience ?? "N/A")</span></p>
+                        <p><strong>Hoạt động:</strong> <span>@(Model.UserProfile.IsActive ? "Yes" : "No")</span></p>
+                        <p><strong>Vị trí làm việc:</strong> <span>@(Model.UserProfile.WorkPosition ?? "N/A")</span></p>
+                        <p><strong>Kinh nghiệm:</strong> <span>@(Model.UserProfile.Experience ?? "N/A")</span></p>
                     </div>
                 </div>
             </div>
             <div class="profile-card-footer">
-                <button type="button" class="btn btn-success btn-update" data-bs-toggle="modal" data-bs-target="#updateUserModal">Update User</button>
-                <a asp-page="/Index" class="btn btn-primary btn-back">Back to Home</a>
+                <button type="button" class="btn btn-success btn-update" data-bs-toggle="modal" data-bs-target="#updateUserModal">Chỉnh sửa</button>
+                <a asp-page="/Index" class="btn btn-primary btn-back">Về trang chủ</a>
             </div>
         </div>
 
@@ -241,7 +241,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="updateUserModalLabel">Update User Information</h5>
+                        <h5 class="modal-title" id="updateUserModalLabel">Thông tin người dùng</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <form asp-page-handler="UpdateUser" method="post">
@@ -257,30 +257,30 @@
                                 <input type="email" class="form-control" id="Email" name="Email" value="@Model.UserProfile.Email" required />
                             </div>
                             <div class="form-group">
-                                <label for="Phone">Phone</label>
+                                <label for="Phone">Điện thoại:</label>
                                 <input type="text" class="form-control" id="Phone" name="Phone" value="@Model.UserProfile.Phone" />
                             </div>
                             <div class="form-group">
-                                <label for="Address">Address</label>
+                                <label for="Address">Địa chỉ:</label>
                                 <input type="text" class="form-control" id="Address" name="Address" value="@Model.UserProfile.Address" />
                             </div>
                             <div class="form-group">
-                                <label for="DateOfBirth">Date of Birth</label>
+                                <label for="DateOfBirth">Ngày sinh:</label>
                                 <input type="date" class="form-control" id="DateOfBirth" name="DateOfBirth"
                                        value="@(Model.UserProfile.DateOfBirth != null && DateTime.TryParse(Model.UserProfile.DateOfBirth, out var DateOfBirth) ? DateOfBirth.ToString("yyyy-MM-dd") : "")" />
                             </div>
                             <div class="form-group">
-                                <label for="WorkPosition">Work Position</label>
+                                <label for="WorkPosition">Vị trí làm việc:</label>
                                 <input type="text" class="form-control" id="WorkPosition" name="WorkPosition" value="@Model.UserProfile.WorkPosition" />
                             </div>
                             <div class="form-group">
-                                <label for="Experience">Experience</label>
+                                <label for="Experience">Kinh nghiệm:</label>
                                 <input type="text" class="form-control" id="Experience" name="Experience" value="@Model.UserProfile.Experience" />
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                            <button type="submit" class="btn btn-primary">Lưu</button>
                         </div>
                     </form>
                 </div>
