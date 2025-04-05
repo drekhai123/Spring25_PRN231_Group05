@@ -53,7 +53,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 
             var productField = _mapper.Map<ProductField>(newProductField);
             productField.ProductFieldId = Guid.NewGuid();
-            productField.ProductFieldStatus = ProductFieldStatus.GROWING;
+            productField.ProductFieldStatus = newProductField.ProductFieldStatus;
             productField.Status = true;
             productField.ProductivityUnit = null;
             productField.Productivity = 0;

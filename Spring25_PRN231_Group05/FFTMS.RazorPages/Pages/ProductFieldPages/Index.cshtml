@@ -25,7 +25,7 @@
             else
             {
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle">
+                    <table class="table table-hover align-middle" id="farmToolsTable">
                         <thead class="table-dark">
                             <tr>
                                 <th>Hoa</th>
@@ -120,3 +120,36 @@
 <script src="~/js/microsoft/signalr/dist/browser/deleteProductField.js"></script>
 <script src="~/js/microsoft/signalr/dist/browser/createProductField.js"></script>
 <script src="~/js/microsoft/signalr/dist/browser/updateProductField.js"></script>
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script>
+        $(document).ready(function () {
+            if ($.fn.DataTable.isDataTable("#farmToolsTable")) {
+                $("#farmToolsTable").DataTable().destroy();
+            }
+
+            $("#farmToolsTable").DataTable({
+                paging: true,
+                ordering: true,
+                info: true,
+                searching: true,
+                lengthMenu: [5, 10, 25, 50, 100],
+                order: [[0, "asc"]],
+                language: {
+                    lengthMenu: "Hiện _MENU_ dòng",
+                    zeroRecords: "Không tìm thấy dữ liệu phù hợp",
+                    info: "Trang _PAGE_ / _PAGES_",
+                    infoEmpty: "Không có dữ liệu",
+                    search: "Tìm:",
+                    paginate: {
+                        first: "Đầu",
+                        last: "Cuối",
+                        next: "Sau",
+                        previous: "Trước"
+                    }
+                }
+            });
+        });
+    </script>
+}

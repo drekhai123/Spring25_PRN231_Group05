@@ -74,7 +74,7 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
                 }
 
                 // Set initial status to GROWING
-                ProductField.ProductFieldStatus = ProductFieldStatus.GROWING;
+                ProductField.ProductFieldStatus = ProductFieldStatus.READYTOPLANT;
 
                 // Set create and update dates
                 ProductField.CreateDate = DateTime.Now;
