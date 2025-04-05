@@ -53,9 +53,12 @@
                                             })
                                         </span>
                                         </dd>
-
                                         <dt class="col-sm-4">Năng suất:</dt>
-                                        <dd class="col-sm-8">@Model.ProductField.Productivity @Model.ProductField.ProductivityUnit</dd>
+                                        <dd class="col-sm-8">
+                                            @(Model.ProductField.Productivity > 0
+                                                ? $"{Model.ProductField.Productivity} {Model.ProductField.ProductivityUnit}"
+                                                : "Không có")
+                                        </dd>
 
                                         <dt class="col-sm-4">Ngày bắt đầu:</dt>
                                         <dd class="col-sm-8">@Model.ProductField.StartDate.ToString("dd/MM/yyyy")</dd>

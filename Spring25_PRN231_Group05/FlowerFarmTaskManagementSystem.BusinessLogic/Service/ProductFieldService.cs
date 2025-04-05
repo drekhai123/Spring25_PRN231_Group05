@@ -55,6 +55,8 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
             productField.ProductFieldId = Guid.NewGuid();
             productField.ProductFieldStatus = ProductFieldStatus.GROWING;
             productField.Status = true;
+            productField.ProductivityUnit = null;
+            productField.Productivity = 0;
 
             // Kiểm tra ProductId và FieldId
             var productExists = await _unitOfWork.ProductRepository.GetByIdAsync(productField.ProductId);
@@ -133,14 +135,14 @@ namespace FlowerFarmTaskManagementSystem.BusinessLogic.Service
 
 
             // Check ProductFieldStatus only for Productivity and ProductivityUnit updates
-            if (productField.Productivity != productFieldRequest.Productivity ||
-                productField.ProductivityUnit != productFieldRequest.ProductivityUnit)
-            {
-                if (productField.ProductFieldStatus != ProductFieldStatus.HARVESTED)
-                {
-                    throw new InvalidOperationException("Không thể cập nhật Năng suất và Đơn vị năng suất. Kế hoạch phải ở trạng thái ĐÃ THU HOẠCH.");
-                }
-            }
+            //if (productField.Productivity != productFieldRequest.Productivity ||
+            //    productField.ProductivityUnit != productFieldRequest.ProductivityUnit)
+            //{
+            //    if (productField.ProductFieldStatus != ProductFieldStatus.HARVESTED)
+            //    {
+            //        throw new InvalidOperationException("Không thể cập nhật Năng suất và Đơn vị năng suất. Kế hoạch phải ở trạng thái ĐÃ THU HOẠCH.");
+            //    }
+            //}
 
             _mapper.Map(productFieldRequest, productField);
 

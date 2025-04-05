@@ -101,15 +101,16 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
                 }
 
                 // Check if trying to update Productivity or ProductivityUnit
-                if ((ProductField.Productivity != originalProductField.Productivity ||
-                     ProductField.ProductivityUnit != originalProductField.ProductivityUnit) &&
-                    ProductField.ProductFieldStatus != ProductFieldStatus.HARVESTED)
-                {
-                    ModelState.AddModelError(string.Empty,
-                        "Năng suất và Đơn vị năng suất chỉ có thể được cập nhật khi trạng thái là ĐÃ THU HOẠCH");
-                    await LoadDropdownData();
-                    return Page();
-                }
+               
+                //if ((ProductField.Productivity != originalProductField.Productivity ||
+                //     ProductField.ProductivityUnit != originalProductField.ProductivityUnit) &&
+                //    ProductField.ProductFieldStatus != ProductFieldStatus.HARVESTED)
+                //{
+                //    ModelState.AddModelError(string.Empty,
+                //        "Năng suất và Đơn vị năng suất chỉ có thể được cập nhật khi trạng thái là ĐÃ THU HOẠCH");
+                //    await LoadDropdownData();
+                //    return Page();
+                //}
 
                 var updateData = new
                 {
