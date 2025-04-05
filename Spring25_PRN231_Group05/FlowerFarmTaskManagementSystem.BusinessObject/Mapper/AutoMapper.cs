@@ -93,7 +93,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Mapper
             CreateMap<ProductFieldUpdateDTO, ProductField>();
             // Task mappings
             CreateMap<TaskWork, TaskResponseDTO>()
-                .ForMember(dest => dest.TaskWorkId, opt => opt.MapFrom(src => src.TaskWorkId))
+               .ForMember(dest => dest.TaskWorkId, opt => opt.MapFrom(src => src.TaskWorkId))
                 .ForMember(dest => dest.JobTitle, opt => opt.MapFrom(src => src.JobTitle))
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                 .ForMember(dest => dest.AssignedBy, opt => opt.MapFrom(src => src.AssignedBy))
@@ -103,16 +103,17 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Mapper
                 .ForMember(dest => dest.CreateDate, opt => opt.MapFrom(src => src.CreateDate))
                 .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.ImageUrl))
                 .ForMember(dest => dest.ProductFieldId, opt => opt.MapFrom(src => src.ProductFieldId))
-                .ForMember(dest => dest.Productivity, opt => opt.MapFrom(src => src.ProductField.Productivity))
-                .ForMember(dest => dest.ProductivityUnit, opt => opt.MapFrom(src => src.ProductField.ProductivityUnit))
-                .ForMember(dest => dest.Product, opt => opt.MapFrom(src => src.ProductField.Product))
-                .ForMember(dest => dest.Field, opt => opt.MapFrom(src => src.ProductField.Field))
-                .ForMember(dest => dest.UserTasks, opt => opt.MapFrom(src => src.UserTasks));
+                .ForMember(dest => dest.Productivity, opt => opt.MapFrom(src => src.ProductField != null ? src.ProductField.Productivity : 0))
+                .ForMember(dest => dest.ProductivityUnit, opt => opt.MapFrom(src => src.ProductField != null ? src.ProductField.ProductivityUnit : null))
+                .ForMember(dest => dest.Product, opt => opt.MapFrom(src => src.ProductField != null ? src.ProductField.Product : null))
+                .ForMember(dest => dest.Field, opt => opt.MapFrom(src => src.ProductField != null ? src.ProductField.Field : null))
+                .ForMember(dest => dest.UserTasks, opt => opt.MapFrom(src => src.UserTasks))
+                .ForMember(dest => dest.ProductFieldStatus, opt => opt.MapFrom(src => src.ProductField != null ? src.ProductField.ProductFieldStatus : ProductFieldStatus.READYTOPLANT));
+
 
             CreateMap<TaskRequestDTO, TaskWork>()
                 .ForMember(dest => dest.ProductFieldId, opt => opt.MapFrom(src => src.ProductFieldId))
                 .ForMember(dest => dest.UserTasks, opt => opt.Ignore());
-
             // UserTask mappings
             CreateMap<UserTask, UserTaskResponseDTO>()
                 .ForMember(dest => dest.UserTaskId, opt => opt.MapFrom(src => src.UserTaskId))
@@ -132,7 +133,6 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Mapper
                 .ForMember(dest => dest.UpdateDate, opt => opt.MapFrom(src => DateTime.UtcNow))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (int)UserTaskStatus.Waiting))
                 .ForMember(dest => dest.FarmToolsOfTasks, opt => opt.Ignore());
-
             // FarmTool mappings
             CreateMap<FarmToolCategoriesRequestDTO, FarmToolCategories>()
                 .ForMember(dest => dest.FarmToolCategoriesId, opt => opt.MapFrom(src => src.FarmToolCategoriesId.ToString()));
@@ -160,7 +160,8 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Mapper
                 .ForMember(dest => dest.Productivity, opt => opt.MapFrom(src => src.ProductField != null ? src.ProductField.Productivity : 0))
                 .ForMember(dest => dest.ProductivityUnit, opt => opt.MapFrom(src => src.ProductField != null ? src.ProductField.ProductivityUnit : null))
                 .ForMember(dest => dest.Product, opt => opt.MapFrom(src => src.ProductField != null ? src.ProductField.Product : null))
-                .ForMember(dest => dest.Field, opt => opt.MapFrom(src => src.ProductField != null ? src.ProductField.Field : null));
+                .ForMember(dest => dest.Field, opt => opt.MapFrom(src => src.ProductField != null ? src.ProductField.Field : null))
+                .ForMember(dest => dest.ProductFieldStatus, opt => opt.MapFrom(src => src.ProductField != null ? src.ProductField.ProductFieldStatus : ProductFieldStatus.READYTOPLANT));
 
             CreateMap<FarmToolsOfTask, FarmToolsOfTaskResponseDTO>()
                 .ForMember(dest => dest.FarmToolsOfTaskId, opt => opt.MapFrom(src => src.FarmToolsOfTaskId.ToString()))
