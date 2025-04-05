@@ -59,10 +59,16 @@ namespace FFTMS.RazorPages.Pages.ProductFieldPages
 
             try
             {
+                if (ProductField.StartDate < DateTime.Now)
+                {
+                    ModelState.AddModelError(string.Empty, "Ngày bắt đầu phải bằng hoặc lớn hơn bây giờ");
+                    await LoadDropdownData();
+                    return Page();
+                }
                 // Validate EndDate > StartDate
                 if (ProductField.EndDate <= ProductField.StartDate)
                 {
-                    ModelState.AddModelError(string.Empty, "End Date must be greater than Start Date");
+                    ModelState.AddModelError(string.Empty, "Ngày kết thúc phải lớn hơn ngày bắt đầu");
                     await LoadDropdownData();
                     return Page();
                 }
