@@ -34,7 +34,7 @@ namespace FlowerFarmTaskManagementSystem.BusinessObject.Models
     { 
         [EnumMember(Value = "Chuẩn bị trồng")]
         READYTOPLANT,
-        [EnumMember(Value = "Đang phát triển")]
+        [EnumMember(Value = "Đang trồng")]
         GROWING,
         [EnumMember(Value = "Chuẩn bị thu hoạch")]
         READYTOHARVEST,
